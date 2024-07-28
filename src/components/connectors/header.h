@@ -8,16 +8,13 @@
 
 #include "connbase.h"
 
-class LibraryItem;
-
 class Header : public ConnBase
 {
     public:
         Header( QString type, QString id );
         ~Header();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         bool pointDown() { return m_pointDown; }
         void setPointDown( bool down );

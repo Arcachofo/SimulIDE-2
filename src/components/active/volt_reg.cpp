@@ -9,7 +9,6 @@
 #include "volt_reg.h"
 #include "connector.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 #include "pin.h"
 #include "e-node.h"
 
@@ -17,17 +16,13 @@
 
 #define tr(str) simulideTr("VoltReg",str)
 
-Component* VoltReg::construct( QString type, QString id )
-{ return new VoltReg( type, id ); }
-
-LibraryItem* VoltReg::libraryItem()
-{
-    return new LibraryItem(
+listItem_t VoltReg::libraryItem(){
+    return {
         tr("Volt. Regulator"),
         "Other Active",
         "voltreg.png",
         "VoltReg",
-        VoltReg::construct );
+        [](QString id){ return (Component*)new VoltReg("VoltReg", id ); } };
 }
 
 VoltReg::VoltReg( QString type, QString id )

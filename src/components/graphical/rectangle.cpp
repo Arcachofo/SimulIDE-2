@@ -9,17 +9,13 @@
 
 #define tr(str) simulideTr("Rectangle",str)
 
-Component* Rectangle::construct( QString type, QString id )
-{ return new Rectangle( type, id ); }
-
-LibraryItem* Rectangle::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Rectangle::libraryItem(){
+    return {
         tr("Rectangle"),
         "Graphical",
         "rectangle.png",
         "Rectangle",
-        Rectangle::construct);
+        [](QString id){ return (Component*)new Rectangle("Rectangle", id ); } };
 }
 
 Rectangle::Rectangle( QString type, QString id )
@@ -28,9 +24,9 @@ Rectangle::Rectangle( QString type, QString id )
 }
 Rectangle::~Rectangle(){}
 
-void Rectangle::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void Rectangle::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
-    Component::paint( p, option, widget );
+    Component::paint( p, o, w );
 
     QPen pen(Qt::black, m_border, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     p->setPen( pen );

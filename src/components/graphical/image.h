@@ -8,16 +8,13 @@
 
 #include "shape.h"
 
-class LibraryItem;
-
 class Image : public Shape
 {
     public:
         Image( QString type, QString id );
         ~Image();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void setBackground( QString bck ) override;
         virtual QString background() override;

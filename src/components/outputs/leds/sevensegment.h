@@ -10,16 +10,13 @@
 #include "e-element.h"
 #include "ledsmd.h"
 
-class LibraryItem;
-
 class SevenSegment : public Component, public eElement
 {
     public:
         SevenSegment( QString type, QString id );
         ~SevenSegment();
 
- static Component* construct( QString type, QString id );
- static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         QString colorStr();
         void setColorStr( QString color );

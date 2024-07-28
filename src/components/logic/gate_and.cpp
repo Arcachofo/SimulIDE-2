@@ -6,24 +6,19 @@
 #include <QPainter>
 
 #include "gate_and.h"
-#include "itemlibrary.h"
 
 #include "intprop.h"
 #include "boolprop.h"
 
 #define tr(str) simulideTr("AndGate",str)
 
-Component* AndGate::construct( QString type, QString id )
-{ return new AndGate( type, id ); }
-
-LibraryItem* AndGate::libraryItem()
-{
-    return new LibraryItem(
+listItem_t AndGate::libraryItem(){
+    return {
         tr("And Gate" ),
         "Gates",
         "andgate.png",
-        "And Gate",
-        AndGate::construct );
+        "AndGate",
+        [](QString id){ return (Component*)new AndGate("AndGate", id ); } };
 }
 
 AndGate::AndGate( QString type, QString id )

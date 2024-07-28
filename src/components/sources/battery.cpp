@@ -6,24 +6,19 @@
 #include "battery.h"
 #include "simulator.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 #include "pin.h"
 
 #include "doubleprop.h"
 
 #define tr(str) simulideTr("Battery",str)
 
-Component* Battery::construct( QString type, QString id )
-{ return new Battery( type, id ); }
-
-LibraryItem* Battery::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Battery::libraryItem(){
+    return {
         tr("Battery"),
         "Sources",
         "battery.png",
         "Battery",
-        Battery::construct );
+        [](QString id){ return (Component*)new Battery("Battery", id ); } };
 }
 
 Battery::Battery( QString type, QString id )

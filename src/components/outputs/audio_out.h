@@ -11,16 +11,13 @@
 #include "e-resistor.h"
 #include "component.h"
 
-class LibraryItem;
-
 class AudioOut : public Component, public eResistor
 {
     public:
         AudioOut( QString type, QString id );
         ~AudioOut();
-    
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

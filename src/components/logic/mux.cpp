@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "mux.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("Mux",str)
 
-Component* Mux::construct( QString type, QString id )
-{ return new Mux( type, id ); }
-
-LibraryItem* Mux::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Mux::libraryItem(){
+    return {
         tr("Mux"),
         "Converters" ,
         "mux.png",
         "Mux",
-        Mux::construct );
+        [](QString id){ return (Component*)new Mux("Mux", id ); } };
 }
 
 Mux::Mux( QString type, QString id )

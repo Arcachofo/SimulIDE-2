@@ -8,7 +8,6 @@
 #include "i2cram.h"
 #include "memtable.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 #include "label.h"
 
@@ -19,17 +18,13 @@
 
 #define tr(str) simulideTr("I2CRam",str)
 
-Component* I2CRam::construct( QString type, QString id )
-{ return new I2CRam( type, id ); }
-
-LibraryItem* I2CRam::libraryItem()
-{
-    return new LibraryItem(
+listItem_t I2CRam::libraryItem(){
+    return {
         tr("I2C Ram"),
         "Memory",
         "2to3.png",
         "I2CRam",
-        I2CRam::construct );
+        [](QString id){ return (Component*)new I2CRam("I2CRam", id ); } };
 }
 
 I2CRam::I2CRam( QString type, QString id )

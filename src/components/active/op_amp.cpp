@@ -8,7 +8,6 @@
 #include <QtMath>
 
 #include "op_amp.h"
-#include "itemlibrary.h"
 #include "propdialog.h"
 #include "connector.h"
 #include "simulator.h"
@@ -20,17 +19,13 @@
 
 #define tr(str) simulideTr("OpAmp",str)
 
-Component* OpAmp::construct( QString type, QString id )
-{ return new OpAmp( type, id ); }
-
-LibraryItem* OpAmp::libraryItem()
-{
-    return new LibraryItem(
+listItem_t OpAmp::libraryItem(){
+    return {
         tr("OpAmp"),
         "Other Active",
         "opamp.png",
-        "opAmp",
-        OpAmp::construct );
+        "OpAmp",
+        [](QString id){ return (Component*)new OpAmp("OpAmp", id ); } };
 }
 
 OpAmp::OpAmp( QString type, QString id )

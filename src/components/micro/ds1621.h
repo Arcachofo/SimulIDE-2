@@ -9,16 +9,13 @@
 #include "twimodule.h"
 #include "iocomponent.h"
 
-class LibraryItem;
-
 class DS1621 : public IoComponent, public TwiModule
 {
     public:
         DS1621( QString type, QString id );
         ~DS1621();
         
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         double tempInc() { return m_tempInc; }
         void setTempInc( double inc ) { m_tempInc = trim( inc ); }
@@ -32,9 +29,8 @@ class DS1621 : public IoComponent, public TwiModule
 
         virtual void readByte() override;
         virtual void writeByte() override;
-        //virtual void startWrite() override;
 
-        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
+        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w ) override;
 
     public slots:
         void upbuttonclicked();

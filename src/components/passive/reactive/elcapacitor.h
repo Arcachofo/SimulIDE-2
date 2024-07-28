@@ -8,20 +8,17 @@
 
 #include "capacitorbase.h"
 
-class LibraryItem;
-
 class elCapacitor : public CapacitorBase
 {
     public:
         elCapacitor( QString type, QString id );
         ~elCapacitor();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 
-        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
+        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w ) override;
 };
 
 #endif

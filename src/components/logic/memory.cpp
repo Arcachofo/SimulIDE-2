@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "memory.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -20,17 +19,13 @@
 
 #define tr(str) simulideTr("Memory",str)
 
-Component* Memory::construct( QString type, QString id )
-{ return new Memory( type, id ); }
-
-LibraryItem* Memory::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Memory::libraryItem(){
+    return {
         tr("Ram/Rom"),
         "Memory",
         "2to3g.png",
         "Memory",
-        Memory::construct );
+        [](QString id){ return (Component*)new Memory("Memory", id ); } };
 }
 
 Memory::Memory( QString type, QString id )

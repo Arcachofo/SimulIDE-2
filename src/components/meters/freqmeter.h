@@ -9,16 +9,13 @@
 #include "component.h"
 #include "e-element.h"
 
-class LibraryItem;
-
 class FreqMeter : public Component, public eElement
 {
     public:
         FreqMeter( QString type, QString id );
         ~FreqMeter();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

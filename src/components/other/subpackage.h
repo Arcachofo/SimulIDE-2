@@ -9,7 +9,6 @@
 #include "chip.h"
 #include "linker.h"
 
-class LibraryItem;
 class QAction;
 
 class SubPackage : public Chip, public Linker
@@ -19,9 +18,8 @@ class SubPackage : public Chip, public Linker
     public:
         SubPackage( QString type, QString id );
         ~SubPackage();
-        
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+
+ static listItem_t libraryItem();
 
         virtual void setLogicSymbol( bool ls ) override;
 

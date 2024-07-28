@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "ledbar.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "connector.h"
 #include "simulator.h"
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("LedBar",str)
 
-Component* LedBar::construct( QString type, QString id )
-{ return new LedBar( type, id ); }
-
-LibraryItem* LedBar::libraryItem()
-{
-    return new LibraryItem(
+listItem_t LedBar::libraryItem(){
+    return {
         tr("Led Bar"),
         "Leds",
         "ledbar.png",
         "LedBar",
-        LedBar::construct);
+        [](QString id){ return (Component*)new LedBar("LedBar", id ); } };
 }
 
 LedBar::LedBar( QString type, QString id )

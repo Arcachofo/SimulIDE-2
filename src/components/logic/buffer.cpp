@@ -6,24 +6,19 @@
 #include <QPainter>
 
 #include "buffer.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 
 #include "boolprop.h"
 
 #define tr(str) simulideTr("Buffer",str)
 
-Component* Buffer::construct( QString type, QString id )
-{ return new Buffer( type, id ); }
-
-LibraryItem* Buffer::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Buffer::libraryItem(){
+    return {
         tr("Buffer"),
         "Gates",
         "buffer.png",
         "Buffer",
-        Buffer::construct );
+        [](QString id){ return (Component*)new Buffer("Buffer", id ); } };
 }
 
 Buffer::Buffer( QString type, QString id )

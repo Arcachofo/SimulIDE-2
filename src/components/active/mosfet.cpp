@@ -8,7 +8,6 @@
 #include "mosfet.h"
 #include "simulator.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 
 #include "doubleprop.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("Mosfet",str)
 
-Component* Mosfet::construct( QString type, QString id )
-{ return new Mosfet( type, id ); }
-
-LibraryItem* Mosfet::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Mosfet::libraryItem(){
+    return {
         tr("Mosfet"),
         "Transistors",
         "mosfet.png",
         "Mosfet",
-        Mosfet::construct);
+        [](QString id){ return (Component*)new Mosfet("Mosfet", id ); } };
 }
 
 Mosfet::Mosfet( QString type, QString id )

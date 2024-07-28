@@ -10,7 +10,6 @@
 #include "touchpad.h"
 #include "simulator.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 #include "e-node.h"
 
 #include "doubleprop.h"
@@ -19,17 +18,13 @@
 
 #define tr(str) simulideTr("TouchPad",str)
 
-Component* TouchPad::construct( QString type, QString id )
-{ return new TouchPad( type, id ); }
-
-LibraryItem* TouchPad::libraryItem()
-{
-    return new LibraryItem(
+listItem_t TouchPad::libraryItem(){
+    return {
         tr("TouchPad (Resistive)"),
         "Peripherals",
         "touch.png",
-        "TouchPadR",
-        TouchPad::construct);
+        "TouchPad",
+        [](QString id){ return (Component*)new TouchPad("TouchPad", id ); } };
 }
 
 TouchPad::TouchPad( QString type, QString id )

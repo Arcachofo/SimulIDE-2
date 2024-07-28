@@ -6,7 +6,6 @@
 #ifndef LINE_H
 #define LINE_H
 
-#include "itemlibrary.h"
 #include "shape.h"
 
 class Line : public Shape
@@ -15,8 +14,7 @@ class Line : public Shape
         Line( QString type, QString id );
         ~Line();
 
- static Component* construct( QString type, QString id );
- static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         virtual QPainterPath shape() const override;
         virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;

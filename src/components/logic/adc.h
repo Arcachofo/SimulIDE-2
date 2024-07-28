@@ -8,16 +8,13 @@
 
 #include "logiccomponent.h"
 
-class LibraryItem;
-
 class ADC : public LogicComponent
 {
     public:
         ADC( QString type, QString id );
         ~ADC();
 
- static Component*   construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;

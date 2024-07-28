@@ -7,7 +7,6 @@
 
 #include "demux.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "connector.h"
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("Demux",str)
 
-Component* Demux::construct( QString type, QString id )
-{ return new Demux( type, id ); }
-
-LibraryItem* Demux::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Demux::libraryItem(){
+    return {
         tr("Demux"),
         "Converters",
         "demux.png",
         "Demux",
-        Demux::construct );
+        [](QString id){ return (Component*)new Demux("Demux", id ); } };
 }
 
 Demux::Demux( QString type, QString id )
@@ -160,9 +155,9 @@ QPainterPath Demux::shape() const
     return path;
 }
 
-void Demux::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget )
+void Demux::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* wi )
 {
-    Component::paint( p, option, widget );
+    Component::paint( p, o, wi );
 
     int w = m_width*8/2;
     int h = m_height*8/2;

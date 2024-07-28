@@ -8,16 +8,13 @@
 
 #include "logiccomponent.h"
 
-class LibraryItem;
-
 class BinCounter : public LogicComponent
 {
     public:
         BinCounter( QString type, QString id );
         ~BinCounter();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual bool setPropStr( QString prop, QString val ) override;
 

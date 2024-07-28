@@ -9,16 +9,13 @@
 #include "ledbase.h"
 #include "linker.h"
 
-class LibraryItem;
-
 class Led : public LedBase, public Linker
 {
     public:
         Led( QString type, QString id );
         ~Led();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void voltChanged() override;
 

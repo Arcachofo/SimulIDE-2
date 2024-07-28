@@ -8,16 +8,13 @@
 
 #include "clock-base.h"
 
-class LibraryItem;
-
 class Clock : public ClockBase
 {
     public:
         Clock( QString type, QString id );
         ~Clock();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void runEvent() override;
 

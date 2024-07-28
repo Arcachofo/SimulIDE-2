@@ -8,21 +8,16 @@
 
 #include "lm555.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 #include "e-node.h"
 
-Component* Lm555::construct( QString type, QString id )
-{ return new Lm555( type, id ); }
-
-LibraryItem* Lm555::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Lm555::libraryItem(){
+    return {
         "LM555",
         "Other Logic",
         "ic2.png",
         "Lm555",
-        Lm555::construct );
+        [](QString id){ return (Component*)new Lm555("Lm555", id ); } };
 }
 
 Lm555::Lm555( QString type, QString id )

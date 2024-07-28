@@ -8,7 +8,6 @@
 
 #include "plotbase.h"
 
-class LibraryItem;
 class LaChannel;
 class LaWidget;
 class DataLaWidget;
@@ -24,8 +23,7 @@ class LAnalizer : public PlotBase
         LAnalizer( QString type, QString id );
         ~LAnalizer();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 

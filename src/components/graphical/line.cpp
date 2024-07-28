@@ -9,17 +9,13 @@
 
 #define tr(str) simulideTr("Line",str)
 
-Component* Line::construct( QString type, QString id )
-{ return new Line( type, id ); }
-
-LibraryItem* Line::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Line::libraryItem(){
+    return {
         tr("Line"),
         "Graphical",
         "line.png",
         "Line",
-        Line::construct);
+        [](QString id){ return (Component*)new Line("Line", id ); } };
 }
 
 Line::Line( QString type, QString id )

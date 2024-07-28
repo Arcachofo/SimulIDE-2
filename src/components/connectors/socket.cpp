@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "socket.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -12,17 +11,13 @@
 
 #define tr(str) simulideTr("Socket",str)
 
-Component* Socket::construct( QString type, QString id )
-{ return new Socket( type, id ); }
-
-LibraryItem* Socket::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Socket::libraryItem(){
+    return {
         tr("Socket"),
         "Connectors",
         "socket.png",
         "Socket",
-        Socket::construct);
+        [](QString id){ return (Component*)new Socket("Socket", id ); } };
 }
 
 Socket::Socket( QString type, QString id )
@@ -44,10 +39,10 @@ Socket::~Socket()
 
 void Socket::updateStep()
 {
-    updatePins( false );
+    updateConnections( false );
 }
 
-void Socket::updatePins( bool connect )
+void Socket::updateConnections( bool connect )
 {
     for( int i=0; i<m_size; i++ )
     {

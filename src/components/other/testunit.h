@@ -9,7 +9,6 @@
 #include "iocomponent.h"
 #include "e-element.h"
 
-class LibraryItem;
 class TruthTable;
 
 class TestUnit: public IoComponent, public eElement
@@ -18,8 +17,7 @@ class TestUnit: public IoComponent, public eElement
         TestUnit( QString type, QString id );
         ~TestUnit();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;

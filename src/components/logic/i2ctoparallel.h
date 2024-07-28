@@ -9,16 +9,13 @@
 #include "twimodule.h"
 #include "iocomponent.h"
 
-class LibraryItem;
-
 class I2CToParallel : public IoComponent, public TwiModule
 {
     public:
         I2CToParallel( QString type, QString id );
         ~I2CToParallel();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;

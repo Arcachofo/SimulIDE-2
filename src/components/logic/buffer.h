@@ -8,16 +8,13 @@
 
 #include "gate.h"
 
-class LibraryItem;
-
 class Buffer : public Gate
 {
     public:
         Buffer( QString type, QString id );
         ~Buffer();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         virtual void setTristate( bool t ) override;
 

@@ -8,7 +8,6 @@
 
 #include "varsource.h"
 
-class LibraryItem;
 class Pin;
 
 class CurrSource : public VarSource
@@ -17,8 +16,7 @@ class CurrSource : public VarSource
         CurrSource( QString type, QString id );
         ~CurrSource();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;

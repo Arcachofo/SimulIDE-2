@@ -10,8 +10,6 @@
 #include "component.h"
 #include "e-coil.h"
 
-class LibraryItem;
-
 class Transformer : public Component, public eElement
 {
         struct winding_t
@@ -31,8 +29,7 @@ class Transformer : public Component, public eElement
         Transformer( QString type, QString id );
         ~Transformer();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void runEvent() override;

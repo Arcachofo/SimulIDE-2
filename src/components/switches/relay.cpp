@@ -7,7 +7,6 @@
 #include <math.h>
 
 #include "relay.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "e-node.h"
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("Relay",str)
 
-Component* Relay::construct( QString type, QString id )
-{ return new Relay( type, id ); }
-
-LibraryItem* Relay::libraryItem()
-{
-    return new LibraryItem(
-        tr( "Relay (all)" ),
+listItem_t Relay::libraryItem(){
+    return {
+        tr( "Relay" ),
         "Switches",
         "relay-spst.png",
-        "RelaySPST",
-        Relay::construct);
+        "Relay",
+        [](QString id){ return (Component*)new Relay("Relay", id ); } };
 }
 
 Relay::Relay( QString type, QString id )

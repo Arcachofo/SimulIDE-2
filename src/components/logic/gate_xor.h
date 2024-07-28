@@ -9,19 +9,16 @@
 #include "gate.h"
 #include "component.h"
 
-class LibraryItem;
-
 class XorGate : public Gate
 {
     public:
         XorGate( QString type, QString id );
         ~XorGate();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         virtual QPainterPath shape() const override;
-        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
+        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w ) override;
 
     protected:
         virtual bool calcOutput( int inputs ) override;

@@ -9,16 +9,13 @@
 #include "comp2pin.h"
 #include "e-resistor.h"
 
-class LibraryItem;
-
 class Battery : public Comp2Pin, public eResistor
 {
     public:
         Battery( QString type, QString id );
         ~Battery();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         double voltage() { return m_volt; }
         void setVoltage( double volt );

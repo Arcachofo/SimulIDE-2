@@ -10,7 +10,6 @@
 #include "e-element.h"
 
 class IoPin;
-class LibraryItem;
 
 class Hd44780 : public Hd44780_Base, public eElement
 {
@@ -18,8 +17,7 @@ class Hd44780 : public Hd44780_Base, public eElement
         Hd44780( QString type, QString id );
         ~Hd44780();
         
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

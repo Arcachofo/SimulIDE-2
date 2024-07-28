@@ -7,7 +7,6 @@
 
 #include "tunnel.h"
 #include "linker.h"
-#include "itemlibrary.h"
 #include "propdialog.h"
 #include "circuitwidget.h"
 #include "simulator.h"
@@ -23,17 +22,13 @@
 
 QHash<QString, QList<Tunnel*>*> Tunnel::m_tunnels;
 
-Component* Tunnel::construct( QString type, QString id )
-{ return new Tunnel( type, id ); }
-
-LibraryItem* Tunnel::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Tunnel::libraryItem(){
+    return {
         tr("Tunnel."),
         "Connectors",
         "tunnel.png",
         "Tunnel",
-        Tunnel::construct );
+        [](QString id){ return (Component*)new Tunnel("Tunnel", id ); } };
 }
 
 Tunnel::Tunnel( QString type, QString id )
@@ -68,16 +63,6 @@ Tunnel::Tunnel( QString type, QString id )
     }, groupNoCopy | groupHidden} );
 }
 Tunnel::~Tunnel() {}
-
-bool Tunnel::setPropStr( QString prop, QString val )
-{
-    if( prop =="Rotated" )       // Old: TODELETE
-    {
-        if( val == "true" ) { m_Hflip = -1; setflip(); }
-    }
-    else return Component::setPropStr( prop, val );
-    return true;
-}
 
 eNode* Tunnel::getEnode( QString n ) // Static
 {

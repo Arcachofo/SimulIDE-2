@@ -10,16 +10,13 @@
 #include "component.h"
 #include "rtclock.h"
 
-class LibraryItem;
-
 class DS1307 : public Component, public TwiModule
 {
     public:
         DS1307( QString type, QString id );
         ~DS1307();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         bool timeUpdtd() { return m_timeUpdtd; }
         void setTimeUpdtd( bool u ) { m_timeUpdtd = u; }

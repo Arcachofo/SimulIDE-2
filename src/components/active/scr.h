@@ -9,7 +9,6 @@
 #include "component.h"
 #include "e-element.h"
 
-class LibraryItem;
 class eDiode;
 class eResistor;
 
@@ -19,8 +18,7 @@ class SCR : public Component, public eElement
         SCR( QString type, QString id );
         ~SCR();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

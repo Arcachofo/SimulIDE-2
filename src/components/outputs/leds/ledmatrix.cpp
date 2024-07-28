@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "ledmatrix.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "connector.h"
 #include "simulator.h"
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("LedMatrix",str)
 
-Component* LedMatrix::construct( QString type, QString id )
-{ return new LedMatrix( type, id ); }
-
-LibraryItem* LedMatrix::libraryItem()
-{
-    return new LibraryItem(
+listItem_t LedMatrix::libraryItem(){
+    return {
         tr("LedMatrix"),
         "Leds",
         "ledmatrix.png",
         "LedMatrix",
-        LedMatrix::construct);
+        [](QString id){ return (Component*)new LedMatrix("LedMatrix", id ); } };
 }
 
 LedMatrix::LedMatrix( QString type, QString id )

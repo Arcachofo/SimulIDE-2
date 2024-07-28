@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "currsource.h"
-#include "itemlibrary.h"
 #include "propdialog.h"
 #include "simulator.h"
 #include "custombutton.h"
@@ -14,17 +13,13 @@
 
 #define tr(str) simulideTr("CurrSource",str)
 
-Component* CurrSource::construct( QString type, QString id )
-{ return new CurrSource( type, id ); }
-
-LibraryItem* CurrSource::libraryItem()
-{
-    return new LibraryItem(
+listItem_t CurrSource::libraryItem(){
+    return {
         tr("Current Source"),
         "Sources",
         "cursource.png",
         "Current Source",
-        CurrSource::construct );
+        [](QString id){ return (Component*)new CurrSource("Current Source", id ); } };
 }
 
 CurrSource::CurrSource( QString type, QString id )

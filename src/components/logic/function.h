@@ -9,7 +9,6 @@
 #include "iocomponent.h"
 #include "scriptbase.h"
 
-class LibraryItem;
 class CustomButton;
 class QGraphicsProxyWidget;
 
@@ -19,8 +18,7 @@ class Function : public IoComponent, public ScriptBase
         Function( QString type, QString id );
         ~Function();
         
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;

@@ -7,7 +7,6 @@
 #include <QtMath>
 
 #include "lamp.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "pin.h"
 
@@ -15,17 +14,13 @@
 
 #define tr(str) simulideTr("Lamp",str)
 
-Component* Lamp::construct( QString type, QString id )
-{ return new Lamp( type, id ); }
-
-LibraryItem* Lamp::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Lamp::libraryItem(){
+    return {
         tr("Incandescent lamp"),
         "Other Outputs",
         "lamp.png",
         "Lamp",
-        Lamp::construct);
+        [](QString id){ return (Component*)new Lamp("Lamp", id ); } };
 }
 
 Lamp::Lamp( QString type, QString id )

@@ -9,7 +9,6 @@
 
 #include "switchdip.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -21,17 +20,13 @@
 
 #define tr(str) simulideTr("SwitchDip",str)
 
-Component* SwitchDip::construct( QString type, QString id )
-{ return new SwitchDip( type, id ); }
-
-LibraryItem* SwitchDip::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SwitchDip::libraryItem(){
+    return {
         tr("Switch Dip"),
         "Switches",
         "switchdip.png",
         "SwitchDip",
-        SwitchDip::construct);
+        [](QString id){ return (Component*)new SwitchDip("SwitchDip", id ); } };
 }
 
 SwitchDip::SwitchDip( QString type, QString id )

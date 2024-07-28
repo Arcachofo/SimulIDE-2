@@ -7,7 +7,6 @@
 #include <QMenu>
 
 #include "diode.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "e-node.h"
 #include "pin.h"
@@ -17,17 +16,13 @@
 
 #define tr(str) simulideTr("Diode",str)
 
-Component* Diode::construct( QString type, QString id )
-{ return new Diode( type, id ); }
-
-LibraryItem* Diode::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Diode::libraryItem(){
+    return {
         tr("Diode"),
         "Rectifiers",
         "diode.png",
         "Diode",
-        Diode::construct);
+        [](QString id){ return (Component*)new Diode("Diode", id ); } };
 }
 
 Diode::Diode( QString type, QString id, bool zener )
@@ -152,9 +147,9 @@ void Diode::voltChanged()
     }
 }
 
-void Diode::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void Diode::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
-    Component::paint( p, option, widget );
+    Component::paint( p, o, w );
 
     p->setBrush( Qt::black );
 

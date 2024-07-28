@@ -8,7 +8,6 @@
 
 #include "varsource.h"
 
-class LibraryItem;
 class IoPin;
 
 class VoltSource : public VarSource
@@ -17,8 +16,7 @@ class VoltSource : public VarSource
         VoltSource( QString type, QString id );
         ~VoltSource();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 

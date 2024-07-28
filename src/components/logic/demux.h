@@ -8,16 +8,13 @@
 
 #include "logiccomponent.h"
 
-class LibraryItem;
-
 class Demux : public LogicComponent
 {
     public:
         Demux( QString type, QString id );
         ~Demux();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;
@@ -26,8 +23,8 @@ class Demux : public LogicComponent
         int addrBits() { return m_addrBits; }
         void setAddrBits( int bits );
         
-        virtual QPainterPath shape() const;
-        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget );
+        virtual QPainterPath shape() const override;
+        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w );
 
     private:
         int m_addrBits;

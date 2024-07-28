@@ -11,7 +11,6 @@
 #include "e-resistor.h"
 #include "e-pin.h"
 
-class LibraryItem;
 class IoPin;
 class eNode;
 
@@ -22,8 +21,7 @@ class Lm555 : public Component, public eElement
         Lm555( QString type, QString id );
         ~Lm555();
         
-        static Component* construct( QString type, QString id );
-        static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

@@ -15,7 +15,7 @@
 #include <QMimeData>
 
 #include "managecomps.h"
-#include "itemlibrary.h"
+#include "component.h"
 
 class TreeItem;
 class QDomNode;
@@ -41,15 +41,15 @@ class ComponentList : public QTreeWidget
         void setShortcut( QString s, QString c ) { m_shortCuts[s] = c; }
         QString getComponent( QString shortcut ) { return m_shortCuts.value( shortcut ); }
 
-        void loadXml( QString xmlFile, bool convert=false );
-
-        bool isConverting() { return m_converting; }
+        void loadXml( QString xmlFile );
 
         void writeSettings();
 
         void mousePressEvent( QMouseEvent* event );
 
         void dropEvent( QDropEvent* event );
+
+        Component* createComponent( QString type, QString id );
 
     private slots:
         void slotItemClicked( QTreeWidgetItem* item, int );
@@ -59,8 +59,7 @@ class ComponentList : public QTreeWidget
     private:
  static ComponentList* m_pSelf;
 
-        QString convertMcuFile( QString file );
-
+        void addItem( listItem_t item );
         void addItem( QString caption, TreeItem* catItem, QString icon, QString type );
         void addItem( QString caption, TreeItem* catItem, QIcon &icon, QString type );
 
@@ -70,7 +69,6 @@ class ComponentList : public QTreeWidget
         void insertItem( QDomNode* node, TreeItem* parent );
 
         bool m_customComp;
-        bool m_converting;
 
         TreeItem* addCategory( QString nameTr, QString name, QString parent, QString icon );
 
@@ -94,7 +92,7 @@ class ComponentList : public QTreeWidget
 
         manCompDialog m_mcDialog;
 
-        ItemLibrary m_itemLibrary;
+        QMap<QString, Component* (*)(QString)> m_componentFactory;
 };
 
 #endif

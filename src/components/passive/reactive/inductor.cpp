@@ -7,24 +7,19 @@
 #include <math.h>
 
 #include "inductor.h"
-#include "itemlibrary.h"
 #include "pin.h"
 
 #include "doubleprop.h"
 
 #define tr(str) simulideTr("Inductor",str)
 
-Component* Inductor::construct( QString type, QString id )
-{ return new Inductor( type, id ); }
-
-LibraryItem* Inductor::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Inductor::libraryItem(){
+    return {
         tr("Inductor"),
         "Reactive",
         "inductor.png",
         "Inductor",
-        Inductor::construct);
+        [](QString id){ return (Component*)new Inductor("Inductor", id ); } };
 }
 
 Inductor::Inductor( QString type, QString id )

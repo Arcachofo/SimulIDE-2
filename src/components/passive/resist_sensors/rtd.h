@@ -12,16 +12,13 @@
 
 #include "thermistorbase.h"
 
-class LibraryItem;
-
 class RTD : public ThermistorBase
 {
      public:
         RTD( QString type, QString id );
         ~RTD();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         double getR0() { return m_r0; }
         void setR0( double r0 ) { m_r0 = r0; }

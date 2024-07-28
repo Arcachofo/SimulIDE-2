@@ -8,7 +8,6 @@
 #include <QtMath>
 
 #include "comparator.h"
-#include "itemlibrary.h"
 #include "propdialog.h"
 #include "connector.h"
 #include "simulator.h"
@@ -20,17 +19,13 @@
 
 #define tr(str) simulideTr("Comparator",str)
 
-Component* Comparator::construct( QString type, QString id )
-{ return new Comparator( type, id ); }
-
-LibraryItem* Comparator::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Comparator::libraryItem(){
+    return {
         tr("Comparator"),
         "Other Active",
         "opamp.png",
         "Comparator",
-        Comparator::construct );
+        [](QString id){ return (Component*)new Comparator("Comparator", id ); } };
 }
 
 Comparator::Comparator( QString type, QString id )

@@ -8,7 +8,6 @@
 #include <QtMath>
 
 #include "scr.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "e-diode.h"
@@ -19,17 +18,13 @@
 
 #define tr(str) simulideTr("SCR",str)
 
-Component* SCR::construct( QString type, QString id )
-{ return new SCR( type, id ); }
-
-LibraryItem* SCR::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SCR::libraryItem(){
+    return {
         tr("SCR"),
         "Rectifiers",
         "scr.png",
         "SCR",
-        SCR::construct );
+        [](QString id){ return (Component*)new SCR("SCR", id ); } };
 }
 
 SCR::SCR( QString type, QString id )

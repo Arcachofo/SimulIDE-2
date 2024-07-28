@@ -12,24 +12,19 @@
 #include "iopin.h"
 #include "simulator.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 
 #include "doubleprop.h"
 #include "stringprop.h"
 
 #define tr(str) simulideTr("Dht22",str)
 
-Component* Dht22::construct( QString type, QString id )
-{ return new Dht22( type, id ); }
-
-LibraryItem* Dht22::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Dht22::libraryItem(){
+    return {
         "DHt22/11",
         "Sensors",
         "dht22.png",
         "Dht22",
-        Dht22::construct );
+        [](QString id){ return (Component*)new Dht22("Dht22", id ); } };
 }
 
 Dht22::Dht22( QString type, QString id )

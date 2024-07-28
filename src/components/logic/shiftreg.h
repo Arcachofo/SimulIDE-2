@@ -8,16 +8,13 @@
 
 #include "logiccomponent.h"
 
-class LibraryItem;
-
 class ShiftReg : public LogicComponent
 {
     public:
         ShiftReg( QString type, QString id );
         ~ShiftReg();
 
- static Component* construct( QString type, QString id );
- static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         virtual bool setPropStr( QString prop, QString val ) override;
 

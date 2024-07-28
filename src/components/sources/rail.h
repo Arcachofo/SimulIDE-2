@@ -9,7 +9,6 @@
 #include "component.h"
 #include "e-element.h"
 
-class LibraryItem;
 class IoPin;
 
 class Rail : public Component, public eElement
@@ -18,8 +17,7 @@ class Rail : public Component, public eElement
         Rail( QString type, QString id );
         ~Rail();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         double volt() { return m_volt; }
         void setVolt( double v );

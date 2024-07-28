@@ -4,8 +4,6 @@
 #include "component.h"
 #include "linkercomponent.h"
 
-class LibraryItem;
-
 class TextComponent : public LinkerComponent
 {
     public:
@@ -18,8 +16,7 @@ class TextComponent : public LinkerComponent
                            m_area.width()+m_border+2, m_area.height()+m_border+2 ); 
         }
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 

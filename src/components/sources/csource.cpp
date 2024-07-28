@@ -8,7 +8,6 @@
 #include "csource.h"
 #include "simulator.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 #include "propdialog.h"
 #include "pin.h"
 
@@ -17,17 +16,13 @@
 
 #define tr(str) simulideTr("Csource",str)
 
-Component* Csource::construct( QString type, QString id )
-{ return new Csource( type, id ); }
-
-LibraryItem* Csource::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Csource::libraryItem(){
+    return {
         tr("Controlled Source"),
         "Sources",
         "csource.png",
         "Csource",
-        Csource::construct );
+        [](QString id){ return (Component*)new Csource("Csource", id ); } };
 }
 
 Csource::Csource( QString type, QString id )

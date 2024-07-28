@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "subcircuit.h"
-#include "itemlibrary.h"
 #include "mainwindow.h"
 #include "componentlist.h"
 #include "circuitwidget.h"
@@ -153,14 +152,13 @@ Component* SubCircuit::construct( QString type, QString id )
     return subcircuit;
 }
 
-LibraryItem* SubCircuit::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SubCircuit::libraryItem(){
+    return {
         tr("Subcircuit"),
         "",         // Category Not dispalyed
         "",
         "Subcircuit",
-        SubCircuit::construct );
+        [](QString id){ return SubCircuit::construct("Subcircuit", id ); } };
 }
 
 SubCircuit::SubCircuit( QString type, QString id )

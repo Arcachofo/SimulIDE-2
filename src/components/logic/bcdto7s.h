@@ -8,16 +8,13 @@
 
 #include "bcdbase.h"
 
-class LibraryItem;
-
 class BcdTo7S : public BcdBase
 {
     public:
         BcdTo7S( QString type, QString id );
         ~BcdTo7S();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;

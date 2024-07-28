@@ -11,7 +11,6 @@
 #include "connectorline.h"
 #include "circuit.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 #include "label.h"
 #include "iopin.h"
 
@@ -20,17 +19,13 @@
 
 #define tr(str) simulideTr("Probe",str)
 
-Component* Probe::construct( QString type, QString id )
-{ return new Probe( type, id ); }
-
-LibraryItem* Probe::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Probe::libraryItem(){
+    return {
         tr("Probe"),
         "Meters",
         "probe.png",
         "Probe",
-        Probe::construct );
+        [](QString id){ return (Component*)new Probe("Probe", id ); } };
 }
 
 Probe::Probe( QString type, QString id )

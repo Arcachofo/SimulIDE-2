@@ -5,7 +5,6 @@
 
 #include "resistordip.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -23,17 +22,13 @@
 
 eNode ResistorDip::m_puEnode("");
 
-Component* ResistorDip::construct( QString type, QString id )
-{ return new ResistorDip( type, id ); }
-
-LibraryItem* ResistorDip::libraryItem()
-{
-    return new LibraryItem(
+listItem_t ResistorDip::libraryItem(){
+    return {
         tr("ResistorDip"),
         "Resistors",
         "resistordip.png",
         "ResistorDip",
-        ResistorDip::construct);
+        [](QString id){ return (Component*)new ResistorDip("ResistorDip", id ); } };
 }
 
 ResistorDip::ResistorDip( QString type, QString id )

@@ -8,23 +8,18 @@
 
 #include "led.h"
 #include "pin.h"
-#include "itemlibrary.h"
 
 #include "stringprop.h"
 
 #define tr(str) simulideTr("Led",str)
 
-Component* Led::construct( QString type, QString id )
-{ return new Led( type, id ); }
-
-LibraryItem* Led::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Led::libraryItem(){
+    return {
         tr("Led"),
         "Leds",
         "led.png",
         "Led",
-        Led::construct);
+        [](QString id){ return (Component*)new Led("Led", id ); } };
 }
 
 Led::Led( QString type, QString id )

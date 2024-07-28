@@ -6,7 +6,6 @@
 #include <QPainter>
 
 #include "ws2812.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "iopin.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("WS2812",str)
 
-Component* WS2812::construct( QString type, QString id )
-{ return new WS2812( type, id ); }
-
-LibraryItem* WS2812::libraryItem()
-{
-    return new LibraryItem(
+listItem_t WS2812::libraryItem(){
+    return {
         tr("WS2812 Led"),
         "Leds",
         "ws2812.png",
         "WS2812",
-        WS2812::construct );
+        [](QString id){ return (Component*)new WS2812("WS2812", id ); } };
 }
 
 WS2812::WS2812( QString type, QString id )

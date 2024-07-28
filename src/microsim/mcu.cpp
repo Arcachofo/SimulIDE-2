@@ -20,7 +20,6 @@
 #include "scriptcpu.h"
 #include "circuit.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "infowidget.h"
 #include "mainwindow.h"
@@ -43,14 +42,13 @@
 
 Mcu* Mcu::m_pSelf = NULL;
 
-LibraryItem* Mcu::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Mcu::libraryItem(){
+    return {
         "NEW_MCU",
         "",
         "ic2.png",
         "MCU",
-        Mcu::construct );
+        [](QString id){ return Mcu::construct("BJT", id ); } };
 }
 
 Component* Mcu::construct( QString type, QString id )

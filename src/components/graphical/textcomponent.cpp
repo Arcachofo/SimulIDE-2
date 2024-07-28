@@ -9,7 +9,6 @@
 #include <QGuiApplication>
 
 #include "textcomponent.h"
-#include "itemlibrary.h"
 #include "circuit.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -22,17 +21,13 @@
 
 #define tr(str) simulideTr("TextComponent",str)
 
-Component* TextComponent::construct( QString type, QString id )
-{ return new TextComponent( type, id ); }
-
-LibraryItem* TextComponent::libraryItem()
-{
-    return new LibraryItem(
+listItem_t TextComponent::libraryItem(){
+    return {
         tr("Text"),
         "Graphical",
         "text.png",
         "TextComponent",
-        TextComponent::construct );
+        [](QString id){ return (Component*)new TextComponent("TextComponent", id ); } };
 }
 
 TextComponent::TextComponent( QString type, QString id )

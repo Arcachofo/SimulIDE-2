@@ -9,7 +9,6 @@
 #include "e-element.h"
 #include "component.h"
 
-class LibraryItem;
 class QPushButton;
 class QGraphicsProxyWidget;
 class IoPin;
@@ -20,8 +19,7 @@ class Dht22 : public Component , public eElement
         Dht22( QString type, QString id );
         ~Dht22();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         void setModel( QString model);
         QString model();

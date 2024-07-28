@@ -21,7 +21,6 @@
 #include "subpackage.h"
 #include "packagepin.h"
 #include "mainwindow.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "componentlist.h"
 #include "circuit.h"
@@ -36,17 +35,13 @@
 
 QString SubPackage::m_lastPkg = "";
 
-Component* SubPackage::construct( QString type, QString id )
-{ return new SubPackage( type, id ); }
-
-LibraryItem* SubPackage::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SubPackage::libraryItem(){
+    return {
         tr("Package"),
         "Other",
         "resistordip.png",
         "Package",
-        SubPackage::construct );
+        [](QString id){ return (Component*)new SubPackage("Package", id ); } };
 }
 
 SubPackage::SubPackage( QString type, QString id )
@@ -133,12 +128,12 @@ void SubPackage::setLogicSymbol( bool ls )
     // Used when loading old subcircuits with only DIP and LS
     // To convert original pkg labels to "Logic Symbol" and "DIP"
     // In these cases package file exist
-    if( !m_pkgeFile.isEmpty() && ComponentList::self()->isConverting() )
+    /*if( !m_pkgeFile.isEmpty() && ComponentList::self()->isConverting() )
     {
         if     ( ls )                  setIdLabel("1- Logic Symbol");
         else if( m_subcType == Board ) setIdLabel("0- Board");
         else                           setIdLabel("2- DIP");
-    }
+    }*/
     Chip::setLogicSymbol( ls );
 }
 

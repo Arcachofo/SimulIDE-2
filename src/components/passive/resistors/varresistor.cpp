@@ -6,7 +6,6 @@
 #include <QPainter>
 
 #include "varresistor.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 
 #include "doubleprop.h"
@@ -14,17 +13,13 @@
 
 #define tr(str) simulideTr("VarResistor",str)
 
-Component* VarResistor::construct( QString type, QString id )
-{ return new VarResistor( type, id ); }
-
-LibraryItem* VarResistor::libraryItem()
-{
-    return new LibraryItem(
+listItem_t VarResistor::libraryItem(){
+    return {
         tr("Variable Resistor"),
         "Resistors",
         "varresistor.png",
         "VarResistor",
-        VarResistor::construct);
+        [](QString id){ return (Component*)new VarResistor("VarResistor", id ); } };
 }
 
 VarResistor::VarResistor( QString type, QString id )

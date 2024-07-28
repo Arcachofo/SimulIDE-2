@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "i2ctoparallel.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 
 #include "doubleprop.h"
@@ -14,17 +13,13 @@
 
 #define tr(str) simulideTr("I2CToParallel",str)
 
-Component* I2CToParallel::construct( QString type, QString id )
-{ return new I2CToParallel( type, id ); }
-
-LibraryItem* I2CToParallel::libraryItem()
-{
-    return new LibraryItem(
+listItem_t I2CToParallel::libraryItem(){
+    return {
         tr("I2C to Parallel"),
         "Converters" ,
         "2to3g.png",
         "I2CToParallel",
-        I2CToParallel::construct );
+        [](QString id){ return (Component*)new I2CToParallel("I2CToParallel", id ); } };
 }
 
 I2CToParallel::I2CToParallel( QString type, QString id )

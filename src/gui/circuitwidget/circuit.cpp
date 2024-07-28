@@ -11,7 +11,6 @@
 
 #include "circuit.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 #include "mainwindow.h"
 #include "circuitwidget.h"
 #include "comproperty.h"
@@ -539,15 +538,8 @@ void Circuit::importCircuit()
 
 Component* Circuit::createItem( QString type, QString id, bool map )
 {
-    Component* comp = NULL;
-    for( LibraryItem* item : ItemLibrary::self()->items() )
-    {
-        if( !item->createItemFnPtr() ) continue; // Is category
-        if( item->type() != type ) continue;
+    Component* comp = ComponentList::self()->createComponent( type, id );
 
-        comp = item->createItemFnPtr()( type, id );
-        break;
-    }
     if( map ) m_compMap[id] = comp;
     return comp;
 }

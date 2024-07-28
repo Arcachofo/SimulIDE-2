@@ -7,9 +7,10 @@
 #define KEYPAD_H
 
 #include "e-element.h"
-#include "push_base.h"
-#include "e-diode.h"
-class LibraryItem;
+#include "component.h"
+
+class PushBase;
+class eDiode;
 
 class KeyPad : public Component, public eElement
 {
@@ -19,8 +20,7 @@ class KeyPad : public Component, public eElement
 
         void initialize() override;
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         int rows() { return m_rows; }
         void setRows( int rows );

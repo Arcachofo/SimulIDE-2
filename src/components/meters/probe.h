@@ -10,7 +10,6 @@
 #include "e-element.h"
 
 class IoPin;
-class LibraryItem;
 
 class Probe : public Component, public eElement
 {
@@ -18,8 +17,7 @@ class Probe : public Component, public eElement
         Probe( QString type, QString id );
         ~Probe();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 

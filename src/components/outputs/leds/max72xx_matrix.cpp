@@ -6,7 +6,6 @@
 #include <QPainter>
 
 #include "max72xx_matrix.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "simulator.h"
 #include "iopin.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("Max72xx_matrix",str)
 
-Component* Max72xx_matrix::construct( QString type, QString id )
-{ return new Max72xx_matrix( type, id ); }
-
-LibraryItem* Max72xx_matrix::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Max72xx_matrix::libraryItem(){
+    return {
         tr("Max72xx matrix"),
         "Leds",
         "max72xx.png",
         "Max72xx_matrix",
-        Max72xx_matrix::construct);
+        [](QString id){ return (Component*)new Max72xx_matrix("Max72xx_matrix", id ); } };
 }
 
 Max72xx_matrix::Max72xx_matrix( QString type, QString id )

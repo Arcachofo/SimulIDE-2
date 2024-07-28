@@ -6,7 +6,6 @@
 #include <QGraphicsProxyWidget>
 
 #include "switch.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "e-node.h"
 #include "pin.h"
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("Switch",str)
 
-Component* Switch::construct( QString type, QString id )
-{ return new Switch( type, id ); }
-
-LibraryItem* Switch::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Switch::libraryItem(){
+    return {
         tr("Switch (all)"),
         "Switches",
         "switch.png",
         "Switch",
-        Switch::construct);
+        [](QString id){ return (Component*)new Switch("Switch", id ); } };
 }
 
 Switch::Switch( QString type, QString id )

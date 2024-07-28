@@ -9,7 +9,6 @@
 
 #include "audio_out.h"
 #include "connector.h"
-#include "itemlibrary.h"
 #include "propdialog.h"
 #include "pin.h"
 #include "label.h"
@@ -20,17 +19,13 @@
 
 #define tr(str) simulideTr("AudioOut",str)
 
-Component* AudioOut::construct( QString type, QString id )
-{ return new AudioOut( type, id ); }
-
-LibraryItem* AudioOut::libraryItem()
-{
-    return new LibraryItem(
+listItem_t AudioOut::libraryItem(){
+    return {
         tr("Audio Out"),
         "Other Outputs",
         "audio_out.png",
         "AudioOut",
-        AudioOut::construct);
+        [](QString id){ return (Component*)new AudioOut("AudioOut", id ); } };
 }
 
 AudioOut::AudioOut( QString type, QString id )

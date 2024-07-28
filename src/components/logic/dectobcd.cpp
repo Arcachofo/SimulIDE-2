@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "dectobcd.h"
-#include "itemlibrary.h"
 #include "circuit.h"
 #include "iopin.h"
 
@@ -12,17 +11,13 @@
 
 #define tr(str) simulideTr("DecToBcd",str)
 
-Component* DecToBcd::construct( QString type, QString id )
-{ return new DecToBcd( type, id ); }
-
-LibraryItem* DecToBcd::libraryItem()
-{
-    return new LibraryItem(
+listItem_t DecToBcd::libraryItem(){
+    return {
         tr("Encoder(10/16 to 4)"),
         "Converters",
         "3to2g.png",
         "DecToBcd",
-        DecToBcd::construct );
+        [](QString id){ return (Component*)new DecToBcd("DecToBcd", id ); } };
 }
 
 DecToBcd::DecToBcd( QString type, QString id )

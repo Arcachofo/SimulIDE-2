@@ -10,16 +10,13 @@
 #include "e-element.h"
 #include "e-led.h"
 
-class LibraryItem;
-
 class LedRgb : public Component, public eElement
 {
     public:
         LedRgb( QString type, QString id );
         ~LedRgb();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;

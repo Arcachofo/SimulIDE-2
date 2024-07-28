@@ -15,22 +15,17 @@
 
 #include <QPainter>
 
-#include "itemlibrary.h"
+#include "pcd8544.h"
 #include "connector.h"
 #include "simulator.h"
-#include "pcd8544.h"
 
-Component* Pcd8544::construct( QString type, QString id )
-{ return new Pcd8544( type, id ); }
-
-LibraryItem* Pcd8544::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Pcd8544::libraryItem(){
+    return {
         "Pcd8544",
         "Displays",
         "pcd8544.png",
         "Pcd8544",
-        Pcd8544::construct );
+        [](QString id){ return (Component*)new Pcd8544("Pcd8544", id ); } };
 }
 
 Pcd8544::Pcd8544( QString type, QString id )

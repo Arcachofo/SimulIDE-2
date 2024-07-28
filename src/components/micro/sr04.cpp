@@ -7,21 +7,16 @@
 
 #include "sr04.h"
 #include "iopin.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "mainwindow.h"
 
-Component* SR04::construct( QString type, QString id )
-{ return new SR04( type, id ); }
-
-LibraryItem* SR04::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SR04::libraryItem(){
+    return {
         "HC-SR04",
         "Sensors",
         "sr04_ico.png",
         "SR04",
-        SR04::construct);
+        [](QString id){ return (Component*)new SR04("SR04", id ); } };
 }
 
 SR04::SR04( QString type, QString id )

@@ -6,21 +6,16 @@
 #include <QPainter>
 
 #include "ili9341.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "simulator.h"
 
-Component* Ili9341::construct( QString type, QString id )
-{ return new Ili9341( type, id ); }
-
-LibraryItem* Ili9341::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Ili9341::libraryItem(){
+    return {
         "Ili9341" ,
         "Displays",
         "ili9341.png",
         "Ili9341",
-        Ili9341::construct );
+        [](QString id){ return (Component*)new Ili9341("Ili9341", id ); } };
 }
 
 Ili9341::Ili9341( QString type, QString id )

@@ -8,7 +8,6 @@
 
 #include "component.h"
 
-class LibraryItem;
 class eNode;
 class Pin;
 
@@ -18,9 +17,7 @@ class Tunnel : public Component
         Tunnel( QString type, QString id );
         ~Tunnel();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
-        virtual bool setPropStr( QString prop, QString val ) override;
+ static listItem_t libraryItem();
 
         QRectF boundingRect() const override;
 

@@ -8,16 +8,13 @@
 
 #include "reactive.h"
 
-class LibraryItem;
-
 class Inductor : public Reactive
 {
     public:
         Inductor( QString type, QString id );
         ~Inductor();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         double indCurrent() { return m_curSource; }
 

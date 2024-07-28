@@ -9,16 +9,13 @@
 #include "e-clocked_device.h"
 #include "component.h"
 
-class LibraryItem;
-
 class WS2812 : public Component, public eClockedDevice
 {
     public:
         WS2812( QString type, QString id );
         ~WS2812();
 
- static Component* construct( QString type, QString id );
- static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         int  rows() { return m_rows; }
         void setRows( int rows );

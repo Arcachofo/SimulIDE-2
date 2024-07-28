@@ -12,7 +12,6 @@
 #include "e-element.h"
 #include "usartmodule.h"
 
-class LibraryItem;
 class CustomButton;
 class QGraphicsProxyWidget;
 
@@ -21,9 +20,8 @@ class SerialPort : public Component, public UsartModule, public eElement
     public:
         SerialPort( QString type, QString id );
         ~SerialPort();
-        
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;

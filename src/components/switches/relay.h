@@ -9,7 +9,6 @@
 #include "mech_contact.h"
 #include "inductor.h"
 
-class LibraryItem;
 class eNode;
 
 class Relay : public MechContact
@@ -18,8 +17,7 @@ class Relay : public MechContact
         Relay( QString type, QString id );
         ~Relay();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         double iTrig() { return m_trigCurrent; }
         void setITrig( double c ) { if( c > 0.0 ) m_trigCurrent = c; }

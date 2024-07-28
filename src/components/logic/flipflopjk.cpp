@@ -4,22 +4,17 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "flipflopjk.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 
 #define tr(str) simulideTr("FlipFlopJK",str)
 
-Component* FlipFlopJK::construct( QString type, QString id )
-{ return new FlipFlopJK( type, id ); }
-
-LibraryItem* FlipFlopJK::libraryItem()
-{
-    return new LibraryItem(
+listItem_t FlipFlopJK::libraryItem(){
+    return {
         tr("FlipFlop JK"),
         "Memory",
         "3to2.png",
         "FlipFlopJK",
-        FlipFlopJK::construct );
+        [](QString id){ return (Component*)new FlipFlopJK("FlipFlopJK", id ); } };
 }
 
 FlipFlopJK::FlipFlopJK( QString type, QString id )

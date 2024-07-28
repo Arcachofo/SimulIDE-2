@@ -9,7 +9,6 @@
 
 #include "serialterm.h"
 #include "serialmon.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "usarttx.h"
@@ -25,17 +24,13 @@
 
 #define tr(str) simulideTr("SerialTerm",str)
 
-Component* SerialTerm::construct( QString type, QString id )
-{ return new SerialTerm( type, id ); }
-
-LibraryItem* SerialTerm::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SerialTerm::libraryItem(){
+    return {
         tr("Serial Terminal"),
         "Peripherals",
         "serialterm.png",
         "SerialTerm",
-        SerialTerm::construct );
+        [](QString id){ return (Component*)new SerialTerm("SerialTerm", id ); } };
 }
 
 SerialTerm::SerialTerm( QString type, QString id )

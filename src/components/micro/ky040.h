@@ -10,7 +10,6 @@
 #include "component.h"
 #include "dialwidget.h"
 
-class LibraryItem;
 class QToolButton;
 class IoPin;
 class CustomDial;
@@ -21,8 +20,7 @@ class KY040 : public Component, public eElement
         KY040( QString type, QString id );
         ~KY040();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;

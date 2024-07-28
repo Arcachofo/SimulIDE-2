@@ -6,23 +6,18 @@
 #include <QPainter>
 
 #include "gate_xor.h"
-#include "itemlibrary.h"
 
 #include "boolprop.h"
 
 #define tr(str) simulideTr("XorGate",str)
 
-Component* XorGate::construct( QString type, QString id )
-{ return new XorGate( type, id ); }
-
-LibraryItem* XorGate::libraryItem()
-{
-    return new LibraryItem(
+listItem_t XorGate::libraryItem(){
+    return {
         tr("Xor Gate" ),
         "Gates",
         "xorgate.png",
-        "Xor Gate",
-        XorGate::construct );
+        "XorGate",
+        [](QString id){ return (Component*)new XorGate("XorGate", id ); } };
 }
 
 XorGate::XorGate( QString type, QString id )
@@ -69,13 +64,13 @@ QPainterPath XorGate::shape() const
     return path;
 }
 
-void XorGate::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void XorGate::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
     int y_orig = m_area.y();
     int height = m_area.height();
 
     // Paint white background of gate
-    Component::paint( p, option, widget );
+    Component::paint( p, o, w );
     QPen pen = p->pen();
     p->setPen( Qt::NoPen );
 

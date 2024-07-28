@@ -9,7 +9,6 @@
 #include "e-resistor.h"
 #include "comp2pin.h"
 
-class LibraryItem;
 
 class Lamp : public Comp2Pin, public eResistor
 {
@@ -17,8 +16,7 @@ class Lamp : public Comp2Pin, public eResistor
         Lamp( QString type, QString id );
         ~Lamp();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

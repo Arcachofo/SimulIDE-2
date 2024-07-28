@@ -6,24 +6,19 @@
 #include <QPainter>
 
 #include "gate_or.h"
-#include "itemlibrary.h"
 
 #include "intprop.h"
 #include "boolprop.h"
 
 #define tr(str) simulideTr("OrGate",str)
 
-Component* OrGate::construct( QString type, QString id )
-{ return new OrGate( type, id ); }
-
-LibraryItem* OrGate::libraryItem()
-{
-    return new LibraryItem(
+listItem_t OrGate::libraryItem(){
+    return {
         tr("Or Gate"),
         "Gates",
         "orgate.png",
-        "Or Gate",
-        OrGate::construct );
+        "OrGate",
+        [](QString id){ return (Component*)new OrGate("OrGate", id ); } };
 }
 
 OrGate::OrGate( QString type, QString id )
@@ -74,13 +69,13 @@ QPainterPath OrGate::shape() const
     return path;
 }
 
-void OrGate::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void OrGate::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
     int y_orig = m_area.y();
     int height = m_area.height();
 
     // Paint white background of gate
-    Component::paint( p, option, widget );
+    Component::paint( p, o, w );
     QPen pen = p->pen();
     p->setPen( Qt::NoPen );
 

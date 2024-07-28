@@ -9,7 +9,6 @@
 #include "component.h"
 #include "e-element.h"
 
-class LibraryItem;
 class eDiode;
 class eResistor;
 
@@ -19,8 +18,7 @@ class Diac : public Component, public eElement
         Diac( QString type, QString id );
         ~Diac();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

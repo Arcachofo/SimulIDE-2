@@ -10,16 +10,13 @@
 #include "dialwidget.h"
 #include "linker.h"
 
-class LibraryItem;
-
 class Dial : public Dialed, public Linker
 {
     public:
         Dial( QString type, QString id );
         ~Dial();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 

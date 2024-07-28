@@ -9,16 +9,13 @@
 #include "logiccomponent.h"
 #include "memdata.h"
 
-class LibraryItem;
-
 class DynamicMemory : public LogicComponent, public MemData
 {
     public:
         DynamicMemory( QString type, QString id );
         ~DynamicMemory();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;

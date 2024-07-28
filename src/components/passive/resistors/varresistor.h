@@ -8,16 +8,13 @@
 
 #include "varresbase.h"
 
-class LibraryItem;
-
 class VarResistor : public VarResBase
 {
     public:
         VarResistor( QString type, QString id );
         ~VarResistor();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 

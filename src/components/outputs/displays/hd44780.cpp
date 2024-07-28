@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "hd44780.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "simulator.h"
 #include "iopin.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("Hd44780",str)
 
-Component* Hd44780::construct( QString type, QString id )
-{ return new Hd44780( type, id ); }
-
-LibraryItem* Hd44780::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Hd44780::libraryItem(){
+    return {
         "Hd44780",
         "Displays",
         "hd44780.png",
         "Hd44780",
-        Hd44780::construct );
+        [](QString id){ return (Component*)new Hd44780("Hd44780", id ); } };
 }
 
 Hd44780::Hd44780( QString type, QString id )

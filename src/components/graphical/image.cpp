@@ -11,23 +11,18 @@
 
 #include "image.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 
 #include "stringprop.h"
 
 #define tr(str) simulideTr("Image",str)
 
-Component* Image::construct( QString type, QString id )
-{ return new Image( type, id ); }
-
-LibraryItem* Image::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Image::libraryItem(){
+    return {
         tr("Image"),
         "Graphical",
         "img.png",
         "Image",
-        Image::construct);
+        [](QString id){ return (Component*)new Image("Image", id ); } };
 }
 
 Image::Image( QString type, QString id )

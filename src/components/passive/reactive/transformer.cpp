@@ -7,7 +7,6 @@
 #include <QtMath>
 
 #include "transformer.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("Transformer",str)
 
-Component* Transformer::construct( QString type, QString id )
-{ return new Transformer( type, id ); }
-
-LibraryItem* Transformer::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Transformer::libraryItem(){
+    return {
         tr("Transformer"),
         "Reactive",
         "transformer.png",
         "Transformer",
-        Transformer::construct );
+        [](QString id){ return (Component*)new Transformer("Transformer", id ); } };
 }
 
 Transformer::Transformer( QString type, QString id )

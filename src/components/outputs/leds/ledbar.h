@@ -9,16 +9,13 @@
 #include "component.h"
 #include "ledsmd.h"
 
-class LibraryItem;
-
 class LedBar : public Component
 {
     public:
         LedBar( QString type, QString id );
         ~LedBar();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         QString colorStr();
         void setColorStr( QString color );

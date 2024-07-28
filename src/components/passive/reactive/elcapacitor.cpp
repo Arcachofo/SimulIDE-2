@@ -6,23 +6,18 @@
 #include <QPainter>
 
 #include "elcapacitor.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "e-pin.h"
 
 #define tr(str) simulideTr("elCapacitor",str)
 
-Component* elCapacitor::construct( QString type, QString id )
-{ return new elCapacitor( type, id ); }
-
-LibraryItem* elCapacitor::libraryItem()
-{
-    return new LibraryItem(
+listItem_t elCapacitor::libraryItem(){
+    return {
         tr("Electrolytic Capacitor"),
         "Reactive",
         "elcapacitor.png",
         "elCapacitor",
-        elCapacitor::construct);
+        [](QString id){ return (Component*)new elCapacitor("elCapacitor", id ); } };
 }
 
 elCapacitor::elCapacitor( QString type, QString id )
@@ -42,9 +37,9 @@ void elCapacitor::updateStep()
         update();
 }   }
 
-void elCapacitor::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void elCapacitor::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
-    Component::paint( p, option, widget );
+    Component::paint( p, o, w);
 
     QPen pen = p->pen();
     pen.setWidth(3);

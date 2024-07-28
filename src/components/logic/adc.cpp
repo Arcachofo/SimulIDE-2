@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "adc.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "simulator.h"
 #include "iopin.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("ADC",str)
 
-Component* ADC::construct( QString type, QString id )
-{ return new ADC( type, id ); }
-
-LibraryItem* ADC::libraryItem()
-{
-    return new LibraryItem(
+listItem_t ADC::libraryItem(){
+    return {
         tr("ADC"),
         "Other Logic",
         "1to3.png",
         "ADC",
-        ADC::construct );
+        [](QString id){ return (Component*)new ADC("ADC", id ); } };
 }
 
 ADC::ADC( QString type, QString id )

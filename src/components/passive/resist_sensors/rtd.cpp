@@ -12,24 +12,19 @@
 
 #include "rtd.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 
 #include "doubleprop.h"
 #include "propdialog.h"
 
 #define tr(str) simulideTr("RTD",str)
 
-Component* RTD::construct( QString type, QString id )
-{ return new RTD( type, id ); }
-
-LibraryItem* RTD::libraryItem()
-{
-    return new LibraryItem(
+listItem_t RTD::libraryItem(){
+    return {
         tr("RTD"),
         "Resistive Sensors",
         "rtd.png",
         "RTD",
-        RTD::construct );
+        [](QString id){ return (Component*)new RTD("RTD", id ); } };
 }
 
 RTD::RTD( QString type, QString id )

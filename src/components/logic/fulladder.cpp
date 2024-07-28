@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "fulladder.h"
-#include "itemlibrary.h"
 #include "circuit.h"
 #include "iopin.h"
 
@@ -12,17 +11,13 @@
 
 #define tr(str) simulideTr("FullAdder",str)
 
-Component* FullAdder::construct( QString type, QString id)
-{ return new FullAdder( type, id); }
-
-LibraryItem* FullAdder::libraryItem()
-{
-    return new LibraryItem(
+listItem_t FullAdder::libraryItem(){
+    return {
         tr("Full Adder"),
         "Arithmetic",
         "2to2.png",
         "FullAdder",
-        FullAdder::construct );
+        [](QString id){ return (Component*)new FullAdder("FullAdder", id ); } };
 }
 
 FullAdder::FullAdder( QString type, QString id)

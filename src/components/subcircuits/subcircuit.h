@@ -9,7 +9,6 @@
 #include "chip.h"
 
 class Tunnel;
-class LibraryItem;
 
 class SubCircuit : public Chip
 {
@@ -18,7 +17,7 @@ class SubCircuit : public Chip
         ~SubCircuit();
 
  static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void remove() override;
 

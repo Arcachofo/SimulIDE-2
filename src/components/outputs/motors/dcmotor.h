@@ -9,17 +9,13 @@
 #include "linkercomponent.h"
 #include "e-resistor.h"
 
-
-class LibraryItem;
-
 class DcMotor : public LinkerComponent, public eResistor
 {
     public:
         DcMotor( QString type, QString id );
         ~DcMotor();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

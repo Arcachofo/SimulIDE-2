@@ -12,24 +12,19 @@
 #include "propdialog.h"
 #include "simulator.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 #include "e-node.h"
 
 #include "doubleprop.h"
 
 #define tr(str) simulideTr("Potentiometer",str)
 
-Component* Potentiometer::construct( QString type, QString id )
-{ return new Potentiometer( type, id ); }
-
-LibraryItem* Potentiometer::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Potentiometer::libraryItem(){
+    return {
         tr("Potentiometer"),
         "Resistors",
         "potentiometer.png",
         "Potentiometer",
-        Potentiometer::construct );
+        [](QString id){ return (Component*)new Potentiometer("Potentiometer", id ); } };
 }
 
 Potentiometer::Potentiometer( QString type, QString id )

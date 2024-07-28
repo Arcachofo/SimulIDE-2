@@ -9,7 +9,6 @@
 #include "stepper.h"
 #include "simulator.h"
 #include "connector.h"
-#include "itemlibrary.h"
 
 #include "doubleprop.h"
 #include "boolprop.h"
@@ -17,17 +16,13 @@
 
 #define tr(str) simulideTr("Stepper",str)
 
-Component*  Stepper::construct( QString type, QString id )
-{ return new Stepper( type, id ); }
-
-LibraryItem* Stepper::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Stepper::libraryItem(){
+    return {
         tr("Stepper"),
         "Motors",
         "steeper.png",
         "Stepper",
-        Stepper::construct );
+        [](QString id){ return (Component*)new Stepper("Stepper", id ); } };
 }
 
 Stepper::Stepper( QString type, QString id )
@@ -210,10 +205,10 @@ void Stepper::setHidden( bool hid, bool hidArea, bool hidLabel )
     m_pinCo.setVisible( !m_bipolar && !m_hidden );
 }
 
-void Stepper::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void Stepper::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
     p->setRenderHint( QPainter::Antialiasing );
-    Component::paint( p, option, widget );
+    Component::paint( p, o, w);
 
     //p->setBrush( QColor(250, 210, 230) );
     if( !m_hidden ) p->drawRoundRect(-64,-40, 25, 80 );

@@ -8,16 +8,13 @@
 
 #include "meter.h"
 
-class LibraryItem;
-
 class Voltimeter : public Meter
 {
     public:
         Voltimeter( QString type, QString id );
         ~Voltimeter();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 };

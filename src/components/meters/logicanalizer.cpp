@@ -6,7 +6,6 @@
 #include <QGraphicsProxyWidget>
 
 #include "logicanalizer.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "circuitwidget.h"
 #include "circuit.h"
@@ -25,17 +24,13 @@
 
 #define tr(str) simulideTr("LAnalizer",str)
 
-Component* LAnalizer::construct( QString type, QString id )
-{ return new LAnalizer( type, id ); }
-
-LibraryItem* LAnalizer::libraryItem()
-{
-    return new LibraryItem(
+listItem_t LAnalizer::libraryItem(){
+    return {
         tr( "Logic Analyzer" ),
         "Meters",
         "lanalizer.png",
         "LAnalizer",
-        LAnalizer::construct );
+        [](QString id){ return (Component*)new LAnalizer("LAnalizer", id ); } };
 }
 
 LAnalizer::LAnalizer( QString type, QString id )

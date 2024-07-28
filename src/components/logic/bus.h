@@ -9,7 +9,6 @@
 #include "component.h"
 #include "e-element.h"
 
-class LibraryItem;
 class eNode;
 
 class Bus : public Component, public eElement
@@ -18,8 +17,7 @@ class Bus : public Component, public eElement
         Bus( QString type, QString id );
         ~Bus();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
         
         int numLines() { return m_numLines; }
         void setNumLines( int lines );

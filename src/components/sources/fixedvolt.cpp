@@ -7,7 +7,6 @@
 
 #include "fixedvolt.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "iopin.h"
 #include "custombutton.h"
@@ -17,17 +16,13 @@
 
 #define tr(str) simulideTr("FixedVolt",str)
 
-Component* FixedVolt::construct( QString type, QString id )
-{ return new FixedVolt( type, id ); }
-
-LibraryItem* FixedVolt::libraryItem()
-{
-    return new LibraryItem(
+listItem_t FixedVolt::libraryItem(){
+    return {
         tr("Fixed Voltage"),
         "Sources",
         "voltage.png",
         "Fixed Voltage",
-        FixedVolt::construct );
+        [](QString id){ return (Component*)new FixedVolt("Fixed Voltage", id ); } };
 }
 
 FixedVolt::FixedVolt( QString type, QString id )

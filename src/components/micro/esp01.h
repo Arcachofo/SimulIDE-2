@@ -10,7 +10,6 @@
 #include "component.h"
 #include "usartmodule.h"
 
-class LibraryItem;
 class QTcpSocket;
 class QSignalMapper;
 
@@ -28,8 +27,7 @@ class Esp01 : public Component, public UsartModule, public eElement
             uartReply
         };
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         int baudrate() { return m_baudrate; }
         void setBaudrate( int br ) { m_baudrate = br;}

@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "shiftreg.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "iopin.h"
 
@@ -13,17 +12,13 @@
 
 #define tr(str) simulideTr("ShiftReg",str)
 
-Component* ShiftReg::construct( QString type, QString id )
-{ return new ShiftReg( type, id ); }
-
-LibraryItem* ShiftReg::libraryItem()
-{
-    return new LibraryItem(
+listItem_t ShiftReg::libraryItem(){
+    return {
         tr( "Shift Register" ),
         "Arithmetic",
         "1to3.png",
         "ShiftReg",
-        ShiftReg::construct );
+        [](QString id){ return (Component*)new ShiftReg("ShiftReg", id ); } };
 }
 
 ShiftReg::ShiftReg( QString type, QString id )

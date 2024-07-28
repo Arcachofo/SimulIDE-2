@@ -14,7 +14,6 @@
 #include "iopin.h"
 #include "simulator.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 #include "utils.h"
 
 #include "doubleprop.h"
@@ -22,17 +21,13 @@
 
 #define tr(str) simulideTr("Ds18b20",str)
 
-Component* Ds18b20::construct( QString type, QString id )
-{ return new Ds18b20( type, id ); }
-
-LibraryItem* Ds18b20::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Ds18b20::libraryItem(){
+    return {
         "DS18B20",
         "Sensors",
         "ic2_comp.png",
         "DS18B20",
-        Ds18b20::construct );
+        [](QString id){ return (Component*)new Ds18b20("Ds18b20", id ); } };
 }
 
 Ds18b20::Ds18b20( QString type, QString id )

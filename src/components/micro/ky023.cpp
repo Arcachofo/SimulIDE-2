@@ -15,7 +15,6 @@
 #include "simulator.h"
 #include "circuit.h"
 #include "custombutton.h"
-#include "itemlibrary.h"
 
 #define WIDTH 40
 #define HEIGHT 56
@@ -25,17 +24,13 @@
 
 #define tr(str) simulideTr("KY023",str)
 
-Component* KY023::construct( QString type, QString id )
-{ return new KY023( type, id ); }
-
-LibraryItem* KY023::libraryItem()
-{
-    return new LibraryItem(
+listItem_t KY023::libraryItem(){
+    return {
         tr( "KY-023" ),
         "Peripherals",
         "ky-023.png",
         "KY023",
-        KY023::construct);
+        [](QString id){ return (Component*)new KY023("KY023", id ); } };
 }
 
 KY023::KY023( QString type, QString id )

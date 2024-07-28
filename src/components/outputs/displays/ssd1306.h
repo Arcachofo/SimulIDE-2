@@ -13,7 +13,6 @@
 #define VERT_ADDR_MODE 1
 #define PAGE_ADDR_MODE 2
 
-class LibraryItem;
 class IoPin;
 
 class Ssd1306 : public Component, public TwiModule
@@ -22,8 +21,7 @@ class Ssd1306 : public Component, public TwiModule
         Ssd1306( QString type, QString id );
         ~Ssd1306();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         enum dispColor {
             White = 0,

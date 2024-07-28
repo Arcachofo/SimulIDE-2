@@ -8,16 +8,13 @@
 
 #include "bcdbase.h"
 
-class LibraryItem;
-
 class SevenSegmentBCD : public BcdBase
 {
     public:
         SevenSegmentBCD( QString type, QString id );
         ~SevenSegmentBCD();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
         virtual void voltChanged() override;

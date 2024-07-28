@@ -10,7 +10,6 @@
 #include <math.h>
 
 #include "ds1621.h"
-#include "itemlibrary.h"
 #include "circuit.h"
 #include "iopin.h"
 #include "simulator.h"
@@ -19,18 +18,13 @@
 
 #define tr(str) simulideTr("DS1621",str)
 
-Component *DS1621::construct( QString type, QString id) {
-  return new DS1621( type, id );
-}
-
-LibraryItem *DS1621::libraryItem()
-{
-    return new LibraryItem(
+listItem_t DS1621::libraryItem(){
+    return {
         tr("DS1621"),
         "Sensors",
         "ic_comp.png",
         "DS1621",
-        DS1621::construct);
+        [](QString id){ return (Component*)new DS1621("DS1621", id ); } };
 }
 
 DS1621::DS1621( QString type, QString id )
@@ -272,9 +266,9 @@ void DS1621::downbuttonclicked()
     update();
 }
 
-void DS1621::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void DS1621::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
-    Component::paint( p, option, widget );
+    Component::paint( p, o, w );
     QPen pen( Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin );
     p->setPen( pen );
     p->setBrush(QColor( 50, 50, 70 ));

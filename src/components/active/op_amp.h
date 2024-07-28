@@ -9,7 +9,6 @@
 #include "component.h"
 #include "e-element.h"
 
-class LibraryItem;
 class IoPin;
 
 class OpAmp : public Component, public eElement
@@ -18,8 +17,7 @@ class OpAmp : public Component, public eElement
         OpAmp( QString type, QString id );
         ~OpAmp();
         
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

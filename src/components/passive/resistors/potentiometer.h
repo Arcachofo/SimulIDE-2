@@ -10,16 +10,13 @@
 #include "e-resistor.h"
 #include "pin.h"
 
-class LibraryItem;
-
 class Potentiometer : public Dialed, public eElement
 {
     public:
         Potentiometer( QString type, QString id );
         ~Potentiometer();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void updateStep() override;

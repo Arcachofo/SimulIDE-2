@@ -13,7 +13,6 @@
 #include "circuit.h"
 #include "simulator.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 #include "utils.h"
 #include "iopin.h"
 #include "custombutton.h"
@@ -24,17 +23,13 @@
 
 #define tr(str) simulideTr("Function",str)
 
-Component* Function::construct( QString type, QString id )
-{ return new Function( type, id ); }
-
-LibraryItem* Function::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Function::libraryItem(){
+    return {
         tr("Function"),
         "Arithmetic",
         "subc.png",
         "Function",
-        Function::construct );
+        [](QString id){ return (Component*)new Function("Function", id ); } };
 }
 
 Function::Function( QString type, QString id )

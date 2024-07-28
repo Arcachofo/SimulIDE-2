@@ -4,24 +4,19 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "magnitudecomp.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 
 #include "intprop.h"
 
 #define tr(str) simulideTr("MagnitudeComp",str)
 
-Component* MagnitudeComp::construct( QString type, QString id )
-{ return new MagnitudeComp( type, id ); }
-
-LibraryItem* MagnitudeComp::libraryItem()
-{
-    return new LibraryItem(
+listItem_t MagnitudeComp::libraryItem(){
+    return {
         tr("Magnitude Comparator"),
         "Arithmetic" ,
         "3to2g.png",
         "MagnitudeComp",
-        MagnitudeComp::construct );
+        [](QString id){ return (Component*)new MagnitudeComp("MagnitudeComp", id ); } };
 }
 
 MagnitudeComp::MagnitudeComp( QString type, QString id )

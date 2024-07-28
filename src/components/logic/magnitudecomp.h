@@ -9,16 +9,13 @@
 #include "iocomponent.h"
 #include "e-element.h"
 
-class LibraryItem;
-
 class MagnitudeComp : public IoComponent, public eElement
 {
     public:
         MagnitudeComp( QString type, QString id );
         ~MagnitudeComp();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;

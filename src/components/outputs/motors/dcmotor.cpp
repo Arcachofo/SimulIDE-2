@@ -7,7 +7,6 @@
 #include <math.h>
 
 #include "dcmotor.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "pin.h"
 #include "label.h"
@@ -17,17 +16,13 @@
 
 #define tr(str) simulideTr("DcMotor",str)
 
-Component* DcMotor::construct( QString type, QString id )
-{ return new DcMotor( type, id ); }
-
-LibraryItem* DcMotor::libraryItem()
-{
-    return new LibraryItem(
+listItem_t DcMotor::libraryItem(){
+    return {
         tr("Dc Motor"),
         "Motors",
         "dcmotor.png",
         "DcMotor",
-        DcMotor::construct );
+        [](QString id){ return (Component*)new DcMotor("DcMotor", id ); } };
 }
 
 DcMotor::DcMotor( QString type, QString id )

@@ -4,28 +4,18 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "header.h"
-#include "itemlibrary.h"
-//#include "circuitwidget.h"
-//#include "simulator.h"
-//#include "circuit.h"
-//#include "e-node.h"
-//#include "pin.h"
 
 #include "boolprop.h"
 
 #define tr(str) simulideTr("Header",str)
 
-Component* Header::construct( QString type, QString id )
-{ return new Header( type, id ); }
-
-LibraryItem* Header::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Header::libraryItem(){
+    return {
         tr("Header"),
         "Connectors",
         "header.png",
         "Header",
-        Header::construct);
+        [](QString id){ return (Component*)new Header("Header", id ); } };
 }
 
 Header::Header( QString type, QString id )

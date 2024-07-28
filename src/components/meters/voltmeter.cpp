@@ -4,22 +4,17 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "voltmeter.h"
-#include "itemlibrary.h"
 #include "e-pin.h"
 
 #define tr(str) simulideTr("Voltimeter",str)
 
-Component* Voltimeter::construct( QString type, QString id )
-{ return new Voltimeter( type, id ); }
-
-LibraryItem* Voltimeter::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Voltimeter::libraryItem(){
+    return {
         tr("Voltmeter"),
         "Meters",
         "voltimeter.png",
         "Voltimeter",
-        Voltimeter::construct);
+        [](QString id){ return (Component*)new Voltimeter("Voltimeter", id ); } };
 }
 
 Voltimeter::Voltimeter( QString type, QString id )

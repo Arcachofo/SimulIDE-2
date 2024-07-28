@@ -10,24 +10,19 @@
 #include "simulator.h"
 #include "circuit.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 #include "e-node.h"
 
 #include "intprop.h"
 
 #define tr(str) simulideTr("Bus",str)
 
-Component* Bus::construct( QString type, QString id )
-{ return new Bus( type, id ); }
-
-LibraryItem* Bus::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Bus::libraryItem(){
+    return {
         tr("Bus"),
         "Connectors",
         "bus.png",
         "Bus",
-        Bus::construct );
+        [](QString id){ return (Component*)new Bus("Bus", id ); } };
 }
 
 Bus::Bus( QString type, QString id )

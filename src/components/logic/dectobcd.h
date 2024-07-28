@@ -8,16 +8,13 @@
 
 #include "logiccomponent.h"
 
-class LibraryItem;
-
 class DecToBcd : public LogicComponent
 {
     public:
         DecToBcd( QString type, QString id );
         ~DecToBcd();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;
@@ -32,4 +29,3 @@ class DecToBcd : public LogicComponent
 };
 
 #endif
-

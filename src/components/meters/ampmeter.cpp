@@ -4,21 +4,16 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "ampmeter.h"
-#include "itemlibrary.h"
 
 #define tr(str) simulideTr("Amperimeter",str)
 
-Component* Amperimeter::construct( QString type, QString id )
-{ return new Amperimeter( type, id ); }
-
-LibraryItem* Amperimeter::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Amperimeter::libraryItem(){
+    return {
         tr("Ampmeter"),
         "Meters",
         "amperimeter.png",
         "Amperimeter",
-        Amperimeter::construct);
+        [](QString id){ return (Component*)new Amperimeter( "Amperimeter", id ); } };
 }
 
 Amperimeter::Amperimeter( QString type, QString id )

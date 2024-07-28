@@ -1,12 +1,11 @@
 /***************************************************************************
- *   Copyright (C) 2016 by Santiago González                               *
- *                                                                         *
- ***( see copyright.txt file at root folder )*******************************/
+*    Copyright (C) 2016 by Santiago González                              *
+*                                                                         *
+* **( see copyright.txt file at root folder )*******************************/
 
 #include <math.h>
 
 #include "bcdtodec.h"
-#include "itemlibrary.h"
 #include "circuit.h"
 #include "iopin.h"
 
@@ -14,17 +13,13 @@
 
 #define tr(str) simulideTr("BcdToDec",str)
 
-Component* BcdToDec::construct( QString type, QString id )
-{ return new BcdToDec( type, id ); }
-
-LibraryItem* BcdToDec::libraryItem()
-{
-    return new LibraryItem(
+listItem_t BcdToDec::libraryItem(){
+    return {
         tr("Decoder(4 to 10/16)"),
         "Converters",
         "2to3g.png",
         "BcdToDec",
-        BcdToDec::construct );
+        [](QString id){ return (Component*)new BcdToDec("BcdToDec", id ); } };
 }
 
 BcdToDec::BcdToDec( QString type, QString id )

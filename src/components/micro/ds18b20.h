@@ -11,7 +11,6 @@
 #include "e-element.h"
 #include "component.h"
 
-class LibraryItem;
 class IoPin;
 
 class Ds18b20 : public Component , public eElement
@@ -45,8 +44,7 @@ class Ds18b20 : public Component , public eElement
             DS_RD_POW  = 0xB4
         };
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         QString getROM() { return arrayToHex( m_ROM, 8 ); }
         void setROM( QString ROMstr );

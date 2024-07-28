@@ -27,11 +27,9 @@ ComponentList* ComponentList::m_pSelf = NULL;
 ComponentList::ComponentList( QWidget* parent )
              : QTreeWidget( parent )
              , m_mcDialog( this )
-             , m_itemLibrary()
 {
     m_pSelf = this;
 
-    m_converting = false;
     m_searchFilter = "";
 
     m_mcDialog.setVisible( false );
@@ -77,25 +75,6 @@ ComponentList::ComponentList( QWidget* parent )
              this, &ComponentList::slotItemClicked );
 }
 ComponentList::~ComponentList(){}
-
-void ComponentList::LoadLibraryItems()
-{
-    for( LibraryItem* item : m_itemLibrary.items() )
-    {
-        QString category = item->category();
-
-        QString icon = item->iconfile();
-        QString iconFile = MainWindow::self()->getDataFilePath("images/"+icon );
-        if( !QFile::exists( iconFile ) ) iconFile = ":/"+icon; // Image not in simulide data folder, use hardcoded image
-
-        if( item->createItemFnPtr() )
-        {
-            TreeItem* catItem = getCategory( category );
-            if( catItem ) addItem( item->name(), catItem, iconFile, item->type() );
-        }
-        else addCategory( item->name(), item->type(), category, iconFile );
-    }
-}
 
 void ComponentList::LoadCompSetAt( QDir compSetDir )
 {
@@ -257,10 +236,8 @@ void ComponentList::loadComps( QDir compSetDir )
     }
 }
 
-void ComponentList::loadXml( QString xmlFile, bool convert )
+void ComponentList::loadXml( QString xmlFile )
 {
-    m_converting = convert;
-
     QFile file( xmlFile );
     if( !file.open(QFile::ReadOnly | QFile::Text) ){
           qDebug() << "ComponentList::loadXml Cannot read file"<< endl << xmlFile << endl << file.errorString();
@@ -322,63 +299,7 @@ void ComponentList::loadXml( QString xmlFile, bool convert )
                     }
                     else icon = getIcon( folder, name );
 
-                    if( convert )
-                    {
-                        qDebug() << "ComponentList::loadXml Corverting" << name;
-
-                        QString info;
-                        if( reader.attributes().hasAttribute("info") ) info = reader.attributes().value("info").toString();
-
-                        QString iconData;
-                        if( QFile::exists( icon ) )
-                        {
-                            QByteArray ba = fileToByteArray( icon, "ComponentList::loadXml");
-                            QString data( ba.toHex() );
-                            iconData = data;
-                        }
-                        QString xmlFolder = QFileInfo( xmlFile ).absolutePath();
-                        QString compFolder = xmlFolder+"/"+folder;
-                        QString convFolder = xmlFolder+"/converted/"+folder;
-
-                        if( !QDir( convFolder ).exists() )
-                            QDir( xmlFolder ).mkpath("converted/"+folder);
-
-                        QString compFile = convFolder+"/"+name+".comp";
-                        QString compStr;
-
-                        if( type == "Subcircuit" )
-                        {
-                            CircuitWidget::self()->loadCirc( compFolder+"/"+name+"/"+name+".sim1" );
-                            compStr = Circuit::self()->circuitToString();
-                        }
-                        else if( type == "MCU" )
-                        {
-                            QString data = reader.attributes().value("data").toString();
-                            QString pkge = reader.attributes().value("package").toString();
-
-                            if( !category.startsWith("Micro") ) category = "Micro/"+category;
-
-                            QString pkgFile = compFolder+pkge+".package";
-                            if( !QFile::exists( pkgFile ) ) pkgFile = compFolder+pkge+"_LS.package";
-                            compStr += Chip::convertPackage( fileToString( pkgFile, "ComponentList::convertItem" ) );
-
-                            QString mcuFile = compFolder+data+".mcu";
-                            compStr += convertMcuFile( mcuFile );
-                        }
-                        QString comp = "<libitem";
-                        comp += " itemtype=\""+ type+"\"";
-                        comp += " category=\""+ category  +"\"";
-                        comp += " compname=\""+ name      +"\"";
-                        comp += " compinfo=\""+ info      +"\"";
-                        comp += " icondata=\""+ iconData  +"\"";
-                        comp += ">\n\n";
-                        comp += compStr;
-                        comp += "</libitem>";
-
-                        Circuit::self()->saveString( compFile, comp );
-
-                    }
-                    else if( catItem && !m_components.contains( name ) )
+                    if( catItem && !m_components.contains( name ) )
                     {
                         if( type == "Subcircuit" )
                         {
@@ -396,8 +317,6 @@ void ComponentList::loadXml( QString xmlFile, bool convert )
     QString compSetName = xmlFile.split( "/").last();
 
     qDebug() << tr("        Loaded Component set:           ") << compSetName;
-
-    m_converting = false;
 }
 
 QString ComponentList::getIcon( QString folder, QString name )
@@ -408,24 +327,23 @@ QString ComponentList::getIcon( QString folder, QString name )
     return icon;
 }
 
-QString ComponentList::convertMcuFile( QString file )
-{
-    QString converted;
-    QString folder = QFileInfo( file ).absolutePath();
 
-    QStringList lines = fileToStringList( file, "ComponentList::convertItem" );
-    for( QString line : lines )
-    {
-        if( line.contains("parts>") ) continue;
-        if( line.startsWith("<!") ) continue;
-        if( line.contains("<include") )
-        {
-            line = line.split("\"").at(1);
-            line = convertMcuFile( folder+"/"+line );
-        }
-        converted.append( line+"\n" );
-    }
-    return converted;
+Component* ComponentList::createComponent( QString type, QString id )
+{
+    return m_componentFactory.value( type )(id);
+}
+
+void ComponentList::addItem( listItem_t item )
+{
+    QString type = item.type;
+    m_componentFactory[type] = item.construct;
+
+    QString icon = item.icon;
+    QString iconFile = MainWindow::self()->getDataFilePath("images/"+icon );
+    if( !QFile::exists( iconFile ) ) iconFile = ":/"+icon; // Image not in simulide data folder, use hardcoded image
+
+    TreeItem* catItem = getCategory( item.category );
+    if( catItem ) addItem( item.label, catItem, iconFile, type );
 }
 
 void ComponentList::addItem( QString caption, TreeItem* catItem, QString icon, QString type )
@@ -685,4 +603,295 @@ void ComponentList::writeSettings()
     treeStr += "</comptree>\n";
 
     Circuit::self()->saveString( m_listFile, treeStr );
+}
+
+//BEGIN Item includes
+#include "ampmeter.h"
+#include "adc.h"
+#include "aip31068_i2c.h"
+#include "audio_out.h"
+#include "battery.h"
+#include "bcdto7s.h"
+#include "bcdtodec.h"
+#include "bincounter.h"
+#include "bjt.h"
+#include "buffer.h"
+#include "bus.h"
+#include "capacitor.h"
+#include "clock.h"
+#include "comparator.h"
+#include "csource.h"
+#include "currsource.h"
+#include "dac.h"
+#include "dcmotor.h"
+#include "dectobcd.h"
+#include "demux.h"
+#include "dht22.h"
+#include "diac.h"
+#include "dial.h"
+#include "diode.h"
+#include "ds1307.h"
+#include "ds1621.h"
+#include "ds18b20.h"
+#include "dynamic_memory.h"
+#include "elcapacitor.h"
+#include "ellipse.h"
+#include "esp01.h"
+#include "fixedvolt.h"
+#include "flipflopd.h"
+#include "flipflopjk.h"
+#include "flipfloprs.h"
+#include "flipflopt.h"
+#include "freqmeter.h"
+#include "fulladder.h"
+#include "function.h"
+#include "gate_and.h"
+#include "gate_or.h"
+#include "gate_xor.h"
+#include "ground.h"
+#include "header.h"
+#include "hd44780.h"
+#include "ili9341.h"
+#include "image.h"
+#include "i2cram.h"
+#include "i2ctoparallel.h"
+#include "inductor.h"
+#include "keypad.h"
+#include "ky023.h"
+#include "ky040.h"
+#include "ks0108.h"
+#include "lamp.h"
+#include "latchd.h"
+#include "ldr.h"
+#include "led.h"
+#include "ledbar.h"
+#include "ledmatrix.h"
+#include "ledrgb.h"
+#include "line.h"
+#include "lm555.h"
+#include "logicanalizer.h"
+#include "magnitudecomp.h"
+#include "max72xx_matrix.h"
+#include "mcu.h"
+#include "memory.h"
+#include "mosfet.h"
+#include "mux.h"
+#include "mux_analog.h"
+#include "op_amp.h"
+#include "oscope.h"
+#include "pcd8544.h"
+#include "probe.h"
+#include "potentiometer.h"
+#include "push.h"
+#include "rail.h"
+#include "rectangle.h"
+#include "relay.h"
+#include "resistor.h"
+#include "resistordip.h"
+#include "rtd.h"
+#include "serialport.h"
+#include "serialterm.h"
+#include "servo.h"
+#include "sevensegment.h"
+#include "sevensegment_bcd.h"
+#include "shiftreg.h"
+#include "socket.h"
+#include "sr04.h"
+#include "scr.h"
+#include "ssd1306.h"
+#include "stepper.h"
+#include "strain.h"
+#include "subcircuit.h"
+#include "subpackage.h"
+#include "switch.h"
+#include "switchdip.h"
+#include "thermistor.h"
+#include "testunit.h"
+#include "textcomponent.h"
+#include "touchpad.h"
+#include "transformer.h"
+#include "triac.h"
+#include "tunnel.h"
+#include "varresistor.h"
+#include "voltmeter.h"
+#include "volt_reg.h"
+#include "voltsource.h"
+#include "wavegen.h"
+#include "ws2812.h"
+#include "zener.h"
+
+void ComponentList::LoadLibraryItems()
+{
+    addCategory( tr("Meters"),"Meters", "", "" );
+    addItem( Probe::libraryItem() );
+    addItem( Voltimeter::libraryItem() );
+    addItem( Amperimeter::libraryItem() );
+    addItem( FreqMeter::libraryItem() );
+    addItem( Oscope::libraryItem() );
+    addItem( LAnalizer::libraryItem() );
+
+    addCategory( tr("Sources"),"Sources", "", "" );
+    addItem( FixedVolt::libraryItem() );
+    addItem( Clock::libraryItem() );
+    addItem( WaveGen::libraryItem() );
+    addItem( VoltSource::libraryItem() );
+    addItem( CurrSource::libraryItem() );
+    addItem( Csource::libraryItem() );
+    addItem( Battery::libraryItem() );
+    addItem( Rail::libraryItem() );
+    addItem( Ground::libraryItem() );
+
+    addCategory( tr("Switches"),"Switches", "", "" );
+    addItem( Push::libraryItem() );
+    addItem( Switch::libraryItem() );
+    addItem( SwitchDip::libraryItem() );
+    addItem( Relay::libraryItem() );
+    addItem( KeyPad::libraryItem() );
+
+    addCategory( tr("Passive"),"Passive", "", "" );
+    addCategory( tr("Resistors"),"Resistors", "Passive", "resistors.png" );
+    addItem( Resistor::libraryItem() );
+    addItem( ResistorDip::libraryItem() );
+    addItem( Potentiometer::libraryItem() );
+    addItem( VarResistor::libraryItem() );
+
+    addCategory( tr("Resistive Sensors"),"Resistive Sensors", "Passive", "resistorsensors.png" );
+    addItem( Ldr::libraryItem() );
+    addItem( Thermistor::libraryItem() );
+    addItem( RTD::libraryItem() );
+    addItem( Strain::libraryItem() );
+
+    addCategory( tr("Reactive"),"Reactive", "Passive", "reactive.png" );
+    addItem( Capacitor::libraryItem() );
+    addItem( elCapacitor::libraryItem() );
+    addItem( Inductor::libraryItem() );
+    addItem( Transformer::libraryItem() );
+
+    addCategory( tr("Active"),"Active", "", "" );
+    addCategory( tr("Rectifiers"),"Rectifiers", "Active", "" );
+    addItem( Diode::libraryItem() );
+    addItem( Zener::libraryItem() );
+    addItem( SCR::libraryItem() );
+    addItem( Diac::libraryItem() );
+    addItem( Triac::libraryItem() );
+
+    addCategory( tr("Transistors"),"Transistors", "Active", "" );
+    addItem( BJT::libraryItem() );
+    addItem( Mosfet::libraryItem() );
+
+    addCategory( tr("Other Active"),"Other Active", "Active", "" );
+    addItem( OpAmp::libraryItem() );
+    addItem( Comparator::libraryItem() );
+    addItem( VoltReg::libraryItem() );
+    addItem( MuxAnalog::libraryItem() );
+
+    addCategory( tr("Outputs"),"Outputs", "", "" );
+    addCategory( tr("Leds"),"Leds", "Outputs", "" );
+    addItem( Led::libraryItem() );
+    addItem( LedRgb::libraryItem() );
+    addItem( LedBar::libraryItem() );
+    addItem( SevenSegment::libraryItem() );
+    addItem( LedMatrix::libraryItem() );
+    addItem( Max72xx_matrix::libraryItem() );
+    addItem( WS2812::libraryItem() );
+
+    addCategory( tr("Displays"),"Displays", "Outputs", "" );
+    addItem( Hd44780::libraryItem() );
+    addItem( Aip31068_i2c::libraryItem() );
+    addItem( Pcd8544::libraryItem() );
+    addItem( Ks0108::libraryItem() );
+    addItem( Ssd1306::libraryItem() );
+    addItem( Ili9341::libraryItem() );
+
+    addCategory( tr("Motors"),"Motors", "Outputs", "" );
+    addItem( DcMotor::libraryItem() );
+    addItem( Stepper::libraryItem() );
+    addItem( Servo::libraryItem() );
+
+    addCategory( tr("Other Outputs"),"Other Outputs", "Outputs", "" );
+    addItem( AudioOut::libraryItem() );
+    addItem( Lamp::libraryItem() );
+
+    addCategory( tr("Micro"),"Micro", "", "" );
+    //addItem( new LibraryItem( "AVR" , "Micro", "ic2.png","AVR", NULL ) );
+    //addItem( new LibraryItem( "PIC" , "Micro", "ic2.png","PIC", NULL ) );
+    //addItem( new LibraryItem( "I51" , "Micro", "ic2.png","I51", NULL ) );
+    //addItem( new LibraryItem("MCS65", "Micro", "ic2.png","MCS65", NULL ) );
+    //addItem( new LibraryItem("Z80"  , "Micro", "ic2.png","Z80", NULL ) );
+    addItem( Mcu::libraryItem() );
+    //addItem( new LibraryItem( QObject::tr("Arduino"), "Micro", "board.png","Arduino", NULL ) );
+    //addItem( new LibraryItem( QObject::tr("Shields"), "Micro", "shield.png","Shields", NULL ) );
+
+    addCategory( tr("Sensors"),"Sensors", "Micro", "1to2.png" );
+    addItem( SR04::libraryItem() );
+    addItem( Dht22::libraryItem() );
+    addItem( DS1621::libraryItem() );
+    addItem( Ds18b20::libraryItem() );
+
+    addCategory( tr("Peripherals"),"Peripherals", "Micro", "perif.png" );
+    addItem( SerialPort::libraryItem() );
+    addItem( SerialTerm::libraryItem() );
+    addItem( TouchPad::libraryItem() );
+    addItem( KY023::libraryItem() );
+    addItem( KY040::libraryItem() );
+    addItem( DS1307::libraryItem() );
+    addItem( Esp01::libraryItem() );
+
+    addCategory( tr("Logic"),"Logic", "", "" );
+    addCategory( tr("Gates"),"Gates", "Logic", "gates.png" );
+    addItem( Buffer::libraryItem() );
+    addItem( AndGate::libraryItem() );
+    addItem( OrGate::libraryItem() );
+    addItem( XorGate::libraryItem() );
+
+    addCategory( tr("Arithmetic"),"Arithmetic", "Logic", "2to2.png" );
+    addItem( BinCounter::libraryItem() );
+    addItem( FullAdder::libraryItem() );
+    addItem( MagnitudeComp::libraryItem() );
+    addItem( ShiftReg::libraryItem() );
+    addItem( Function::libraryItem() );
+
+    addCategory( tr("Memory"),"Memory", "Logic", "subc.png" );
+    addItem( FlipFlopD::libraryItem() );
+    addItem( FlipFlopT::libraryItem() );
+    addItem( FlipFlopRS::libraryItem() );
+    addItem( FlipFlopJK::libraryItem() );
+    addItem( LatchD::libraryItem() );
+    addItem( Memory::libraryItem() );
+    addItem( DynamicMemory::libraryItem() );
+    addItem( I2CRam::libraryItem() );
+
+    addCategory( tr("Converters"),"Converters", "Logic", "1to2.png" );
+    addItem( Mux::libraryItem() );
+    addItem( Demux::libraryItem() );
+    addItem( BcdToDec::libraryItem() );
+    addItem( DecToBcd::libraryItem() );
+    addItem( BcdTo7S::libraryItem() );
+    addItem( I2CToParallel::libraryItem() );
+
+    addCategory( tr("Other Logic"),"Other Logic", "Logic", "2to3.png" );
+    addItem( ADC::libraryItem() );
+    addItem( DAC::libraryItem() );
+    addItem( SevenSegmentBCD::libraryItem() );
+    addItem( Lm555::libraryItem() );
+
+    addItem( SubCircuit::libraryItem() );
+    // Connectors
+    addCategory( tr("Connectors"),"Connectors", "", "" );
+    addItem( Bus::libraryItem() );
+    addItem( Tunnel::libraryItem() );
+    addItem( Socket::libraryItem() );
+    addItem( Header::libraryItem() );
+
+    addCategory( tr("Graphical"),"Graphical", "", "" );
+    addItem( Image::libraryItem() );
+    addItem( TextComponent::libraryItem() );
+    addItem( Rectangle::libraryItem() );
+    addItem( Ellipse::libraryItem() );
+    addItem( Line::libraryItem() );
+
+    addCategory( tr("Other"),"Other", "", "" );
+    addItem( SubPackage::libraryItem() );
+    addItem( TestUnit::libraryItem() );
+    addItem( Dial::libraryItem() );
 }

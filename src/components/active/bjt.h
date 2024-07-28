@@ -9,16 +9,13 @@
 #include "e-bjt.h"
 #include "component.h"
 
-class LibraryItem;
-
 class BJT : public Component, public eBJT
 {
     public:
         BJT( QString type, QString id );
         ~BJT();
         
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 

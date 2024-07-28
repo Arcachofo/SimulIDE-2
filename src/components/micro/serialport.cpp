@@ -9,7 +9,6 @@
 
 #include "serialport.h"
 #include "serialmon.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "usarttx.h"
@@ -25,17 +24,13 @@
 
 #define tr(str) simulideTr("SerialPort",str)
 
-Component* SerialPort::construct( QString type, QString id )
-{ return new SerialPort( type, id ); }
-
-LibraryItem* SerialPort::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SerialPort::libraryItem(){
+    return {
         tr("Serial Port"),
         "Peripherals",
         "serialport.png",
         "SerialPort",
-        SerialPort::construct );
+        [](QString id){ return (Component*)new SerialPort("SerialPort", id ); } };
 }
 
 SerialPort::SerialPort( QString type, QString id )

@@ -9,7 +9,6 @@
 #include "component.h"
 #include "e-element.h"
 
-class LibraryItem;
 class eResistor;
 class Pin;
 
@@ -19,8 +18,7 @@ class ResistorDip : public Component, public eElement
         ResistorDip( QString type, QString id );
         ~ResistorDip();
 
- static Component* construct( QString type, QString id );
- static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
         void setValPos( QPointF ) override {;}
 

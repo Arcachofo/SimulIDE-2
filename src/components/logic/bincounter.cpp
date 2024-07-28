@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "bincounter.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "iopin.h"
 
@@ -13,17 +12,13 @@
 
 #define tr(str) simulideTr("BinCounter",str)
 
-Component *BinCounter::construct( QString type, QString id)
-{ return new BinCounter( type, id); }
-
-LibraryItem* BinCounter::libraryItem()
-{
-    return new LibraryItem(
+listItem_t BinCounter::libraryItem(){
+    return {
         tr("Binary Counter"),
         "Arithmetic",
         "2to1.png",
-        "Counter",
-        BinCounter::construct );
+        "BinCounter",
+        [](QString id){ return (Component*)new BinCounter("BinCounter", id ); } };
 }
 
 BinCounter::BinCounter( QString type, QString id)

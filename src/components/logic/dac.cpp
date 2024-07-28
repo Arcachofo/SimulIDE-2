@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "dac.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "iopin.h"
 
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("DAC",str)
 
-Component* DAC::construct( QString type, QString id )
-{ return new DAC( type, id ); }
-
-LibraryItem* DAC::libraryItem()
-{
-    return new LibraryItem(
+listItem_t DAC::libraryItem(){
+    return {
         tr("DAC"),
         "Other Logic",
         "3to1.png",
         "DAC",
-        DAC::construct );
+        [](QString id){ return (Component*)new DAC("DAC", id ); } };
 }
 
 DAC::DAC( QString type, QString id )

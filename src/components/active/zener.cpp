@@ -4,21 +4,16 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "zener.h"
-#include "itemlibrary.h"
 
 #define tr(str) simulideTr("Zener",str)
 
-Component* Zener::construct( QString type, QString id )
-{ return new Zener( type, id ); }
-
-LibraryItem* Zener::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Zener::libraryItem(){
+    return {
         tr("Zener Diode"),
         "Rectifiers",
         "zener.png",
         "Zener",
-        Zener::construct);
+        [](QString id){ return (Component*)new Zener("Zener", id ); } };
 }
 
 Zener::Zener( QString type, QString id )

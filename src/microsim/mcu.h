@@ -19,7 +19,6 @@
     typeMCU
 };*/
 
-class LibraryItem;
 class MCUMonitor;
 class ScriptCpu;
 
@@ -33,7 +32,7 @@ class Mcu : public Chip, public Linker
 
  static Mcu* self() { return m_pSelf; }
  static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         void setupMcu();
 

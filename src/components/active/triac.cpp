@@ -8,7 +8,6 @@
 #include <QtMath>
 
 #include "triac.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "e-diode.h"
@@ -19,17 +18,13 @@
 
 #define tr(str) simulideTr("Triac",str)
 
-Component* Triac::construct( QString type, QString id )
-{ return new Triac( type, id ); }
-
-LibraryItem* Triac::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Triac::libraryItem(){
+    return {
         tr("Triac"),
         "Rectifiers",
         "triac.png",
         "Triac",
-        Triac::construct );
+        [](QString id){ return (Component*)new Triac("Triac", id ); } };
 }
 
 Triac::Triac( QString type, QString id )

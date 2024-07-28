@@ -8,16 +8,13 @@
 
 #include "thermistorbase.h"
 
-class LibraryItem;
-
 class Thermistor : public ThermistorBase
 {
     public:
         Thermistor( QString type, QString id );
         ~Thermistor();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         int bVal() { return m_bVal; }
         void setBval( int bval );

@@ -13,24 +13,19 @@
 #include "strain.h"
 #include "connector.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 
 #include "doubleprop.h"
 #include "propdialog.h"
 
 #define tr(str) simulideTr("Strain",str)
 
-Component *Strain::construct( QString type, QString id)
-{ return new Strain ( type, id); }
-
-LibraryItem* Strain::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Strain::libraryItem(){
+    return {
         tr("Force Strain Gauge"),
         "Resistive Sensors",
         "strain.png",
         "Strain",
-        Strain::construct );
+        [](QString id){ return (Component*)new Strain("Strain", id ); } };
 }
 
 Strain::Strain( QString type, QString id )

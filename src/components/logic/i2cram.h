@@ -10,16 +10,13 @@
 #include "iocomponent.h"
 #include "memdata.h"
 
-class LibraryItem;
-
 class I2CRam : public IoComponent, public TwiModule, public MemData
 {
     public:
         I2CRam( QString type, QString id );
         ~I2CRam();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void initialize() override;

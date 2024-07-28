@@ -8,24 +8,19 @@
 #include "rail.h"
 #include "simulator.h"
 #include "iopin.h"
-#include "itemlibrary.h"
 #include "pin.h"
 
 #include "doubleprop.h"
 
 #define tr(str) simulideTr("Rail",str)
 
-Component* Rail::construct( QString type, QString id )
-{ return new Rail( type, id ); }
-
-LibraryItem* Rail::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Rail::libraryItem(){
+    return {
         tr("Rail"),
         "Sources",
         "rail.png",
         "Rail",
-        Rail::construct );
+        [](QString id){ return (Component*)new Rail("Rail", id ); } };
 }
 
 Rail::Rail( QString type, QString id )

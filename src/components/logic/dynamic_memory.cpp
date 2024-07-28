@@ -7,7 +7,6 @@
 #include <QDebug>
 
 #include "dynamic_memory.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -21,17 +20,13 @@
 
 #define tr(str) simulideTr("DynamicMemory",str)
 
-Component* DynamicMemory::construct( QString type, QString id )
-{ return new DynamicMemory( type, id ); }
-
-LibraryItem* DynamicMemory::libraryItem()
-{
-    return new LibraryItem(
+listItem_t DynamicMemory::libraryItem(){
+    return {
         tr("Dynamic Ram"),
         "Memory",
         "2to3g.png",
         "DynamicMemory",
-        DynamicMemory::construct );
+        [](QString id){ return (Component*)new DynamicMemory("DynamicMemory", id ); } };
 }
 
 DynamicMemory::DynamicMemory( QString type, QString id )

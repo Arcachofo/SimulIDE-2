@@ -13,7 +13,6 @@
 #include "propdialog.h"
 #include "simulator.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 
 #include "boolprop.h"
 #include "intprop.h"
@@ -21,17 +20,13 @@
 
 #define tr(str) simulideTr("Dial",str)
 
-Component* Dial::construct( QString type, QString id )
-{ return new Dial( type, id ); }
-
-LibraryItem* Dial::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Dial::libraryItem(){
+    return {
         tr("Dial"),
         "Other",
         "dial.png",
         "Dial",
-        Dial::construct );
+        [](QString id){ return (Component*)new Dial("Dial", id ); } };
 }
 
 Dial::Dial( QString type, QString id )

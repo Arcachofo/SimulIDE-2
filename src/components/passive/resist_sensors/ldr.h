@@ -8,16 +8,13 @@
 
 #include "varresbase.h"
 
-class LibraryItem;
-
 class Ldr : public VarResBase
 {
     public:
         Ldr( QString type, QString id );
         ~Ldr();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         int r1() { return m_r1; }
         void setR1( int r1 );

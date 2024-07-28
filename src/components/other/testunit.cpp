@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "testunit.h"
-#include "itemlibrary.h"
 #include "truthtable.h"
 #include "circuitwidget.h"
 #include "simulator.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("TestUnit",str)
 
-Component* TestUnit::construct( QString type, QString id )
-{ return new TestUnit( type, id ); }
-
-LibraryItem* TestUnit::libraryItem()
-{
-    return new LibraryItem(
+listItem_t TestUnit::libraryItem(){
+    return {
         tr("Test Unit"),
         "Other",
         "bug.png",
         "TestUnit",
-        TestUnit::construct );
+        [](QString id){ return (Component*)new TestUnit("TestUnit", id ); } };
 }
 
 TestUnit::TestUnit( QString type, QString id )

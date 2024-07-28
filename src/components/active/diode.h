@@ -9,16 +9,13 @@
 #include "e-diode.h"
 #include "linkercomponent.h"
 
-class LibraryItem;
-
 class Diode : public LinkerComponent, public eDiode
 {
     public:
         Diode( QString type, QString id, bool zener=false );
         ~Diode();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void voltChanged() override;
 
@@ -31,7 +28,7 @@ class Diode : public LinkerComponent, public eDiode
         virtual double resistance() override{ return m_resistor->resistance(); }
         virtual void setResSafe( double resist ) override { m_resistor->setResSafe(resist);}
 
-        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
+        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w ) override;
 
     private:
         bool m_isZener;

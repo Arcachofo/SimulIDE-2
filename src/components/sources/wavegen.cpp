@@ -14,7 +14,6 @@
 #include "iopin.h"
 #include "simulator.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 #include "propdialog.h"
 #include "mainwindow.h"
 #include "circuitwidget.h"
@@ -26,17 +25,13 @@
 
 #define tr(str) simulideTr("WaveGen",str)
 
-Component* WaveGen::construct( QString type, QString id )
-{ return new WaveGen( type, id ); }
-
-LibraryItem* WaveGen::libraryItem()
-{
-    return new LibraryItem(
+listItem_t WaveGen::libraryItem(){
+    return {
         tr("Wave Generator"),
         "Sources",
         "wavegen.png",
         "WaveGen",
-        WaveGen::construct );
+        [](QString id){ return (Component*)new WaveGen("WaveGen", id ); } };
 }
 
 WaveGen::WaveGen( QString type, QString id )

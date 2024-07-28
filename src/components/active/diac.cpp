@@ -8,7 +8,6 @@
 #include <QDebug>
 
 #include "diac.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "e-diode.h"
@@ -19,17 +18,13 @@
 
 #define tr(str) simulideTr("Diac",str)
 
-Component* Diac::construct( QString type, QString id )
-{ return new Diac( type, id ); }
-
-LibraryItem* Diac::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Diac::libraryItem(){
+    return {
         tr("Diac"),
         "Rectifiers",
         "diac.png",
         "Diac",
-        Diac::construct );
+        [](QString id){ return (Component*)new Diac("Diac", id ); } };
 }
 
 Diac::Diac( QString type, QString id )

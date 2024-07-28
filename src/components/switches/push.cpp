@@ -8,7 +8,6 @@
 
 #include "push.h"
 #include "pin.h"
-#include "itemlibrary.h"
 
 #include "stringprop.h"
 #include "boolprop.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("Push",str)
 
-Component* Push::construct( QString type, QString id )
-{ return new Push( type, id ); }
-
-LibraryItem* Push::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Push::libraryItem(){
+    return {
         tr("Push"),
         "Switches",
         "push.png",
         "Push",
-        Push::construct);
+        [](QString id){ return (Component*)new Push("Push", id ); } };
 }
 
 Push::Push( QString type, QString id )

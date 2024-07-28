@@ -7,24 +7,19 @@
 #include <QtMath>
 
 #include "thermistor.h"
-#include "itemlibrary.h"
 
 #include "intprop.h"
 #include "propdialog.h"
 
 #define tr(str) simulideTr("Thermistor",str)
 
-Component* Thermistor::construct( QString type, QString id )
-{ return new Thermistor( type, id ); }
-
-LibraryItem* Thermistor::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Thermistor::libraryItem(){
+    return {
         tr("Thermistor"),
         "Resistive Sensors",
         "thermistor.png",
         "Thermistor",
-        Thermistor::construct);
+        [](QString id){ return (Component*)new Thermistor("Thermistor", id ); } };
 }
 
 Thermistor::Thermistor( QString type, QString id )

@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "latchd.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("LatchD",str)
 
-Component* LatchD::construct( QString type, QString id )
-{ return new LatchD( type, id ); }
-
-LibraryItem* LatchD::libraryItem()
-{
-    return new LibraryItem(
+listItem_t LatchD::libraryItem(){
+    return {
         tr( "Latch" ),
         "Memory",
         "subc.png",
         "LatchD",
-        LatchD::construct );
+        [](QString id){ return (Component*)new LatchD("LatchD", id ); } };
 }
 
 LatchD::LatchD( QString type, QString id )

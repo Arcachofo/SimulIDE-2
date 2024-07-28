@@ -9,7 +9,6 @@
 #include <QMenu>
 
 #include "esp01.h"
-#include "itemlibrary.h"
 #include "serialmon.h"
 #include "simulator.h"
 #include "usarttx.h"
@@ -21,17 +20,13 @@
 
 #define tr(str) simulideTr("Esp01",str)
 
-Component* Esp01::construct( QString type, QString id )
-{ return new Esp01( type, id ); }
-
-LibraryItem* Esp01::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Esp01::libraryItem(){
+    return {
         "Esp01 (TCP)",
         "Peripherals",
         "esp01_ico.png",
         "Esp01",
-        Esp01::construct );
+        [](QString id){ return (Component*)new Esp01("Esp01", id ); } };
 }
 
 Esp01::Esp01( QString type, QString id )

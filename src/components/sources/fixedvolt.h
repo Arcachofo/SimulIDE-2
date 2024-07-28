@@ -13,7 +13,6 @@
 #include "e-element.h"
 
 class IoPin;
-class LibraryItem;
 class CustomButton;
 
 class FixedVolt : public Component, public eElement
@@ -22,8 +21,7 @@ class FixedVolt : public Component, public eElement
         FixedVolt( QString type, QString id );
         ~FixedVolt();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         void setSmall( bool s );
         bool isSmall() { return m_small; }

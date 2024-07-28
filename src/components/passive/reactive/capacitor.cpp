@@ -6,21 +6,16 @@
 #include <QPainter>
 
 #include "capacitor.h"
-#include "itemlibrary.h"
 
 #define tr(str) simulideTr("Capacitor",str)
 
-Component* Capacitor::construct( QString type, QString id )
-{ return new Capacitor( type, id ); }
-
-LibraryItem* Capacitor::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Capacitor::libraryItem(){
+    return {
         tr("Capacitor"),
         "Reactive",
         "capacitor.png",
         "Capacitor",
-        Capacitor::construct);
+        [](QString id){ return (Component*)new Capacitor("Capacitor", id ); } };
 }
 
 Capacitor::Capacitor( QString type, QString id )

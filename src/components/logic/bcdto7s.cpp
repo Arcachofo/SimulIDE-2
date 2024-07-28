@@ -4,24 +4,19 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "bcdto7s.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 
 #include "boolprop.h"
 
 #define tr(str) simulideTr("BcdTo7S",str)
 
-Component* BcdTo7S::construct( QString type, QString id )
-{ return new BcdTo7S( type, id ); }
-
-LibraryItem* BcdTo7S::libraryItem()
-{
-    return new LibraryItem(
+listItem_t BcdTo7S::libraryItem(){
+    return {
         tr("Bcd To 7S."),
         "Converters",
         "2to3g.png",
         "BcdTo7S",
-        BcdTo7S::construct );
+        [](QString id){ return (Component*)new BcdTo7S("BcdTo7S", id ); } };
 }
 
 BcdTo7S::BcdTo7S( QString type, QString id )

@@ -8,16 +8,13 @@
 
 #include "switch_base.h"
 
-class LibraryItem;
-
 class Switch : public SwitchBase
 {
     public:
         Switch( QString type, QString id );
         ~Switch();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
 

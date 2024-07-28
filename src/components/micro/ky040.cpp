@@ -15,7 +15,6 @@
 #include "simulator.h"
 #include "circuit.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 
 #include "intprop.h"
 
@@ -28,17 +27,13 @@
 
 #define tr(str) simulideTr("KY040",str)
 
-Component* KY040::construct( QString type, QString id )
-{ return new KY040( type, id ); }
-
-LibraryItem* KY040::libraryItem()
-{
-    return new LibraryItem(
+listItem_t KY040::libraryItem(){
+    return {
         tr("Rotary Encoder (relative)"),
         "Peripherals",
         "ky-040.png",
         "KY040",
-        KY040::construct);
+        [](QString id){ return (Component*)new KY040("KY040", id ); } };
 }
 
 KY040::KY040( QString type, QString id )

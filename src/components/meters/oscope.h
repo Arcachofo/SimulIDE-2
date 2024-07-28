@@ -8,7 +8,6 @@
 
 #include "plotbase.h"
 
-class LibraryItem;
 class OscopeChannel;
 class OscWidget;
 class DataWidget;
@@ -19,8 +18,7 @@ class Oscope : public PlotBase
         Oscope( QString type, QString id );
         ~Oscope();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         double filter() { return m_filter; }
         void setFilter( double filter );

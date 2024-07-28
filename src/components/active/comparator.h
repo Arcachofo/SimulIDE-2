@@ -6,20 +6,17 @@
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
 
-#include "component.h"
 #include "iocomponent.h"
 #include "e-element.h"
 
-class LibraryItem;
 
 class Comparator : public IoComponent, public eElement
 {
     public:
         Comparator( QString type, QString id );
         ~Comparator();
-        
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;

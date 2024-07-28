@@ -7,8 +7,9 @@
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
-#include "itemlibrary.h"
 #include "e-node.h"
+#include "e-diode.h"
+#include "push_base.h"
 
 #include "stringprop.h"
 #include "intprop.h"
@@ -16,17 +17,13 @@
 
 #define tr(str) simulideTr("KeyPad",str)
 
-Component* KeyPad::construct( QString type, QString id )
-{ return new KeyPad( type, id ); }
-
-LibraryItem* KeyPad::libraryItem()
-{
-    return new LibraryItem(
+listItem_t KeyPad::libraryItem(){
+    return {
         tr("KeyPad"),
         "Switches",
         "keypad.png",
         "KeyPad",
-        KeyPad::construct);
+        [](QString id){ return (Component*)new KeyPad("KeyPad", id ); } };
 }
 
 KeyPad::KeyPad( QString type, QString id )

@@ -10,7 +10,6 @@
 #include "e-clocked_device.h"
 #include "iopin.h"
 
-class LibraryItem;
 
 class Ili9341 : public Component, public eClockedDevice
 {
@@ -18,8 +17,7 @@ class Ili9341 : public Component, public eClockedDevice
         Ili9341( QString type, QString id );
         ~Ili9341();
         
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void initialize() override;

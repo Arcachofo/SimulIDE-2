@@ -1,14 +1,12 @@
 /***************************************************************************
- *   Copyright (C) 2016 by Santiago González                               *
- *                                                                         *
- ***( see copyright.txt file at root folder )*******************************/
+*    Copyright (C) 2016 by Santiago González                              *
+*                                                                         *
+* **( see copyright.txt file at root folder )*******************************/
 
 #ifndef BCDTODEC_H
 #define BCDTODEC_H
 
 #include "logiccomponent.h"
-
-class LibraryItem;
 
 class BcdToDec : public LogicComponent
 {
@@ -16,8 +14,7 @@ class BcdToDec : public LogicComponent
         BcdToDec( QString type, QString id );
         ~BcdToDec();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
         
         virtual void stamp() override;
         virtual void voltChanged() override;
@@ -31,4 +28,3 @@ class BcdToDec : public LogicComponent
 };
 
 #endif
-

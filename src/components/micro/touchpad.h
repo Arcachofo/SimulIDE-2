@@ -12,7 +12,6 @@
 #include "touchpadwidget.h"
 #include "pin.h"
 
-class LibraryItem;
 class Pin;
 
 class TouchPad : public Component, public eElement
@@ -21,8 +20,7 @@ class TouchPad : public Component, public eElement
         TouchPad( QString type, QString id );
         ~TouchPad();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

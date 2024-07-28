@@ -14,7 +14,6 @@
 #include "component.h"
 #include "joystickwidget.h"
 
-class LibraryItem;
 class IoPin;
 class QToolButton;
 
@@ -24,8 +23,7 @@ class KY023 : public Component, public eElement
         KY023( QString type, QString id );
         ~KY023();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
         
         virtual void updateStep() override;
 

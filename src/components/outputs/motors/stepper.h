@@ -11,16 +11,13 @@
 #include "e-resistor.h"
 #include "pin.h"
 
-class LibraryItem;
-
 class Stepper : public LinkerComponent, public eElement
 {
     public:
         Stepper( QString type, QString id );
         ~Stepper();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;
@@ -37,7 +34,7 @@ class Stepper : public LinkerComponent, public eElement
 
         virtual void setHidden( bool hid, bool hidArea=false, bool hidLabel=false ) override;
 
-        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
+        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w ) override;
 
     protected:
         int m_steps;

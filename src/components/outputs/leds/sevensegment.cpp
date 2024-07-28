@@ -5,7 +5,6 @@
 
 #include "sevensegment.h"
 #include "circuitwidget.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("SevenSegment",str)
 
-Component* SevenSegment::construct( QString type, QString id )
-{ return new SevenSegment( type, id ); }
-
-LibraryItem* SevenSegment::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SevenSegment::libraryItem(){
+    return {
         tr("7 Segment"),
         "Leds",
         "seven_segment.png",
-        "Seven Segment",
-        SevenSegment::construct );
+        "SevenSegment",
+        [](QString id){ return (Component*)new SevenSegment("SevenSegment", id ); } };
 }
 
 SevenSegment::SevenSegment( QString type, QString id )

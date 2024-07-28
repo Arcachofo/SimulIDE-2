@@ -9,7 +9,6 @@
 #include "hd44780_base.h"
 #include "twimodule.h"
 
-class LibraryItem;
 class IoPin;
 
 class Aip31068_i2c : public Hd44780_Base, public TwiModule
@@ -18,8 +17,7 @@ class Aip31068_i2c : public Hd44780_Base, public TwiModule
         Aip31068_i2c( QString type, QString id );
         ~Aip31068_i2c();
         
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

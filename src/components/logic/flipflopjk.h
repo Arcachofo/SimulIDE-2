@@ -8,16 +8,13 @@
 
 #include "flipflopbase.h"
 
-class LibraryItem;
-
 class FlipFlopJK : public FlipFlopBase
 {
     public:
         FlipFlopJK( QString type, QString id );
         ~FlipFlopJK();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem *libraryItem();
+ static listItem_t libraryItem();
 
     protected:
         void calcOutput();

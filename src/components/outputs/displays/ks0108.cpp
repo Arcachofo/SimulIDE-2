@@ -7,25 +7,21 @@
 #include <math.h>
 
 #include "ks0108.h"
-#include "itemlibrary.h"
 #include "connector.h"
 #include "simulator.h"
+#include "iopin.h"
 
 #include "boolprop.h"
 
 #define tr(str) simulideTr("Ks0108",str)
 
-Component* Ks0108::construct( QString type, QString id )
-{ return new Ks0108( type, id ); }
-
-LibraryItem* Ks0108::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Ks0108::libraryItem(){
+    return {
         "KS0108",
         "Displays",
         "ks0108.png",
         "Ks0108",
-        Ks0108::construct );
+        [](QString id){ return (Component*)new Ks0108("Ks0108", id ); } };
 }
 
 Ks0108::Ks0108( QString type, QString id )

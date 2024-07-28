@@ -9,7 +9,6 @@
 #include "e-element.h"
 #include "component.h"
 
-class LibraryItem;
 class IoPin;
 
 class SR04 : public Component, public eElement
@@ -18,8 +17,7 @@ class SR04 : public Component, public eElement
         SR04( QString type, QString id );
         ~SR04();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
         
         virtual void stamp() override;
         virtual void initialize() override;

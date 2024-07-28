@@ -8,20 +8,17 @@
 
 #include "connbase.h"
 
-class LibraryItem;
-
 class Socket : public ConnBase
 {
     public:
         Socket( QString type, QString id );
         ~Socket();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void updateStep() override;
 
-        void updatePins( bool connect );
+        void updateConnections( bool u  );
 
     private:
         virtual void updatePixmap() override;

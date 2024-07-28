@@ -8,24 +8,19 @@
 #include "clock.h"
 #include "iopin.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 
 #include "doubleprop.h"
 #include "boolprop.h"
 
 #define tr(str) simulideTr("Clock",str)
 
-Component* Clock::construct( QString type, QString id )
-{ return new Clock( type, id ); }
-
-LibraryItem* Clock::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Clock::libraryItem(){
+    return {
         tr("Clock"),
         "Sources",
         "clock.png",
         "Clock",
-        Clock::construct );
+        [](QString id){ return (Component*)new Clock("Clock", id ); } };
 }
 
 Clock::Clock( QString type, QString id )

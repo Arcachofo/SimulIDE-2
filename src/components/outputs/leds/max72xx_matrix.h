@@ -8,7 +8,6 @@
 
 #include "logiccomponent.h"
 
-class LibraryItem;
 class IoPin;
 class Pin;
 
@@ -18,8 +17,7 @@ class Max72xx_matrix : public LogicComponent
         Max72xx_matrix( QString type, QString id );
         ~Max72xx_matrix();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         QString colorStr() { return m_enumUids.at((int)m_ledColor ); }
         void setColorStr( QString color );

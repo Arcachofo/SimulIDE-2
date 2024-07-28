@@ -6,24 +6,19 @@
 #include <QPainter>
 
 #include "resistor.h"
-#include "itemlibrary.h"
 #include "pin.h"
 
 #include "doubleprop.h"
 
 #define tr(str) simulideTr("Resistor",str)
 
-Component* Resistor::construct( QString type, QString id )
-{ return new Resistor( type, id ); }
-
-LibraryItem* Resistor::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Resistor::libraryItem(){
+    return {
         tr("Resistor"),
         "Resistors",
         "resistor.png",
         "Resistor",
-        Resistor::construct);
+        [](QString id){ return (Component*)new Resistor("Resistor", id ); } };
 }
 
 Resistor::Resistor( QString type, QString id )

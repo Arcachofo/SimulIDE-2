@@ -10,16 +10,14 @@
 #include "e-element.h"
 
 class eResistor;
-class LibraryItem;
 
 class MuxAnalog : public Component, public eElement
 {
     public:
         MuxAnalog( QString type, QString id );
         ~MuxAnalog();
-        
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;

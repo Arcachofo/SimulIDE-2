@@ -13,12 +13,10 @@
 //
 // Copyright: See COPYING file that comes with this distribution
 
-
 #ifndef PCD8544_H
 #define PCD8544_H
 
 #include "component.h"
-#include "itemlibrary.h"
 #include "e-element.h"
 #include "pin.h"
 
@@ -28,8 +26,7 @@ class Pcd8544 : public Component, public eElement
         Pcd8544( QString type, QString id );
         ~Pcd8544();
         
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
         
         virtual void stamp() override;
         virtual void initialize() override;

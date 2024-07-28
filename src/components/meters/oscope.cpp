@@ -10,7 +10,6 @@
 #include "circuitwidget.h"
 #include "circuit.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 #include "oscopechannel.h"
 #include "oscwidget.h"
 #include "datawidget.h"
@@ -24,17 +23,13 @@
 
 #define tr(str) simulideTr("Oscope",str)
 
-Component* Oscope::construct( QString type, QString id )
-{ return new Oscope( type, id ); }
-
-LibraryItem* Oscope::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Oscope::libraryItem(){
+    return {
         tr( "Oscope" ),
         "Meters",
         "oscope.png",
         "Oscope",
-        Oscope::construct );
+        [](QString id){ return (Component*)new Oscope( "Oscope", id ); } };
 }
 
 Oscope::Oscope( QString type, QString id )

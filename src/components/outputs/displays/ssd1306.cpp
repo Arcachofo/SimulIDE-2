@@ -6,7 +6,6 @@
 #include <QPainter>
 
 #include "ssd1306.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuitview.h"
 #include "circuit.h"
@@ -19,17 +18,13 @@
 
 #define tr(str) simulideTr("Ssd1306",str)
 
-Component* Ssd1306::construct( QString type, QString id )
-{ return new Ssd1306( type, id ); }
-
-LibraryItem* Ssd1306::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Ssd1306::libraryItem(){
+    return {
         "SSD1306",
         "Displays",
         "ssd1306.png",
         "Ssd1306",
-        Ssd1306::construct );
+        [](QString id){ return (Component*)new Ssd1306("Ssd1306", id ); } };
 }
 
 Ssd1306::Ssd1306( QString type, QString id )

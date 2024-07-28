@@ -6,24 +6,19 @@
 #include <QPainter>
 
 #include "ds1307.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 
 #include "boolprop.h"
 
 #define tr(str) simulideTr("DS1307",str)
 
-Component* DS1307::construct( QString type, QString id )
-{ return new DS1307( type, id ); }
-
-LibraryItem* DS1307::libraryItem()
-{
-    return new LibraryItem(
+listItem_t DS1307::libraryItem(){
+    return {
         "DS1307",
         "Peripherals",
         "dsxxx_ico.png",
         "DS1307",
-        DS1307::construct );
+        [](QString id){ return (Component*)new DS1307("DS1307", id ); } };
 }
 
 DS1307::DS1307( QString type, QString id )

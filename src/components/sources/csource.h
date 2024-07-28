@@ -9,16 +9,13 @@
 #include "e-resistor.h"
 #include "component.h"
 
-class LibraryItem;
-
 class Csource : public Component, public eResistor
 {
     public:
         Csource( QString type, QString id );
         ~Csource();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void voltChanged() override;

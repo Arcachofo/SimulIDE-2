@@ -12,16 +12,13 @@
 
 #include "varresbase.h"
 
-class LibraryItem;
-
 class Strain : public VarResBase
 {
     public:
         Strain( QString type, QString id );
         ~Strain();
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void updateStep() override;

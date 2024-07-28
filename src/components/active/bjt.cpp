@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "bjt.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "connector.h"
 #include "simulator.h"
@@ -18,24 +17,21 @@
 
 #define tr(str) simulideTr("BJT",str)
 
-Component* BJT::construct( QString type, QString id )
-{ return new BJT( type, id ); }
-
-LibraryItem* BJT::libraryItem()
+listItem_t BJT::libraryItem()
 {
-    return new LibraryItem(
+    return {
         tr("BJT"),
         "Transistors",
         "bjt.png",
         "BJT",
-        BJT::construct );
+        [](QString id){ return (Component*)new BJT("BJT", id ); } };
 }
 
 BJT::BJT( QString type, QString id )
    : Component( type, id )
    , eBJT( id )
 {
-    m_area =  QRectF( -12, -14, 28, 28 );
+    m_area =  QRectF(-12,-14, 28, 28 );
     setLabelPos(18, 0, 0);
 
     m_pin.resize( 3 );

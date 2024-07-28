@@ -10,16 +10,13 @@
 #include "e-element.h"
 #include "memdata.h"
 
-class LibraryItem;
-
 class Memory : public IoComponent, public eElement, public MemData
 {
     public:
         Memory( QString type, QString id );
         ~Memory();
 
-        static Component* construct( QString type, QString id );
-        static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;

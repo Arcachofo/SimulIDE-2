@@ -7,7 +7,6 @@
 #include <QtMath>
 
 #include "servo.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "circuit.h"
 #include "iopin.h"
@@ -17,17 +16,13 @@
 
 #define tr(str) simulideTr("Servo",str)
 
-Component* Servo::construct( QString type, QString id )
-{ return new Servo( type, id ); }
-
-LibraryItem* Servo::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Servo::libraryItem(){
+    return {
         tr("Servo Motor"),
         "Motors",
         "servo.png",
         "Servo",
-        Servo::construct );
+        [](QString id){ return (Component*)new Servo("Servo", id ); } };
 }
 
 Servo::Servo( QString type, QString id )
@@ -169,9 +164,9 @@ QPainterPath Servo::shape() const
     return path;
 }
 
-void Servo::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void Servo::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
-    Component::paint( p, option, widget );
+    Component::paint( p, o, w );
     //p->drawPath( shape() );
     p->setBrush( QColor(50, 70, 100) );
     p->drawRoundedRect( QRect( -(m_width/2)*8,-(m_height/2)*8, m_width*8, m_height*8 ), 4, 4 );

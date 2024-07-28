@@ -8,18 +8,17 @@
 
 #include "component.h"
 #include "e-element.h"
-#include "iopin.h"
+#include "pin.h"
 
-class LibraryItem;
+class IoPin;
 
 class Ks0108 : public Component, public eElement
 {
     public:
         Ks0108( QString type, QString id );
         ~Ks0108();
-        
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+
+ static listItem_t libraryItem();
 
         virtual void initialize() override;
         virtual void stamp() override;

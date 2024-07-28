@@ -4,23 +4,18 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "flipfloprs.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "iopin.h"
 
 #define tr(str) simulideTr("FlipFlopRS",str)
 
-Component* FlipFlopRS::construct( QString type, QString id )
-{ return new FlipFlopRS( type, id ); }
-
-LibraryItem* FlipFlopRS::libraryItem()
-{
-    return new LibraryItem(
+listItem_t FlipFlopRS::libraryItem(){
+    return {
         tr("FlipFlop RS"),
         "Memory",
         "2to2.png",
         "FlipFlopRS",
-        FlipFlopRS::construct );
+        [](QString id){ return (Component*)new FlipFlopRS("FlipFlopRS", id ); } };
 }
 
 FlipFlopRS::FlipFlopRS( QString type, QString id )

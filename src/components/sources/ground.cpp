@@ -6,22 +6,17 @@
 #include <QPainter>
 
 #include "ground.h"
-#include "itemlibrary.h"
 #include "iopin.h"
 
 #define tr(str) simulideTr("Ground",str)
 
-Component* Ground::construct( QString type, QString id )
-{ return new Ground( type, id ); }
-
-LibraryItem* Ground::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Ground::libraryItem(){
+    return {
         tr("Ground (0 V)"),
         "Sources",
         "ground.png",
         "Ground",
-        Ground::construct );
+        [](QString id){ return (Component*)new Ground("Ground", id ); } };
 }
 
 Ground::Ground( QString type, QString id )

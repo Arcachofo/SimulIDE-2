@@ -8,16 +8,13 @@
 
 #include "logiccomponent.h"
 
-class LibraryItem;
-
 class Servo : public LogicComponent
 {
     public:
         Servo( QString type, QString id );
         ~Servo();
-        
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+
+ static listItem_t libraryItem();
 
         double speed() { return m_speed; }
         void setSpeed( double speed ) { m_speed = speed; }
@@ -33,7 +30,7 @@ class Servo : public LogicComponent
         virtual void voltChanged() override;
 
         virtual QPainterPath shape() const override;
-        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
+        virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w ) override;
 
     private:
         double m_pos;            // Actual Angular position 0-180

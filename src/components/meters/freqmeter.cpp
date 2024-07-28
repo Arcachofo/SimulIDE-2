@@ -7,7 +7,6 @@
 #include <QFont>
 
 #include "freqmeter.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "pin.h"
 #include "label.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("FreqMeter",str)
 
-Component* FreqMeter::construct( QString type, QString id )
-{ return new FreqMeter( type, id ); }
-
-LibraryItem* FreqMeter::libraryItem()
-{
-    return new LibraryItem(
+listItem_t FreqMeter::libraryItem(){
+    return {
         tr("Frequency Meter"),
         "Meters",
         "frequencimeter.png",
         "FreqMeter",
-        FreqMeter::construct);
+        [](QString id){ return (Component*)new FreqMeter( "FreqMeter", id ); } };
 }
 
 FreqMeter::FreqMeter( QString type, QString id )

@@ -7,7 +7,6 @@
 #include <math.h>
 
 #include "sevensegment_bcd.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "iopin.h"
 #include "ledbase.h"
@@ -16,17 +15,13 @@
 
 #define tr(str) simulideTr("SevenSegmentBCD",str)
 
-Component* SevenSegmentBCD::construct( QString type, QString id )
-{ return new SevenSegmentBCD( type, id ); }
-
-LibraryItem* SevenSegmentBCD::libraryItem()
-{
-    return new LibraryItem(
+listItem_t SevenSegmentBCD::libraryItem(){
+    return {
         tr("7 Seg BCD"),
         "Other Logic",
         "7segbcd.png",
-        "7-Seg BCD", /// FIXME: only alphanumeric in Component type
-        SevenSegmentBCD::construct );
+        "SevenSegmentBCD",
+        [](QString id){ return (Component*)new SevenSegmentBCD("SevenSegmentBCD", id ); } };
 }
 
 SevenSegmentBCD::SevenSegmentBCD( QString type, QString id )

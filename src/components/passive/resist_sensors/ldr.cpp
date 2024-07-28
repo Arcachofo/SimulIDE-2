@@ -7,7 +7,6 @@
 #include<math.h>
 
 #include "ldr.h"
-#include "itemlibrary.h"
 
 #include "doubleprop.h"
 #include "intprop.h"
@@ -15,17 +14,13 @@
 
 #define tr(str) simulideTr("Ldr",str)
 
-Component* Ldr::construct( QString type, QString id )
-{ return new Ldr( type, id ); }
-
-LibraryItem* Ldr::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Ldr::libraryItem(){
+    return {
         tr("LDR"),
         "Resistive Sensors",
         "ldr.png",
         "LDR",
-        Ldr::construct);
+        [](QString id){ return (Component*)new Ldr("Ldr", id ); } };
 }
 
 Ldr::Ldr( QString type, QString id )

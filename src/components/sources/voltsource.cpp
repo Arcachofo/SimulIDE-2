@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "voltsource.h"
-#include "itemlibrary.h"
 #include "propdialog.h"
 #include "simulator.h"
 #include "custombutton.h"
@@ -14,17 +13,13 @@
 
 #define tr(str) simulideTr("VoltSource",str)
 
-Component* VoltSource::construct( QString type, QString id )
-{ return new VoltSource( type, id ); }
-
-LibraryItem* VoltSource::libraryItem()
-{
-    return new LibraryItem(
+listItem_t VoltSource::libraryItem(){
+    return {
         tr("Voltage Source"),
         "Sources",
         "voltsource.png",
         "Voltage Source",
-        VoltSource::construct );
+        [](QString id){ return (Component*)new VoltSource("Voltage Source", id ); } };
 }
 
 VoltSource::VoltSource( QString type, QString id )

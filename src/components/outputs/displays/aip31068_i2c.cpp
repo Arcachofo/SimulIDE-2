@@ -4,7 +4,6 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "aip31068_i2c.h"
-#include "itemlibrary.h"
 #include "simulator.h"
 #include "iopin.h"
 #include "utils.h"
@@ -14,17 +13,13 @@
 
 #define tr(str) simulideTr("Aip31068_i2c",str)
 
-Component* Aip31068_i2c::construct( QString type, QString id )
-{ return new Aip31068_i2c( type, id ); }
-
-LibraryItem* Aip31068_i2c::libraryItem()
-{
-    return new LibraryItem(
+listItem_t Aip31068_i2c::libraryItem(){
+    return {
         tr("Aip31068 I2C") ,
         "Displays",
         "aip31068.png",
         "Aip31068_i2c",
-        Aip31068_i2c::construct );
+        [](QString id){ return (Component*)new Aip31068_i2c("Aip31068_i2c", id ); } };
 }
 
 Aip31068_i2c::Aip31068_i2c( QString type, QString id )

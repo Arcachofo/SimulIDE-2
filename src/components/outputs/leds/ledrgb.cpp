@@ -9,7 +9,6 @@
 #include "connector.h"
 #include "circuit.h"
 #include "simulator.h"
-#include "itemlibrary.h"
 #include "circuitwidget.h"
 #include "pin.h"
 
@@ -18,17 +17,13 @@
 
 #define tr(str) simulideTr("LedRgb",str)
 
-Component* LedRgb::construct( QString type, QString id )
-{ return new LedRgb( type, id ); }
-
-LibraryItem* LedRgb::libraryItem()
-{
-    return new LibraryItem(
+listItem_t LedRgb::libraryItem(){
+    return {
         tr("Led Rgb"),
         "Leds",
         "ledrgb.png",
         "LedRgb",
-        LedRgb::construct);
+        [](QString id){ return (Component*)new LedRgb("LedRgb", id ); } };
 }
 
 LedRgb::LedRgb( QString type, QString id )

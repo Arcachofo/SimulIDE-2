@@ -8,8 +8,6 @@
 
 #include "clock-base.h"
 
-class LibraryItem;
-
 class WaveGen : public ClockBase
 {
     public:
@@ -25,8 +23,7 @@ class WaveGen : public ClockBase
             Wav
         };
 
- static Component* construct( QString type, QString id );
- static LibraryItem* libraryItem();
+ static listItem_t libraryItem();
 
         virtual bool setPropStr( QString prop, QString val ) override;
 
