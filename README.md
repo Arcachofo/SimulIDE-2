@@ -1,4 +1,14 @@
-# SimulIDE 
+# SimulIDE 2
+
+---
+
+## This is a deep refactor of SimulIDE 1
+
+## Don't use it for anything you want to keep, your circuits will become useless in a few days.
+
+## Last version of SimulIDE 1 is being developed here: [SimulIDE 1.2.0](https://github.com/Arcachofo/SimulIDE_1.2.0)
+
+---
 
 Electronic Circuit Simulator
 
