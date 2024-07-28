@@ -70,56 +70,50 @@ Component::Component( QString type, QString id )
     font.setLetterSpacing( QFont::PercentageSpacing, 90 );
 #endif
 
-    m_idLabel = new Label();
-    m_idLabel->setComponent( this );
+    m_idLabel = new Label( this );
     m_idLabel->setDefaultTextColor( Qt::darkBlue );
     m_idLabel->setFont( font );
     setLabelPos(-16,-24, 0 );
     setShowId( false );
+    Component::setIdLabel( type+"-"+id );
     
-    m_valLabel = new Label();
-    m_valLabel->setComponent( this );
+    m_valLabel = new Label( this );
     m_valLabel->setDefaultTextColor( Qt::darkRed );
     setValLabelPos(-16, 20, 0 );
     font.setPixelSize( 8 );
     m_valLabel->setFont( font );
     m_valLabel->setVisible( false );
 
-    if( !id.contains("-") ) id.prepend( type+"-" );
-    Component::setIdLabel( id );
-
     setCursor( Qt::OpenHandCursor );
     setFlag( QGraphicsItem::ItemIsSelectable, true );
 
-    addPropGroup( { "CompBase", {
-new StrProp <Component>("itemtype","","", this, &Component::itemType,  &Component::setItemType ),
-new StrProp <Component>("CircId"  ,"","", this, &Component::getUid,    &Component::setUid ),
+/*    addPropGroup( { "SubCircuit", {
 new BoolProp<Component>("mainComp","","", this, &Component::isMainComp,&Component::setMainComp ),// Related to Subcircuit:
-new StrProp <Component>("ShowProp","","", this, &Component::showProp,  &Component::setShowProp ),
-    }, groupHidden | groupNoCopy } );
+    }, groupHidden | groupNoCopy } );*/
 
     addPropGroup( { "CompGraphic", {
-new BoolProp <Component>("Show_id"  ,"","", this, &Component::showId,    &Component::setShowId ),
-new BoolProp <Component>("Show_Val" ,"","", this, &Component::showVal,   &Component::setShowVal ),
-new PointProp<Component>("Pos"      ,"","", this, &Component::position,  &Component::setPosition ),
-new DoubProp <Component>("rotation" ,"","", this, &Component::getAngle,  &Component::setAngle ),
+new PointProp<Component>("pos"      ,"","", this, &Component::position,  &Component::setPosition ),
+new DoubProp <Component>("rot"      ,"","", this, &Component::getAngle,  &Component::setAngle ),
 new IntProp  <Component>("hflip"    ,"","", this, &Component::hflip,     &Component::setHflip ),
 new IntProp  <Component>("vflip"    ,"","", this, &Component::vflip,     &Component::setVflip ),
 new StrProp  <Component>("label"    ,"","", this, &Component::idLabel,   &Component::setIdLabel ),
-new PointProp<Component>("idLabPos" ,"","", this, &Component::getIdPos,  &Component::setIdPos ),
-new IntProp  <Component>("labelrot" ,"","", this, &Component::getIdRot,  &Component::setIdRot ),
-new PointProp<Component>("valLabPos","","", this, &Component::getValPos, &Component::setValPos ),
-new IntProp  <Component>("valLabRot","","", this, &Component::getValRot, &Component::setValRot ),
+/*new PointProp<Component>("id_pos"   ,"","", this, &Component::getIdPos,  &Component::setIdPos ),
+new IntProp  <Component>("id_rot"   ,"","", this, &Component::getIdRot,  &Component::setIdRot ),
+new BoolProp <Component>("id_show"  ,"","", this, &Component::showId,    &Component::setShowId ),
+new PointProp<Component>("val_pos"  ,"","", this, &Component::getValPos, &Component::setValPos ),
+new IntProp  <Component>("val_rot"  ,"","", this, &Component::getValRot, &Component::setValRot ),
+new BoolProp <Component>("val_show" ,"","", this, &Component::showVal,   &Component::setShowVal ),
+new StrProp  <Component>("show_prop","","", this, &Component::showProp,  &Component::setShowProp ),*/
     }, groupHidden | groupNoCopy } );
 
-    addPropGroup( { "Board", {                   // Board properties
+/*    addPropGroup( { "Board", {                   // Board properties
 new PointProp<Component>("boardPos", "","", this, &Component::boardPos, &Component::setBoardPos ),
 new PointProp<Component>("circPos" , "","", this, &Component::circPos,  &Component::setCircPos ),
 new DoubProp <Component>("boardRot", "","", this, &Component::boardRot, &Component::setBoardRot ),
 new DoubProp <Component>("circRot" , "","", this, &Component::circRot,  &Component::setCircRot ),
 new IntProp  <Component>("boardHflip","","",this, &Component::boardHflip, &Component::setBoardHflip ),
 new IntProp  <Component>("boardVflip","","",this, &Component::boardVflip, &Component::setBoardVflip ),
-    }, groupHidden | groupNoCopy } );
+    }, groupHidden | groupNoCopy } );*/
 }
 Component::~Component(){}
 

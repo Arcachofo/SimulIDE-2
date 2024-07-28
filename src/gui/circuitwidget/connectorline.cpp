@@ -236,7 +236,7 @@ bool ConnectorLine::connectToWire( QPoint point1 )
     if( !Circuit::self()->is_constarted() ) Circuit::self()->beginUndoStep(); // A new Connector started here
 
     QString type = "Node";
-    QString id = type +"-"+ Circuit::self()->newSceneId();
+    QString id = Circuit::self()->newSceneId();
 
     Node* node = new Node( type, id );     // Now add the Node
     node->setPos( point1.x(), point1.y());

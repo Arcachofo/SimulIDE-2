@@ -30,7 +30,7 @@ Node::Node( QString type, QString id )
     }
     remPropGroup( "CompGraphic" );
     addPropGroup( { "CompGraphic", {
-new PointProp <Component>( "Pos","","",this, &Component::position, &Component::setPosition )
+new PointProp <Component>( "pos","","",this, &Component::position, &Component::setPosition )
     },0} );
 }
 Node::~Node(){}
@@ -95,7 +95,7 @@ void Node::joinConns( int c0, int c1 )
 
     if( pin1->conPin() != pin0 )
     {
-        Connector* con = new Connector( "Connector", "Connector-"+Circuit::self()->newConnectorId(), pin0->conPin() );
+        Connector* con = new Connector( "Wire", Circuit::self()->newConnectorId(), pin0->conPin() );
         Circuit::self()->conList()->append( con );
 
         QStringList list0 = con0->pointList();

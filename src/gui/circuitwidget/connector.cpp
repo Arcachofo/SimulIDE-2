@@ -33,11 +33,9 @@ Connector::Connector( QString type, QString id, Pin* startpin, Pin* endpin )
     Circuit::self()->compMap()->insert( id, this );
 
     addPropGroup( {"Main", {
-new StrProp<Connector>( "itemtype"  ,"","", this, &Connector::itemType,   &Connector::dummySetter ),
-new StrProp<Connector>( "uid"       ,"","", this, &Connector::getUid,     &Connector::dummySetter ),
-new StrProp<Connector>( "startpinid","","", this, &Connector::startPinId, &Connector::dummySetter ),
-new StrProp<Connector>( "endpinid"  ,"","", this, &Connector::endPinId,   &Connector::dummySetter ),
-new StrProp<Connector>( "pointList" ,"","", this, &Connector::pListStr,   &Connector::setPointListStr ),
+new StrProp<Connector>( "pin0"   ,"","", this, &Connector::startPinId, &Connector::dummySetter ),
+new StrProp<Connector>( "pin1"   ,"","", this, &Connector::endPinId,   &Connector::dummySetter ),
+new StrProp<Connector>( "points" ,"","", this, &Connector::pListStr,   &Connector::setPointListStr ),
     }, 0} );
 }
 Connector::~Connector()
@@ -350,12 +348,12 @@ void Connector::splitCon( int index, Pin* pin0, Pin* pin2 )
 {
     if( !m_endPin ) return;
 
-    QString id = "Connector-"+Circuit::self()->newConnectorId();
-    Connector* con0 = new Connector( "Connector", id, m_startPin );
+    QString id = Circuit::self()->newConnectorId();
+    Connector* con0 = new Connector( "Wire", id, m_startPin );
     Circuit::self()->conList()->append( con0 );
 
-    id = "Connector-"+Circuit::self()->newConnectorId();
-    Connector* con1 = new Connector( "Connector", id, pin2 );
+    id = Circuit::self()->newConnectorId();
+    Connector* con1 = new Connector( "Wire", id, pin2 );
     Circuit::self()->conList()->append( con1 );
 
     disconnectLines( index-1, index );

@@ -113,7 +113,7 @@ void CircuitView::dragEnterEvent( QDragEnterEvent* event )
 
     event->accept(); // Not moving items in the list (this will prevent removing items from the list)
 
-    m_enterItem = m_circuit->createItem( type, name+"-"+m_circuit->newSceneId() );
+    m_enterItem = m_circuit->createItem( type, m_circuit->newSceneId() );
     if( m_enterItem )
     {
         m_circuit->clearSelection();

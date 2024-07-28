@@ -42,8 +42,8 @@ MainWindow::MainWindow()
 
     m_configDir.setPath( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) );
 
-    m_settings     = new QSettings( getConfigPath("simulide.ini"), QSettings::IniFormat, this );
-    m_compSettings = new QSettings( getConfigPath("compList.ini"), QSettings::IniFormat, this );
+    m_settings     = new QSettings( getConfigPath("simulide2.ini"), QSettings::IniFormat, this );
+    m_compSettings = new QSettings( getConfigPath("compList2.ini"), QSettings::IniFormat, this );
 
     m_userDir = m_settings->value("userPath").toString();
     if( m_userDir.isEmpty() || !QDir( m_userDir ).exists() )
@@ -81,7 +81,7 @@ MainWindow::MainWindow()
     createWidgets();
     readSettings();
 
-    QString backPath = getConfigPath( "backup.sim1" );
+    QString backPath = getConfigPath( "backup.sim2" );
     if( QFile::exists( backPath ) )
     {
         QMessageBox msgBox;

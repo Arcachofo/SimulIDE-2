@@ -15,10 +15,8 @@ class Label : public QGraphicsTextItem
     friend class Component;
 
     public:
-        Label();
+        Label( Component* parent );
         ~Label();
-
-        void setComponent( Component* parent );
 
         QPointF getLabelPos() { return QPointF( m_labelx, m_labely ); }
         void setLabelPos( QPointF pos );

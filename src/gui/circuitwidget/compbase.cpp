@@ -8,19 +8,26 @@
 #include "propdialog.h"
 #include "comproperty.h"
 
+#include "stringprop.h"
+
 CompBase::CompBase( QString type, QString id )
 {
     m_id   = id;
     m_type = type;
 
-    m_propDialog = NULL;
+    m_propDialog = nullptr;
+
+    addPropGroup( { "CompBase", {
+        //new StrProp <Component>("itemtype","","", this, &Component::itemType,  &Component::setItemType ),
+        new StrProp <CompBase>("uid","","", this, &CompBase::getUid, &CompBase::setUid ),
+    }, groupHidden | groupNoCopy } );
 }
 CompBase::~CompBase()
 {
     for( ComProperty* p : m_propMap.values() ) delete p;
     if( m_propDialog )
     {
-        m_propDialog->setParent( NULL );
+        m_propDialog->setParent( nullptr );
         m_propDialog->close();
         delete m_propDialog;
     }
@@ -98,7 +105,7 @@ QString CompBase::getPropStr( QString prop )
 
 QString CompBase::toString() // Used to save circuit
 {
-    QString item = "\n<item ";
+    QString item = "\n"+m_type;
     for( propGroup pg : m_propGroups )
     {
         if( !Circuit::self()->getBoard() )     // Not a Subcircit Board
@@ -110,9 +117,9 @@ QString CompBase::toString() // Used to save circuit
         {
             QString val = prop->toString();
             if( val.isEmpty() ) continue;
-            item += prop->name() + "=\""+val+"\" ";
+            item += "; "+prop->name()+"="+val;
     }   }
-    item += "/>\n";
+    item += "\n";
 
     return item;
 }

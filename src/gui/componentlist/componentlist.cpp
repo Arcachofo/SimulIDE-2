@@ -101,11 +101,11 @@ void ComponentList::LoadCompSetAt( QDir compSetDir )
                 QString compFile;
                 QString type;
 
-                if( compSetDir.exists( path+".sim1") )
+                if( compSetDir.exists( path+".sim2") )
                 {
                     if( icon.isEmpty() ) icon = ":/subc.png";
                     type = "Subcircuit";
-                    compFile = compSetDir.absoluteFilePath( path+".sim1" );
+                    compFile = compSetDir.absoluteFilePath( path+".sim2" );
                 }
                 else if( compSetDir.exists( path+".mcu") )
                 {

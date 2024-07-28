@@ -11,23 +11,20 @@
 #include "component.h"
 #include "QDebug"
 
-Label::Label()
+Label::Label( Component* parent )
      : QGraphicsTextItem()
 {
     m_labelrot = 0;
     setCursor( Qt::OpenHandCursor );
 
+    m_parentComp = parent;
+    this->setParentItem( parent );
+    this->document()->setDocumentMargin(0);
+
     connect( document(), &QTextDocument::contentsChange,
              this,       &Label::updateGeometry, Qt::UniqueConnection );
 }
 Label::~Label() { }
-
-void Label::setComponent( Component* parent )
-{
-    m_parentComp = parent;
-    this->setParentItem( parent );
-    this->document()->setDocumentMargin(0);
-}
 
 void Label::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {

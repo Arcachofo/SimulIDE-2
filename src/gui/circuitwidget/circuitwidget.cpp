@@ -301,16 +301,13 @@ void CircuitWidget::openCirc()
 {
     const QString dir = m_lastCircDir;
     QString fileName = QFileDialog::getOpenFileName( 0l, tr("Load Circuit"), dir,
-                                        tr("Circuits (*.sim*);;All files (*.*)"));
+                                        tr("Circuits (*.sim2);;All files (*.*)"));
     loadCirc( fileName );
 }
 
 void CircuitWidget::loadCirc( QString path )
 {
-    if( !path.isEmpty()
-      &&(path.endsWith(".simu")
-      || path.endsWith(".sim1")
-      || path.endsWith(".comp")  ) )
+    if( !path.isEmpty() && path.endsWith(".sim2") )
     {
         if( !newCircuit() ) return;
         Circuit::self()->loadCircuit( path );
@@ -337,7 +334,7 @@ void CircuitWidget::saveCircAs()
 {
     const QString dir = m_lastCircDir;
     QString fileName = QFileDialog::getSaveFileName( this, tr("Save Circuit"), dir,
-                                                     tr("Circuits (*.sim1);;All files (*.*)") );
+                                                     tr("Circuits (*.sim2);;All files (*.*)") );
     if( fileName.isEmpty() ) return;
 
     saveCirc( fileName );
@@ -345,7 +342,7 @@ void CircuitWidget::saveCircAs()
 
 void CircuitWidget::saveCirc( QString file )
 {
-    if( !file.endsWith(".sim1") && !file.endsWith(".comp") ) file.append(".sim1");
+    if( !file.endsWith(".sim2") ) file.append(".sim2");
 
     if( Circuit::self()->saveCircuit( file ) )
     {
