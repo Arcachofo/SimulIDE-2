@@ -65,16 +65,16 @@ class ComponentList : public QTreeWidget
 
         void LoadLibraryItems();
         void loadComps( QDir compSetDir );
-        void insertItems();
-        void insertItem( QDomNode* node, TreeItem* parent );
-
-        bool m_customComp;
+        void readConfig();
+        void readNodCfg( QDomNode* node, TreeItem* parent );
 
         TreeItem* addCategory( QString nameTr, QString name, QString parent, QString icon );
 
         QString getIcon( QString folder, QString name );
 
-        bool m_insertItems;
+        bool m_customComp;
+        bool m_oldConfig;
+        bool m_restoreList;
         QString m_listFile;
 
         QString m_searchFilter;
