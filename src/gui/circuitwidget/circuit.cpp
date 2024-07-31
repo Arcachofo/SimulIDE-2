@@ -198,7 +198,7 @@ void Circuit::loadStrDoc( QString &doc )
 
     QList<Linker*>    linkList;   // Linked  Component list
     QList<Component*> compList;   // Pasting Component list
-    QList<Connector*> conList;    // Pasting Connector list
+    QList<Connector*> connList;   // Pasting Connector list
     QList<Node*>      nodeList;   // Pasting node list
 
     Component* lastComp = nullptr;
@@ -289,7 +289,7 @@ void Circuit::loadStrDoc( QString &doc )
                 }
                 Connector* con = new Connector( type, uid, startpin, endpin );
                 con->setPointList( pointList );
-                conList.append( con );
+                connList.append( con );
             }
             else if( !m_pasting /*&& !m_undo && !m_redo*/ )// Start or End pin not found
             {
@@ -382,25 +382,15 @@ void Circuit::loadStrDoc( QString &doc )
     {
         m_idMap.clear();
 
-        for( Component* comp : compList ){
-            comp->setSelected( true );
-            comp->move( m_deltaMove );
-        }
-        for( Node* nod : nodeList ){
-            nod->setSelected( true );
-            nod->move( m_deltaMove );
-            m_nodeList.append( nod );
-        }
-        for( Connector* con : conList ){
-            con->setSelected( true );
-            con->move( m_deltaMove );
-            m_connList.append( con );
-        }
-    }else{
-        m_nodeList += nodeList;
-        m_connList += conList;
+        for( Component* comp : compList ){ comp->setSelected( true ); comp->move( m_deltaMove ); }
+        for( Node*      node : nodeList ){ node->setSelected( true ); node->move( m_deltaMove ); }
+        for( Connector* conn : connList ){ conn->setSelected( true ); conn->move( m_deltaMove ); }
     }
-     m_compList += compList;
+    else for( Component* comp : compList ) { comp->moveSignal(); }
+
+    m_nodeList += nodeList;
+    m_connList += connList;
+    m_compList += compList;
 
     if( !m_undo && !m_redo ) // Take care about unconnected Joints
         for( Node* joint : nodeList ) joint->checkRemove(); // Only removed if some missing connector
