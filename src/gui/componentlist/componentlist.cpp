@@ -51,7 +51,6 @@ ComponentList::ComponentList( QWidget* parent )
     m_restoreList = QFile::exists( m_listFile ); // Restore last List
     m_oldConfig = !m_restoreList; // xml file doesn't exist: read old config
 
-
     m_customComp = false;
     LoadLibraryItems();
     m_customComp = true;

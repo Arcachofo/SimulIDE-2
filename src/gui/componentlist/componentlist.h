@@ -3,16 +3,12 @@
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-#ifndef COMPONENTSELECTOR_H
-#define COMPONENTSELECTOR_H
+#ifndef COMPONENTLIST_H
+#define COMPONENTLIST_H
 
 #include <QDropEvent>
-#include <QDebug>
-
 #include <QDir>
 #include <QTreeWidget>
-
-#include <QMimeData>
 
 #include "managecomps.h"
 #include "component.h"

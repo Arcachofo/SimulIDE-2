@@ -3,7 +3,7 @@ VERSION = "2.0.0"
 RELEASE = ""
 
 TEMPLATE = app
-TARGET = simulide
+TARGET = simulide2
 
 QT += svg
 QT += xml
