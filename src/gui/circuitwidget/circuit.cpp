@@ -476,7 +476,7 @@ bool Circuit::saveCircuit( QString filePath )
     m_filePath = filePath;
 
     bool saved = false;
-    if( filePath.endsWith(".comp") && m_creCompDialog ){
+    if( filePath.endsWith(".subc") && m_creCompDialog ){
         saved = saveString( filePath, m_creCompDialog->toString() );
     }
     else saved = saveString( filePath, circuitToString() );

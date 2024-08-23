@@ -142,7 +142,7 @@ void ComponentList::LoadCompSetAt( QDir compSetDir )
 
 void ComponentList::loadComps( QDir compSetDir )
 {
-    QStringList compList = compSetDir.entryList( {"*.comp"}, QDir::Files );
+    QStringList compList = compSetDir.entryList( {"*.subc"}, QDir::Files );
 
     for( QString compFile : compList )
     {

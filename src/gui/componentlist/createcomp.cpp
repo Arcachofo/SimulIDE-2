@@ -19,7 +19,7 @@ creCompDialog::creCompDialog( QWidget* parent )
     setupUi( this );
 
     m_circuitPath = Circuit::self()->getFilePath();
-    if( m_circuitPath.endsWith(".comp") )
+    if( m_circuitPath.endsWith(".subc") )
     {
         buttonBox->hide();//  button( QDialogButtonBox::Cancel )->hide();
         line->hide();
@@ -57,16 +57,15 @@ QString creCompDialog::toString()
     QString iconData;
     if( index > 0 ) iconData = m_itemList.at( index ).iconData;
 
-    QString comp = "<libitem";
-    comp += " itemtype=\""+ typeBox->currentText()+"\"";
-    comp += " category=\""+ categoryEdit->text()  +"\"";
-    comp += " compname=\""+ name                  +"\"";
-    comp += " compinfo=\""+ infoEdit->text()      +"\"";
-    comp += " icondata=\""+ iconData              +"\"";
-    comp += ">\n\n";
+    QString comp = "libitem";
+    //comp += " itemtype="+ typeBox->currentText()+"\"";
+    comp += "; category="+ categoryEdit->text();
+    comp += "; compname="+ name                ;
+    comp += "; compinfo="+ infoEdit->text()    ;
+    comp += "; icondata="+ iconData            ;
+    comp += "\n\n";
 
     comp += Circuit::self()->circuitToString();
-    comp += "</libitem>";
 
     return comp;
 }
@@ -80,12 +79,12 @@ void creCompDialog::accept()
     if( dir.isEmpty() ) dir = MainWindow::self()->userPath();
 
     QFileInfo info( dir );
-    dir = info.path()+"/"+nameEdit->text()+".comp";
+    dir = info.path()+"/"+nameEdit->text()+".subc";
     QString fileName = QFileDialog::getSaveFileName( this, tr("Save Copmponent"), dir,
-                                                     tr("Components (*.comp);;All files (*.*)") );
+                                                     tr("Components (*.subc);;All files (*.*)") );
     if( fileName.isEmpty() ) return;
 
-    if( !fileName.endsWith(".comp") ) fileName.append(".comp");
+    if( !fileName.endsWith(".subc") ) fileName.append(".subc");
 
     Circuit::self()->saveString( fileName, comp );
 }
