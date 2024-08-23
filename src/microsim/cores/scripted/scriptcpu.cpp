@@ -105,7 +105,7 @@ ScriptCpu::ScriptCpu( eMcu* mcu )
                                    , asMETHODPR( ScriptCpu, circTime, (), uint64_t)
                                    , asCALL_THISCALL );
 
-    memberList << "readPGM( uint address )";
+    /*memberList << "readPGM( uint address )";
     m_aEngine->RegisterObjectMethod("ScriptCpu", "int readPGM(uint n)"
                                    , asMETHODPR( ScriptCpu, readPGM, (uint), int)
                                    , asCALL_THISCALL );
@@ -133,7 +133,7 @@ ScriptCpu::ScriptCpu( eMcu* mcu )
     memberList << "writeROM( uint address, int value )";
     m_aEngine->RegisterObjectMethod("ScriptCpu", "void writeROM(uint a, int v)"
                                    , asMETHODPR( ScriptCpu, writeROM, (uint, int), void)
-                                   , asCALL_THISCALL );
+                                   , asCALL_THISCALL );*/
 
     memberList << "getPort( const string port )";
     m_aEngine->RegisterObjectMethod("ScriptCpu", "IoPort@ getPort(const string port)"
@@ -510,13 +510,13 @@ void ScriptCpu::addEvent( uint time ) { Simulator::self()->addEvent( time, this 
 void ScriptCpu::cancelEvents()        { Simulator::self()->cancelEvents( this ); }
 uint64_t ScriptCpu::circTime()        { return Simulator::self()->circTime(); }
 
-int  ScriptCpu::readPGM( uint addr )         { if( addr < m_progSize       ) return m_progMem[addr] & m_progWordMask ; return -1; }
+/*int  ScriptCpu::readPGM( uint addr )         { if( addr < m_progSize       ) return m_progMem[addr] & m_progWordMask ; return -1; }
 void ScriptCpu::writePGM( uint addr, int v ) { if( addr < m_progSize       ) m_progMem[addr] = v & m_progWordMask; }
 int  ScriptCpu::readRAM( uint addr )         { if( addr <= m_dataMemEnd    ) return m_dataMem[addr]; return -1; }
 void ScriptCpu::writeRAM( uint addr, int v ) { SET_RAM( addr, v ); }
 int  ScriptCpu::readROM( uint addr )         { if( addr < m_mcu->romSize() ) return m_mcu->getRomValue( addr ); return -1; }
 void ScriptCpu::writeROM( uint addr, int v ) { if( addr < m_mcu->romSize() ) m_mcu->setRomValue( addr, v ); }
-
+*/
 IoPort* ScriptCpu::getPort( const string portName )
 {
     QString name = QString::fromStdString( portName );

@@ -11,28 +11,31 @@ McuEeprom::McuEeprom( eMcu* mcu, QString name )
          : McuModule( mcu, name )
          , eElement( mcu->getId()+"-"+name )
 {
-    m_addressL = NULL;
-    m_addressH = NULL;
-    m_dataReg  = NULL;
+    m_addressL = nullptr;
+    m_addressH = nullptr;
+    m_dataReg  = nullptr;
 }
 
-McuEeprom::~McuEeprom()
-{
-}
+McuEeprom::~McuEeprom(){}
 
 void McuEeprom::initialize()
 {
     m_address = 0;
 }
 
+void McuEeprom::reset()
+{
+    if( !m_saveEepr ) m_data.fill(-1);
+}
+
 void McuEeprom::readEeprom()
 {
-    *m_dataReg = m_mcu->getRomValue( m_address );
+    *m_dataReg = m_data[m_address];
 }
 
 void McuEeprom::writeEeprom()
 {
-    m_mcu->setRomValue( m_address, *m_dataReg );
+    m_data[m_address] = *m_dataReg;
 }
 
 void McuEeprom::addrWriteL( uint8_t val )
@@ -45,4 +48,13 @@ void McuEeprom::addrWriteH( uint8_t val )
 {
     m_address = (val << 8) + *m_addressL;
 }
+
+void McuEeprom::setData( QVector<int>* eep )
+{
+    int size = m_size;
+    if( eep->size() < size ) size = eep->size();
+
+    for( int i=0; i<size; ++i ) m_data[i] = eep->at(i);
+}
+
 

@@ -50,12 +50,12 @@ class ScriptCpu : public ScriptBase, public McuCpu
         void cancelEvents();
         uint64_t circTime();
 
-        int  readPGM( uint addr );
+        /*int  readPGM( uint addr );
         void writePGM( uint addr, int value );
         int  readRAM( uint addr );
         void writeRAM( uint addr, int value );
         int  readROM( uint addr );
-        void writeROM( uint addr, int value );
+        void writeROM( uint addr, int value );*/
 
         IoPort* getPort( const string portName );
         IoPin*  getPin( const string pinName );

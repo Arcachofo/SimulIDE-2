@@ -33,7 +33,7 @@ class McuCreator
         static int  processFile( QString fileName );
         static void createProgMem( uint32_t size );
         static void createDataMem( uint32_t size );
-        static void createRomMem( uint32_t size );
+        //static void createRomMem( uint32_t size );
         static void createEeprom( QDomElement* e );
         static void createCfgWord( QDomElement* e );
         static void createDataBlock( QDomElement* d );

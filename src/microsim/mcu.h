@@ -21,6 +21,7 @@
 
 class MCUMonitor;
 class ScriptCpu;
+class McuEeprom;
 
 class Mcu : public Chip, public Linker
 {
@@ -77,8 +78,8 @@ class Mcu : public Chip, public Linker
         void setEeprom( QString eep );
         QString getEeprom();
 
-        bool saveEepr() { return m_eMcu.m_saveEepr; }
-        void setSaveEepr( bool s ) { m_eMcu.m_saveEepr = s; }
+        bool saveEepr();
+        void setSaveEepr( bool s );
 
         int serialMon();
         void setSerialMon( int s );
@@ -152,6 +153,7 @@ class Mcu : public Chip, public Linker
         eMcu m_eMcu;
 
         McuIntOsc* m_intOsc;
+        McuEeprom* m_eeprom;
 
         IoPin*  m_resetPin;
         McuPin* m_portRstPin;

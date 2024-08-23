@@ -38,13 +38,13 @@ eMcu::eMcu( Mcu* comp, QString id )
 
     m_wordSize  = 2;
     m_flashSize = 0;
-    m_romSize   = 0;
+    //m_romSize   = 0;
     m_ramSize   = 0;
 
     m_firmware = "";
     m_debugger = nullptr;
     m_debugging = false;
-    m_saveEepr  = true;
+    //m_saveEepr  = true;
 
     m_ramTable = new RamTable( nullptr, this, false );
 }
@@ -152,9 +152,6 @@ void eMcu::reset()
     else qDebug() << "ERROR: eMcu::reset nullptr Cpu";
 
     for( McuPort* mcuPort : m_mcuPorts ) mcuPort->readPort( 0 ); // Update Pin Input register
-
-    if( !m_saveEepr )
-        for( uint i=0; i<m_romSize; ++i ) setRomValue( i, 0xFF );
 }
 
 void eMcu::hardReset( bool r )
@@ -218,13 +215,13 @@ void eMcu::setFreq( double freq )
     m_freq = freq;
 }
 
-void eMcu::setEeprom( QVector<int>* eep )
+/*void eMcu::setEeprom( QVector<int>* eep )
 {
     int size = m_romSize;
     if( eep->size() < size ) size = eep->size();
 
     for( int i=0; i<size; ++i ) setRomValue( i, eep->at(i) );
-}
+}*/
 
 McuTimer* eMcu::getTimer( QString name )
 {
@@ -265,8 +262,9 @@ void eMcu::enableInterrupts( uint8_t en )
 
 McuModule* eMcu::getModule( QString name )
 {
+    name = name.toLower();
     for( McuModule* module : m_modules )
-        if( module->name() == name ) return module;
+        if( module->name().toLower() == name ) return module;
 
     return nullptr;
 }

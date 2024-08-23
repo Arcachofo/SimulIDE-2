@@ -28,6 +28,7 @@
 #include "memdata.h"
 #include "mcuuart.h"
 #include "mcuintosc.h"
+#include "mcueeprom.h"
 #include "utils.h"
 #include "watcher.h"
 
@@ -233,6 +234,7 @@ void Mcu::setupMcu()
     // Main Property Group --------------------------------------
 
     m_intOsc = (McuIntOsc*)m_eMcu.getModule("intosc");
+    m_eeprom = (McuEeprom*)m_eMcu.getModule("rom");
 
     if( m_packageList.size() > 1 )
     addProperty(tr("Main"), new StrProp<Mcu>("Package", tr("Package"),""
@@ -253,7 +255,7 @@ void Mcu::setupMcu()
     addProperty(tr("Main"),new BoolProp<Mcu>("Auto_Load", tr("Reload hex at Simulation Start"),""
                                             , this, &Mcu::autoLoad, &Mcu::setAutoLoad ));
     }
-    if( m_eMcu.romSize() )
+    if( m_eeprom )
     addProperty(tr("Main"),new BoolProp<Mcu>("saveEepr", tr("EEPROM persitent"),""
                                             , this, &Mcu::saveEepr, &Mcu::setSaveEepr ));
 
@@ -293,7 +295,7 @@ void Mcu::setupMcu()
     if( m_eMcu.flashSize() )
     hi.propList.append(new StrProp<Mcu>("pgm"   ,"","", this, &Mcu::getPGM, &Mcu::setPGM ) );
 
-    if( m_eMcu.romSize() )
+    if( m_eeprom )
     hi.propList.append(new StrProp<Mcu>("eeprom"   ,"","", this, &Mcu::getEeprom, &Mcu::setEeprom ) );
 
     if( m_eMcu.m_usarts.size() )
@@ -443,6 +445,9 @@ void Mcu::setPGM( QString pgm )
     }
 }
 
+bool Mcu::saveEepr() { return m_eeprom->m_saveEepr; }
+void Mcu::setSaveEepr( bool s ) { m_eeprom->m_saveEepr = s; }
+
 void Mcu::setEeprom( QString eep )
 {
     if( eep.isEmpty() ) return;
@@ -450,21 +455,21 @@ void Mcu::setEeprom( QString eep )
     QStringList list = eep.split(",");
     for( QString val : list ) eeprom.append( val.toUInt() );
 
-    if( eeprom.size() > 0 ) m_eMcu.setEeprom( &eeprom );
+    if( eeprom.size() > 0 ) m_eeprom->setData( &eeprom );
 }
 
 QString Mcu::getEeprom()  // Used by property, stripped to last written value.
 {
     QString eeprom;
-    if( m_eMcu.m_saveEepr )
+    if( m_eeprom->m_saveEepr )
     {
-        int size = m_eMcu.romSize();
+        int size = m_eeprom->size();
         if( size > 0 )
         {
             bool empty = true;
             for( int i=size-1; i>=0; --i )
             {
-                uint8_t val = m_eMcu.getRomValue( i );
+                uint8_t val = m_eeprom->getValue( i );
                 if( val < 0xFF ) empty = false;
                 if( empty ) continue;
                 eeprom.prepend( QString::number( val )+"," );
@@ -474,13 +479,12 @@ QString Mcu::getEeprom()  // Used by property, stripped to last written value.
 
 void Mcu::loadEEPROM()
 {
-   QVector<int>* eeprom = m_eMcu.eeprom();
-   MemData::loadData( eeprom, false );
-   m_eMcu.setEeprom( eeprom );
+   MemData::loadData( m_eeprom->data(), false );
+
    if( m_mcuMonitor ) m_mcuMonitor->tabChanged( 1 );
 }
 
-void Mcu::saveEEPROM() { MemData::saveData( m_eMcu.eeprom() ); }
+void Mcu::saveEEPROM() { MemData::saveData( m_eeprom->data() ); }
 
 void Mcu::slotLoad()
 {
@@ -572,7 +576,7 @@ void Mcu::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
         menu->addSeparator();
     }
 
-    if( m_eMcu.romSize() )
+    if( m_eeprom )
     {
         QAction* loadDaAction = menu->addAction( QIcon(":/open.png"),tr("Load EEPROM data from file") );
         QObject::connect( loadDaAction, &QAction::triggered, [=](){ loadEEPROM(); } );

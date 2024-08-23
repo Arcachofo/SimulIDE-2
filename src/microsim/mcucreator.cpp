@@ -151,7 +151,7 @@ int McuCreator::processFile( QString fileName )
     if( root.hasAttribute("data") )       createDataMem( root.attribute("data").toUInt(0,0) );
     if( root.hasAttribute("prog") )       createProgMem( root.attribute("prog").toUInt(0,0) );
     if( root.hasAttribute("progword") )   mcu->m_wordSize = root.attribute("progword").toUInt(0,0);
-    if( root.hasAttribute("eeprom") )     createRomMem( root.attribute("eeprom").toUInt(0,0) );
+    //if( root.hasAttribute("eeprom") )     createRomMem( root.attribute("eeprom").toUInt(0,0) );
     if( root.hasAttribute("inst_cycle") ) mcu->setInstCycle( root.attribute("inst_cycle").toDouble() );
     if( root.hasAttribute("cpu_cycle") )  mcu->m_cPerTick = root.attribute("cpu_cycle").toDouble();
     if( root.hasAttribute("freq") )       m_mcuComp->setExtFreq( root.attribute("freq").toDouble() );
@@ -322,14 +322,14 @@ void McuCreator::createDataMem( uint32_t size )
     mcu->m_addrMap.resize( size, 0xFFFF ); // Not Maped values = 0xFFFF -> don't exist
 }
 
-void McuCreator::createRomMem( uint32_t size )
+/*void McuCreator::createRomMem( uint32_t size )
 {
     if( size == 0 ) return;
 
     mcu->m_romSize = size;
     mcu->m_eeprom.resize( size );
     mcu->m_eeprom.fill( 0xFF );
-}
+}*/
 
 void McuCreator::createEeprom( QDomElement* e )
 {
@@ -344,6 +344,8 @@ void McuCreator::createEeprom( QDomElement* e )
     mcu->m_modules.emplace_back( eeprom );
 
     setConfigRegs( e, eeprom );
+
+
 
     if( e->hasAttribute("dataregs") )
         eeprom->m_dataReg = mcu->getReg( e->attribute("dataregs") );

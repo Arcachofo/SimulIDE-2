@@ -70,12 +70,12 @@ MCUMonitor::MCUMonitor( QWidget* parent, eMcu* mcu )
         tabWidget->addTab( m_flashMonitor, "Flash");
         connect( m_flashMonitor, SIGNAL(dataChanged(int, int)), this, SLOT(flashDataChanged(int, int)) );
     }
-    if( mcu->romSize() )
+    /*if( mcu->romSize() )
     {
         m_romMonitor   = new MemTable( tabWidget, m_processor->romSize() );
         tabWidget->addTab( m_romMonitor, "EEPROM");
         connect( m_romMonitor,   SIGNAL(dataChanged(int, int)), this, SLOT(eepromDataChanged(int, int)) );
-    }
+    }*/
     connect( tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)) );
 }
 
@@ -86,7 +86,9 @@ void MCUMonitor::flashDataChanged( int address, int val )
 { m_processor->setFlashValue( address, val ); }
 
 void MCUMonitor::eepromDataChanged( int address, int val )
-{ m_processor->setRomValue( address, val ); }
+{
+    //m_processor->setRomValue( address, val );
+}
 
 void MCUMonitor::tabChanged( int )
 {
@@ -146,10 +148,10 @@ void MCUMonitor::updateStep()
         if( Simulator::self()->simState() == SIM_RUNNING )
             m_ramMonitor->setAddrSelected( m_ramTable->getCurrentAddr(), m_jumpToAddress );
     }
-    if( m_romMonitor && m_romMonitor->isVisible() )
+    /*if( m_romMonitor && m_romMonitor->isVisible() )
     {
         m_romMonitor->setData( m_processor->eeprom() );
-    }
+    }*/
     if( m_flashMonitor && m_flashMonitor->isVisible() )
     {
         for( uint32_t i=0; i<m_processor->flashSize(); ++i )

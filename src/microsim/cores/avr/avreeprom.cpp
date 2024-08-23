@@ -99,7 +99,7 @@ void AvrEeprom::writeEeprom()
     {
         time = 8500*1e6; // picoseconds
     }
-    m_mcu->setRomValue( m_address, data );
+    setValue( m_address, data );
     Simulator::self()->addEvent( time, this ); // Shedule Write cycle end
 }
 
