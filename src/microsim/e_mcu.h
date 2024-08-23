@@ -13,12 +13,6 @@
 #include "mcudataspace.h"
 #include "mcusleep.h"
 
-//class CpuBase;
-class McuTimer;
-class McuWdt;
-class McuSleep;
-class McuCtrlPort;
-
 enum{
     R_READ = 0,
     R_WRITE,
@@ -32,13 +26,12 @@ enum mcuState_t{
 };
 
 class Mcu;
-class McuIntOsc;
 class McuPort;
-class McuVref;
 class Component;
-class ConfigWord;
-class McuComp;
 class CpuBase;
+class McuTimer;
+class McuWdt;
+class McuSleep;
 
 class eMcu : public DataSpace, public eIou
 {
@@ -66,16 +59,10 @@ class eMcu : public DataSpace, public eIou
         void setDebugger( BaseDebugger* deb );
         void setDebugging( bool d );
 
-        uint16_t getFlashValue( int address ) { return m_progMem[address]; }
+        /*uint16_t getFlashValue( int address ) { return m_progMem[address]; }
         void     setFlashValue( int address, uint16_t value ) { m_progMem[address] = value; }
         uint32_t flashSize(){ return m_flashSize; }
-        uint32_t wordSize() { return m_wordSize; }
-
-        /*virtual QVector<int>* eeprom() { return &m_eeprom; }
-        virtual void setEeprom( QVector<int>* eep );
-        uint32_t romSize()  { return m_romSize; }
-        uint8_t  getRomValue( int address ) { return m_eeprom[address]; }
-        void     setRomValue( int address, uint8_t value ) { m_eeprom[address] = value; }*/
+        uint32_t wordSize() { return m_wordSize; }*/
 
         uint64_t cycle(){ return m_cycle; }
 
@@ -118,15 +105,9 @@ class eMcu : public DataSpace, public eIou
         mcuState_t m_state;
 
         uint64_t m_cycle;
-        std::vector<uint16_t> m_progMem;  // Program memory
-        uint32_t m_flashSize;
-        uint8_t  m_wordSize; // Size of Program memory word in bytes
-
-        QHash<QString, int> m_regsTable;   // int max 32 bits
-
-        //uint32_t m_romSize;
-        //QVector<int> m_eeprom;
-        //bool m_saveEepr;
+        //std::vector<uint16_t> m_progMem;  // Program memory
+        //uint32_t m_flashSize;
+        //uint8_t  m_wordSize; // Size of Program memory word in bytes
 
         std::vector<McuModule*> m_modules;
         std::vector<McuUsart*> m_usarts;

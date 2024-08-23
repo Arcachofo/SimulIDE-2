@@ -25,9 +25,10 @@
 #include "mainwindow.h"
 #include "componentlist.h"
 #include "mcumonitor.h"
-#include "memdata.h"
+//#include "memdata.h"
 #include "mcuuart.h"
 #include "mcuintosc.h"
+#include "mcupgm.h"
 #include "mcueeprom.h"
 #include "utils.h"
 #include "watcher.h"
@@ -235,6 +236,7 @@ void Mcu::setupMcu()
 
     m_intOsc = (McuIntOsc*)m_eMcu.getModule("intosc");
     m_eeprom = (McuEeprom*)m_eMcu.getModule("rom");
+    m_pgm    = (McuPgm*)   m_eMcu.getModule("pgm");
 
     if( m_packageList.size() > 1 )
     addProperty(tr("Main"), new StrProp<Mcu>("Package", tr("Package"),""
@@ -244,7 +246,7 @@ void Mcu::setupMcu()
     addProperty(tr("Main"),new DoubProp<Mcu>("Frequency", tr("Frequency"),"MHz"
                                             , this, &Mcu::extFreq, &Mcu::setExtFreq ));
 
-    if( m_eMcu.flashSize() )
+    if( m_pgm )
     {
     addProperty(tr("Main"),new BoolProp<Mcu>("savePGM", tr("PGM persitent"),""
                                             , this, &Mcu::savePGM, &Mcu::setSavePGM ));
@@ -287,19 +289,19 @@ void Mcu::setupMcu()
 
     propGroup hi = {"Hidden", {}, groupHidden }; // Set before Main
 
-    hi.propList.append(new StrProp<Mcu>("varList" ,"","", this, &Mcu::varList,   &Mcu::setVarList) );
-    hi.propList.append(new StrProp<Mcu>("cpuRegs" ,"","", this, &Mcu::cpuRegs,   &Mcu::setCpuRegs) );
-    hi.propList.append(new StrProp<Mcu>("Links"   ,"","", this, &Mcu::getLinks , &Mcu::setLinks ) );
-    hi.propList.append(new BoolProp<Mcu>("MainMcu","","", this, &Mcu::mainMcu , &Mcu::setMainMcu ) );
+    hi.propList.append( new StrProp<Mcu>("varList" ,"","", this, &Mcu::varList,   &Mcu::setVarList) );
+    hi.propList.append( new StrProp<Mcu>("cpuRegs" ,"","", this, &Mcu::cpuRegs,   &Mcu::setCpuRegs) );
+    hi.propList.append( new StrProp<Mcu>("Links"   ,"","", this, &Mcu::getLinks , &Mcu::setLinks ) );
+    hi.propList.append( new BoolProp<Mcu>("MainMcu","","", this, &Mcu::mainMcu , &Mcu::setMainMcu ) );
 
-    if( m_eMcu.flashSize() )
-    hi.propList.append(new StrProp<Mcu>("pgm"   ,"","", this, &Mcu::getPGM, &Mcu::setPGM ) );
+    if( m_pgm )
+    hi.propList.append( new StrProp<Mcu>("pgm"   ,"","", this, &Mcu::getPGM, &Mcu::setPGM ) );
 
     if( m_eeprom )
-    hi.propList.append(new StrProp<Mcu>("eeprom"   ,"","", this, &Mcu::getEeprom, &Mcu::setEeprom ) );
+    hi.propList.append( new StrProp<Mcu>("eeprom"   ,"","", this, &Mcu::getEeprom, &Mcu::setEeprom ) );
 
     if( m_eMcu.m_usarts.size() )
-    hi.propList.append(new IntProp<Mcu>("SerialMon","","", this, &Mcu::serialMon, &Mcu::setSerialMon ) );
+    hi.propList.append( new IntProp<Mcu>("SerialMon","","", this, &Mcu::serialMon, &Mcu::setSerialMon ) );
 
     if( hi.propList.size() > 0 ) addPropGroup( hi );
 
@@ -421,12 +423,9 @@ void Mcu::setCpuRegs( QString vl )
 
 QString Mcu::getPGM()
 {
-    if( m_savePGM )
+    if( m_pgm && m_savePGM )
     {
-        QString pgmStr;
-        QVector<int> pgm;
-        for( uint16_t val : m_eMcu.m_progMem ) pgmStr += QString::number( val )+",";
-
+        QString pgmStr = m_pgm->getMem();
         return pgmStr;
     }
     return "";
@@ -435,14 +434,8 @@ QString Mcu::getPGM()
 void Mcu::setPGM( QString pgm )
 {
     if( pgm.isEmpty() ) return;
-    QStringList valList = pgm.split(",");
-    int size = m_eMcu.flashSize();
-    int i = 0;
-    for( QString valStr : valList )
-    {
-        if(! valStr.isEmpty() ) m_eMcu.setFlashValue( i, valStr.toInt() );
-        if( ++i >= size ) break;
-    }
+    if( !m_pgm ) return;
+    m_pgm->loadDatStr( pgm, false );
 }
 
 bool Mcu::saveEepr() { return m_eeprom->m_saveEepr; }
@@ -451,11 +444,7 @@ void Mcu::setSaveEepr( bool s ) { m_eeprom->m_saveEepr = s; }
 void Mcu::setEeprom( QString eep )
 {
     if( eep.isEmpty() ) return;
-    QVector<int> eeprom;
-    QStringList list = eep.split(",");
-    for( QString val : list ) eeprom.append( val.toUInt() );
-
-    if( eeprom.size() > 0 ) m_eeprom->setData( &eeprom );
+    m_eeprom->loadDatStr( eep, false );
 }
 
 QString Mcu::getEeprom()  // Used by property, stripped to last written value.
@@ -479,12 +468,14 @@ QString Mcu::getEeprom()  // Used by property, stripped to last written value.
 
 void Mcu::loadEEPROM()
 {
-   MemData::loadData( m_eeprom->data(), false );
+    if( !m_eeprom ) return;
+
+   m_eeprom->loadData();
 
    if( m_mcuMonitor ) m_mcuMonitor->tabChanged( 1 );
 }
 
-void Mcu::saveEEPROM() { MemData::saveData( m_eeprom->data() ); }
+void Mcu::saveEEPROM() { m_eeprom->saveData(); }
 
 void Mcu::slotLoad()
 {
@@ -508,6 +499,7 @@ void Mcu::slotReload()
 bool Mcu::load( QString fileName )
 {
     if( fileName.isEmpty() ) return false;
+    if( !m_pgm ) return false;
 
     QDir circuitDir = QFileInfo( Circuit::self()->getFilePath() ).absoluteDir();
     QString fileNameAbs  = circuitDir.absoluteFilePath( fileName );
@@ -520,14 +512,9 @@ bool Mcu::load( QString fileName )
     }
     if( Simulator::self()->simState() > SIM_STARTING )  CircuitWidget::self()->powerCircOff();
 
-    int size = m_eMcu.flashSize();
-    QVector<int> pgm( size );
-    for( int i=0; i<size; ++i ) pgm[i] = m_eMcu.getFlashValue( i );
-
-    if( !MemData::loadFile( &pgm, cleanPathAbs, false, m_eMcu.m_wordSize*8, &m_eMcu ) )
+    if( !m_pgm->loadFile( cleanPathAbs, false, &m_eMcu ) )
         return false;
 
-    for( int i=0; i<size; ++i ) m_eMcu.setFlashValue( i, pgm.at(i) );
     qDebug() << "Firmware successfully loaded\n";
 
     QString firmware = circuitDir.relativeFilePath( cleanPathAbs );
@@ -543,17 +530,6 @@ bool Mcu::load( QString fileName )
     return true;
 }
 
-/*void Mcu::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
-{
-    if( !acceptedMouseButtons() ) event->ignore();
-    else{
-        event->accept();
-        QMenu* menu = new QMenu();
-        contextMenu( event, menu );
-        Component::contextMenu( event, menu );
-        menu->deleteLater();
-}   }*/
-
 void Mcu::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
 {
     QAction* mainAction = menu->addAction( QIcon(":/subc.png"),tr("Main Mcu") );
@@ -565,7 +541,7 @@ void Mcu::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
         QObject::connect( linkCompAction, &QAction::triggered, [=](){ slotLinkComp(); } );
     }
 
-    if( m_eMcu.flashSize() )
+    if( m_pgm )
     {
         QAction* loadAction = menu->addAction( QIcon(":/load.svg"),tr("Load firmware") );
         QObject::connect( loadAction, &QAction::triggered, [=](){ slotLoad(); } );

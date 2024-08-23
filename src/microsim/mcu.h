@@ -22,6 +22,8 @@
 class MCUMonitor;
 class ScriptCpu;
 class McuEeprom;
+class McuPgm;
+class McuIntOsc;
 
 class Mcu : public Chip, public Linker
 {
@@ -154,6 +156,7 @@ class Mcu : public Chip, public Linker
 
         McuIntOsc* m_intOsc;
         McuEeprom* m_eeprom;
+        McuPgm*    m_pgm;
 
         IoPin*  m_resetPin;
         McuPin* m_portRstPin;

@@ -17,26 +17,33 @@ class MemData
         MemData();
         ~MemData();
 
-        static bool loadData( QVector<int>* toData, bool resize=false, int bits=8 );
-        static void saveData( QVector<int>* data, int bits=8 );
+        bool loadData( bool resize=false );
+        void saveData();
 
-        static bool loadFile( QVector<int>* toData, QString file, bool resize, int bits, eMcu* eMcu=NULL );
-        static bool loadDat( QVector<int>* toData, QString file, bool resize );
-        static bool loadHex( QVector<int>* toData, QString file, bool resize, int bits );
-        static bool loadBin( QVector<int>* toData, QString file, bool resize, int bits );
+        bool loadFile( QString file, bool resize, eMcu* eMcu=nullptr );
+        bool loadDat( QString file, bool resize );
+        bool loadDatStr( QString data, bool resize );
+        bool loadHex( QString file, bool resize );
+        bool loadBin( QString file, bool resize );
 
-        static QString getMem( QVector<int>* data );
-        static void setMem( QVector<int>* data, QString m );
+        QString getMem();
+        void setMem( QString m );
+
+        void setBits( int b ) { m_bits = b; }
 
         virtual void showTable( int dataSize=256, int wordBytes=1 );
 
     protected:
-        MemTable* m_memTable;
-        static eMcu* m_eMcu;
+        void saveDat( int bits );
+        void saveHex( int bits ); /// TODO
+        void saveBin( int bits );
 
-        static void saveDat( QVector<int>* data, int bits );
-        static void saveHex( QVector<int>* data, int bits ); /// TODO
-        static void saveBin( QVector<int>* data, int bits );
+        int m_bits;
+
+        MemTable* m_memTable;
+        eMcu* m_eMcu;
+
+        std::vector<uint64_t> m_data;
 };
 
 #endif

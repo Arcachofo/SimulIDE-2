@@ -36,8 +36,8 @@ eMcu::eMcu( Mcu* comp, QString id )
     m_freq = 0;
     m_cPerInst = 1;
 
-    m_wordSize  = 2;
-    m_flashSize = 0;
+    //m_wordSize  = 2;
+    //m_flashSize = 0;
     //m_romSize   = 0;
     m_ramSize   = 0;
 
@@ -109,14 +109,14 @@ void eMcu::runEvent()
 
 void eMcu::stepCpu()
 {
-    if( !m_flashSize || m_cpu->getPC() < m_flashSize )
+    if( true /*!m_flashSize || m_cpu->getPC() < m_flashSize*/ ) /// Fixme
     {
         if( m_state == mcuRunning ) m_cpu->runStep();
         m_interrupts.runInterrupts();
     }else{
         m_state = mcuError;
         m_component->crash( true );
-        qDebug() << "eMcu::stepCpu: Error PC =" << m_cpu->getPC() << "PGM size =" << m_flashSize;
+        /// qDebug() << "eMcu::stepCpu: Error PC =" << m_cpu->getPC() << "PGM size =" << m_flashSize;
         qDebug() << "MCU stopped";
     }
     m_cycle += cyclesDone;
@@ -214,14 +214,6 @@ void eMcu::setFreq( double freq )
     }
     m_freq = freq;
 }
-
-/*void eMcu::setEeprom( QVector<int>* eep )
-{
-    int size = m_romSize;
-    if( eep->size() < size ) size = eep->size();
-
-    for( int i=0; i<size; ++i ) setRomValue( i, eep->at(i) );
-}*/
 
 McuTimer* eMcu::getTimer( QString name )
 {

@@ -41,8 +41,8 @@ class DynamicMemory : public LogicComponent, public MemData
         void updatePins();
 
     public slots:
-        void loadData();
-        void saveData();
+        //void loadData();
+        //void saveData();
         void slotShowTable();
 
     protected:
@@ -60,7 +60,7 @@ class DynamicMemory : public LogicComponent, public MemData
         int m_address;
         bool m_refreshError;
 
-        QVector<int> m_ram;
+        //QVector<int> m_ram;
         QVector<uint64_t> m_rowLastRefresh;
 
         bool m_oe;

@@ -110,7 +110,8 @@ void DynamicMemory::stamp()                   // Called at Simulation Start
     m_ras = false;
     m_cas = false;
 
-    for( int &data : m_ram ) data = rand() % (int)( pow( 2, m_dataBits ) );
+    for( uint i=0; i<m_data.size(); ++i )
+        m_data[i] = rand() % (int)( pow( 2, m_dataBits ) );
 
     m_WePin->changeCallBack( this );
     m_RasPin->changeCallBack( this );
@@ -124,7 +125,7 @@ void DynamicMemory::stamp()                   // Called at Simulation Start
 
 void DynamicMemory::updateStep()
 {
-    if( m_memTable ) m_memTable->updateTable( &m_ram );
+    //if( m_memTable ) m_memTable->updateTable( &m_data );
     //if ( m_refreshError )
     //    m_error = true;
 }
@@ -184,10 +185,10 @@ void DynamicMemory::voltChanged()        // Some Pin Changed State, Manage it
                     bool state = m_outPin[i]->getInpState();
                     if( state ) value += pow( 2, i );
                 }
-                m_ram[m_address] = value;
+                m_data[m_address] = value;
                 //qDebug() << "Write" << value << "to address" << m_address;
             }else{                                            // Read
-                m_nextOutVal = m_ram[m_address];
+                m_nextOutVal = m_data[m_address];
                 IoComponent::scheduleOutPuts( this );
             }
         }
@@ -244,7 +245,7 @@ void DynamicMemory::setRowAddrBits( int rowAddrBits )
     setAddrBits( bits );
     m_rowAddrBits = rowAddrBits;
 
-    m_ram.resize( pow( 2, m_rowAddrBits + m_colAddrBits ) );  // this is the second resize, because there is the first resize in function setAddrBits
+    m_data.resize( pow( 2, m_rowAddrBits + m_colAddrBits ) );  // this is the second resize, because there is the first resize in function setAddrBits
     m_rowLastRefresh.resize( pow( 2, m_rowAddrBits ) );
 }
 
@@ -260,7 +261,7 @@ void DynamicMemory::setColAddrBits( int colAddrBits )
     setAddrBits( bits );
     m_colAddrBits = colAddrBits;
     
-    m_ram.resize( pow( 2, m_rowAddrBits + m_colAddrBits ) );
+    m_data.resize( pow( 2, m_rowAddrBits + m_colAddrBits ) );
 }
 
 void DynamicMemory::setAddrBits( int bits )
@@ -269,7 +270,7 @@ void DynamicMemory::setAddrBits( int bits )
     if( bits == 0 ) bits = 8;
     if( bits > 24 ) bits = 24;
 
-    m_ram.resize( pow( 2, bits ) );
+    m_data.resize( pow( 2, bits ) );
     
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
     
@@ -277,7 +278,7 @@ void DynamicMemory::setAddrBits( int bits )
     else if( bits > m_addrBits ) createAddrBits( bits-m_addrBits );
     m_addrBits = bits;
 
-    if( m_memTable ) m_memTable->setData( &m_ram, m_dataBytes );
+    //if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
 
     updatePins();
     Circuit::self()->update();
@@ -317,7 +318,7 @@ void DynamicMemory::setDataBits( int bits )
     m_dataBits = bits;
     m_dataBytes = m_dataBits/8;
     if( m_dataBits%8) m_dataBytes++;
-    if( m_memTable ) m_memTable->setData( &m_ram, m_dataBytes );
+    //if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
     updatePins();
     Circuit::self()->update();
 }
@@ -357,17 +358,17 @@ void DynamicMemory::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* m
     Component::contextMenu( event, menu );
 }
 
-void DynamicMemory::loadData()
+/*void DynamicMemory::loadData()
 {
-    MemData::loadData( &m_ram, false, m_dataBits );
-    if( m_memTable ) m_memTable->setData( &m_ram, m_dataBytes );
-}
+    MemData::loadData( false, m_dataBits );
+    /// if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
+}*/
 
-void DynamicMemory::saveData() { MemData::saveData( &m_ram, m_dataBits ); }
+//void DynamicMemory::saveData() { MemData::saveData( &m_data, m_dataBits ); }
 
 void DynamicMemory::slotShowTable()
 {
-    MemData::showTable( m_ram.size(), m_dataBytes );
+    MemData::showTable( m_data.size(), m_dataBytes );
     m_memTable->setWindowTitle( "DRAM: "+idLabel() );
-    m_memTable->setData( &m_ram, m_dataBytes );
+    /// m_memTable->setData( &m_data, m_dataBytes );
 }

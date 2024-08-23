@@ -11,8 +11,8 @@ McuCpu::McuCpu( eMcu* mcu )
     m_dataMem    = mcu->getRam();
     m_dataMemEnd = mcu->ramSize();
     if( m_dataMemEnd ) m_dataMemEnd--;
-    m_progMem    = mcu->m_progMem.data();
-    m_progSize   = mcu->flashSize();
+    /// Fixme m_progMem    = mcu->m_progMem.data();
+    /// Fixme m_progSize   = mcu->flashSize();
 
     if( mcu->m_regStart > 0 ) m_lowDataMemEnd = mcu->m_regStart-1;
     else                      m_lowDataMemEnd = 0;

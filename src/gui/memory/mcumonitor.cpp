@@ -64,12 +64,12 @@ MCUMonitor::MCUMonitor( QWidget* parent, eMcu* mcu )
         jumpButton->setVisible( true );
     }
 
-    if( mcu->flashSize() )
+    /*if( mcu->flashSize() )
     {
         m_flashMonitor = new MemTable( tabWidget, m_processor->flashSize(), m_processor->wordSize() );
         tabWidget->addTab( m_flashMonitor, "Flash");
         connect( m_flashMonitor, SIGNAL(dataChanged(int, int)), this, SLOT(flashDataChanged(int, int)) );
-    }
+    }*/
     /*if( mcu->romSize() )
     {
         m_romMonitor   = new MemTable( tabWidget, m_processor->romSize() );
@@ -83,7 +83,7 @@ void MCUMonitor::ramDataChanged( int address, int val )
 { m_processor->setRamValue( address, val ); }
 
 void MCUMonitor::flashDataChanged( int address, int val )
-{ m_processor->setFlashValue( address, val ); }
+{ /*m_processor->setFlashValue( address, val );*/ }
 
 void MCUMonitor::eepromDataChanged( int address, int val )
 {
@@ -98,11 +98,11 @@ void MCUMonitor::tabChanged( int )
 
 void MCUMonitor::on_byteButton_toggled( bool byte )
 {
-    if( m_flashMonitor )
+    /*if( m_flashMonitor )
     {
         int bytes = byte ? 1 : m_processor->wordSize();
         m_flashMonitor->setCellBytes( bytes );
-    }
+    }*/
     updateStep();
 }
 
@@ -126,7 +126,7 @@ void MCUMonitor::updateStep()
             status >>= 1;
         }
 
-        if( byteButton->isChecked() ) pc *= m_processor->wordSize();
+        /// if( byteButton->isChecked() ) pc *= m_processor->wordSize();
         m_pc.item( 0, 0 )->setData( 0, pc );
         m_pc.item( 0, 1 )->setText("0x"+val2hex(pc) );
     }
@@ -154,8 +154,8 @@ void MCUMonitor::updateStep()
     }*/
     if( m_flashMonitor && m_flashMonitor->isVisible() )
     {
-        for( uint32_t i=0; i<m_processor->flashSize(); ++i )
-            m_flashMonitor->setValue( i, m_processor->getFlashValue(i));
+        //for( uint32_t i=0; i<m_processor->flashSize(); ++i )
+        //    m_flashMonitor->setValue( i, m_processor->getFlashValue(i));
 
         if( Simulator::self()->simState() == SIM_RUNNING
          || Simulator::self()->simState() == SIM_PAUSED )

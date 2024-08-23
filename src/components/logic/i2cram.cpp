@@ -52,7 +52,7 @@ I2CRam::I2CRam( QString type, QString id )
     m_persistent = false;
     m_cCode = 0b01010000; // 0x50, 80
     m_size  = 65536;
-    m_ram.resize( m_size );
+    m_data.resize( m_size );
 
     IoComponent::initState();
 
@@ -98,7 +98,7 @@ void I2CRam::stamp()           // Called at Simulation Start
 void I2CRam::updateStep()
 {
     IoComponent::updateStep();
-    if( m_memTable ) m_memTable->updateTable( &m_ram );
+    /// Fixme if( m_memTable ) m_memTable->updateTable( &m_data );
 }
 
 void I2CRam::voltChanged()             // Some Pin Changed State, Manage it
@@ -128,7 +128,7 @@ void I2CRam::readByte() // Write to RAM
         else               m_addrPtr  = m_rxReg;
     }else{
         while( m_addrPtr >= m_size ) m_addrPtr -= m_size;
-        m_ram[ m_addrPtr ] = m_rxReg;
+        m_data[ m_addrPtr ] = m_rxReg;
         m_addrPtr++;
         
         if( m_addrPtr >= m_size ) m_addrPtr = 0;
@@ -146,7 +146,7 @@ void I2CRam::writeByte() // Read from RAM
 {
     while( m_addrPtr >= m_size ) m_addrPtr -= m_size;
 
-    m_txReg = m_ram[ m_addrPtr ];
+    m_txReg = m_data[ m_addrPtr ];
     if( ++m_addrPtr >= m_size ) m_addrPtr = 0;
 
     TwiModule::writeByte();
@@ -155,7 +155,7 @@ void I2CRam::writeByte() // Read from RAM
 void I2CRam::setMem( QString m )
 {
     if( m.isEmpty() ) return;
-    MemData::setMem( &m_ram, m );
+    setMem( m );
 }
 
 QString I2CRam::getMem()
@@ -163,7 +163,7 @@ QString I2CRam::getMem()
     QString m;
     if( !m_persistent ) return m;
 
-    return MemData::getMem( &m_ram );
+    return getMem();
 }
 
 void I2CRam::setRSize( int size )
@@ -171,9 +171,9 @@ void I2CRam::setRSize( int size )
     if( size > 65536 ) size = 65536;
     if( size < 1 ) size = 1;
     m_size = size;
-    m_ram.resize( size );
+    m_data.resize( size );
 
-    if( m_memTable ) m_memTable->setData( &m_ram );
+    /// Fixme if( m_memTable ) m_memTable->setData( &m_data );
 }
 
 void I2CRam::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
@@ -196,5 +196,5 @@ void I2CRam::slotShowTable()
     MemData::showTable( m_size, 1 );
     if( m_persistent ) m_memTable->setWindowTitle( "I2C ROM: "+m_idLabel->toPlainText());
     else               m_memTable->setWindowTitle( "I2C RAM: "+m_idLabel->toPlainText() );
-    m_memTable->setData( &m_ram );
+    /// m_memTable->setData( &m_data );
 }

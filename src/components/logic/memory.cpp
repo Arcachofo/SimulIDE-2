@@ -104,7 +104,7 @@ void Memory::stamp()                   // Called at Simulation Start
     for( IoPin* pin : m_outPin ) pin->setPinMode( input );
     IoComponent::initState();
 
-    if( !m_persistent ) m_ram.fill( 0 );
+    /// if( !m_persistent ) m_data.fill( 0 );
 
     for( uint i=0; i<m_inPin.size(); ++i )
         m_inPin[i]->changeCallBack( this, m_asynchro );
@@ -122,7 +122,7 @@ void Memory::updateStep()
         for( IoPin* pin : m_outPin ) pin->changeCallBack( this, m_asynchro && m_cs && m_we );
         m_changed = false;
     }
-    if( m_memTable ) m_memTable->updateTable( &m_ram );
+    ///if( m_memTable ) m_memTable->updateTable( &m_data );
 }
 
 void Memory::voltChanged()        // Some Pin Changed State, Manage it
@@ -159,10 +159,10 @@ void Memory::voltChanged()        // Some Pin Changed State, Manage it
             bool state = m_outPin[i]->getInpState();
             if( state ) value += pow( 2, i );
         }
-        m_ram[m_address] = value;
+        m_data[m_address] = value;
     }
     else{                                    // Read
-        m_nextOutVal = m_ram[m_address];
+        m_nextOutVal = m_data[m_address];
         IoComponent::scheduleOutPuts( this );
 }   }
 
@@ -172,18 +172,18 @@ void Memory::setAsynchro( bool a )
     m_changed = true;
 }
 
-void Memory::setMem( QString m )
+/*void Memory::setMem( QString m )
 {
     if( m.isEmpty() ) return;
-    MemData::setMem( &m_ram, m );
+    MemData::setMem( &m_data, m );
 }
 
 QString Memory::getMem()
 {
     QString m;
     if( !m_persistent ) return m;
-    return MemData::getMem( &m_ram );
-}
+    return MemData::getMem( &m_data );
+}*/
 
 void Memory::updatePins()
 {
@@ -221,7 +221,7 @@ void Memory::setAddrBits( int bits )
     if( bits == 0 ) bits = 8;
     if( bits > 24 ) bits = 24;
 
-    m_ram.resize( pow( 2, bits ) );
+    m_data.resize( pow( 2, bits ) );
     
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
     
@@ -229,7 +229,7 @@ void Memory::setAddrBits( int bits )
     else if( bits > m_addrBits ) createAddrBits( bits-m_addrBits );
     m_addrBits = bits;
 
-    if( m_memTable ) m_memTable->setData( &m_ram, m_dataBytes );
+    ///if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
 
     updatePins();
     Circuit::self()->update();
@@ -269,7 +269,7 @@ void Memory::setDataBits( int bits )
     m_dataBits = bits;
     m_dataBytes = m_dataBits/8;
     if( m_dataBits%8) m_dataBytes++;
-    if( m_memTable ) m_memTable->setData( &m_ram, m_dataBytes );
+    ///if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
     updatePins();
     Circuit::self()->update();
 }
@@ -309,18 +309,18 @@ void Memory::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
     Component::contextMenu( event, menu );
 }
 
-void Memory::loadData()
+/*void Memory::loadData()
 {
-    MemData::loadData( &m_ram, false, m_dataBits );
-    if( m_memTable ) m_memTable->setData( &m_ram, m_dataBytes );
+    MemData::loadData( &m_data, false, m_dataBits );
+    if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
 }
 
-void Memory::saveData() { MemData::saveData( &m_ram, m_dataBits ); }
+void Memory::saveData() { MemData::saveData( &m_data, m_dataBits ); }*/
 
 void Memory::slotShowTable()
 {
-    MemData::showTable( m_ram.size(), m_dataBytes );
+    MemData::showTable( m_data.size(), m_dataBytes );
     if( m_persistent ) m_memTable->setWindowTitle( "ROM: "+idLabel() );
     else               m_memTable->setWindowTitle( "RAM: "+idLabel() );
-    m_memTable->setData( &m_ram, m_dataBytes );
+    ///m_memTable->setData( &m_data, m_dataBytes );
 }

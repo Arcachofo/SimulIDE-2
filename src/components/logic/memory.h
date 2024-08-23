@@ -23,8 +23,8 @@ class Memory : public IoComponent, public eElement, public MemData
         virtual void voltChanged() override;
         virtual void runEvent() override { IoComponent::runOutputs(); }
 
-        void setMem( QString m );
-        QString getMem();
+        //void setMem( QString m );
+        //QString getMem();
 
         int addrBits() { return m_addrBits; }
         void setAddrBits( int bits );
@@ -45,8 +45,8 @@ class Memory : public IoComponent, public eElement, public MemData
         void updatePins();
 
     public slots:
-        void loadData();
-        void saveData();
+        //void loadData();
+        //void saveData();
         void slotShowTable();
 
     protected:
@@ -58,7 +58,7 @@ class Memory : public IoComponent, public eElement, public MemData
         int m_dataBytes;
         int m_address;
 
-        QVector<int> m_ram;
+        //QVector<int> m_ram;
 
         bool m_oe;
         bool m_we;

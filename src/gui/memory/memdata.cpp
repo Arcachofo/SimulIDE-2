@@ -16,17 +16,17 @@
 #include "e_mcu.h"
 #include "utils.h"
 
-eMcu* MemData::m_eMcu = NULL;
 
 MemData::MemData()
 {
-    m_memTable = NULL;
+    m_memTable = nullptr;
+    m_eMcu = nullptr;
 }
 MemData::~MemData()
 {
     if( !m_memTable ) return;
 
-    m_memTable->setParent( NULL );
+    m_memTable->setParent( nullptr );
     m_memTable->deleteLater();
 }
 
@@ -41,81 +41,80 @@ void MemData::showTable( int dataSize, int wordBytes )
     m_memTable->show();
 }
 
-bool MemData::loadData( QVector<int>* toData, bool resize, int bits )
+bool MemData::loadData( bool resize )
 {
     Simulator::self()->pauseSim();
 
     QString dir = changeExt( Circuit::self()->getFilePath(), ".data" );
-    QString fileName = QFileDialog::getOpenFileName( NULL,
+    QString fileName = QFileDialog::getOpenFileName( nullptr,
                                                     "MemData::loadData", dir,
                        simulideTr( "MemData", "All files (*.*);;.data (*.data);;.bin (*.bin)"));
 
     if( fileName.isEmpty() ) return false; // User cancels loading
 
-    bool ok = loadFile( toData, fileName, resize, bits );
+    bool ok = loadFile( fileName, resize );
     Simulator::self()->resumeSim();
 
     return ok;
 }
 
-bool MemData::loadFile( QVector<int>* toData, QString file, bool resize, int bits, eMcu* eMcu )
+bool MemData::loadFile( QString file, bool resize, eMcu* eMcu )
 {
     m_eMcu = eMcu;
-    if( eMcu ) return loadHex( toData, file, resize, bits ); // MCUs file must be hex format
+    if( eMcu ) return loadHex( file, resize ); // MCUs file must be hex format
 
-    if( resize ) toData->resize( 1 );
+    if( resize ) m_data.resize( 1 );
 
     QString ext = getFileExt( file ).toLower();
 
     bool ok = false;
-    if     ( ext == ".data" ) ok = loadDat( toData, file, resize );
+    if     ( ext == ".data" ) ok = loadDat( file, resize );
     else if( ext == ".hex"
-          || ext == ".ihx" )  ok = loadHex( toData, file, resize, bits ); // Intel Hex Format
-    else                      ok = loadBin( toData, file, resize, bits ); // Binary Format
+          || ext == ".ihx" )  ok = loadHex( file, resize ); // Intel Hex Format
+    else                      ok = loadBin( file, resize ); // Binary Format
 
-    m_eMcu = NULL;
+    m_eMcu = nullptr;
     return ok;
 }
 
-bool MemData::loadDat( QVector<int>* toData, QString file, bool resize )
+bool MemData::loadDat( QString file, bool resize )
 {
-    QStringList lines = fileToStringList( file, "MemData::loadTxt" );
+    QString data = fileToString( file, "MemData::loadTxt" );
 
+    data.replace("\n", ",");
+    return loadDatStr( data, resize );
+}
+
+bool MemData::loadDatStr( QString data, bool resize )
+{
     int addr = 0;
-    int dataEnd = toData->size()-1;
+    int dataEnd = m_data.size()-1;
 
-    for( QString line : lines )
+    QStringList words = data.split(",");
+
+    for( QString sdata : words )
     {
-        line = line.replace("\t", "").replace(" ", "");
-        if( line.isEmpty() ) continue;
+        bool ok = false;
+        int data = sdata.toInt( &ok, 10 );
+        if( !ok ) continue;
 
-        QStringList words = line.split( "," );
-        words.removeAll(QString(""));
-
-        while( !words.isEmpty() )
+        if( addr > dataEnd )
         {
-            QString sdata = words.takeFirst();
-            bool ok = false;
-            int data = sdata.toInt( &ok, 10 );
-            if( !ok ) continue;
-
             if( resize ){
                 dataEnd++;
-                toData->resize( dataEnd+1 );
+                m_data.resize( dataEnd+1 );
+            }else{
+                qDebug() << "\nMemData::loadDat: Data doesn't fit in Memory"<<dataEnd<<"\n";
+                break;
             }
-            if( addr > dataEnd ) break;
-            toData->replace( addr, data );
-            addr++;
         }
-        if( !words.isEmpty() && ( addr > dataEnd ) )
-        {
-            qDebug() << "\nMemData::loadDat: Data doesn't fit in Memory"<<dataEnd<<"\n";
-            return false;
-    }   }
+        m_data.at( addr ) = data ;
+        addr++;
+    }
     return true;
 }
 
-bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits )
+bool MemData::loadHex( QString file, bool resize )
 {
     qDebug() <<"Loading hex file:\n"<<file<<"\n";
     QStringList lineList = fileToStringList( file, "MemData::loadHex" );
@@ -128,8 +127,8 @@ bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits
     int checksum;
     int hiByte;
     uint16_t data;
-    int dataEnd = toData->size()-1;
-    int WordSize = bits/8;
+    int dataEnd = m_data.size()-1;
+    int bytes = (m_bits+7)/8;
 
     bool ok;
 
@@ -154,7 +153,7 @@ bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits
         checksum += nBytes;
 
         addr = addrBase+line.mid( 2, 4 ).toInt( &ok, 16 );
-        addr /= WordSize;
+        addr /= bytes;
         checksum += line.mid( 2, 2 ).toInt( &ok, 16 );
         checksum += line.mid( 4, 2 ).toInt( &ok, 16 );
 
@@ -168,12 +167,12 @@ bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits
         }
         checksum += type;
         int i;
-        for( i=8; i<8+nBytes*2; i+=2*WordSize )
+        for( i=8; i<8+nBytes*2; i+=2*bytes )
         {
             data = line.mid( i, 2 ).toInt( &ok, 16 );
             checksum += data;
 
-            if( WordSize == 2 ){
+            if( bytes == 2 ){
                 hiByte = line.mid( i+2, 2 ).toInt( &ok, 16 );
                 data += (hiByte<<8);
                 checksum += hiByte;
@@ -186,9 +185,9 @@ bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits
             }
             if( resize ){
                 dataEnd++;
-                toData->resize( dataEnd+1 );
+                m_data.resize( dataEnd+1 );
             }
-            //qDebug()<< "MemData::loadHex"<<addrBase/WordSize<< addr <<data;
+            //qDebug()<< "MemData::loadHex"<<addrBase/bytes<< addr <<data;
             if( addr > dataEnd ){
                 bool ok = false;
                 if( m_eMcu )
@@ -204,7 +203,7 @@ bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits
                     return true;
                 }
             }
-            else toData->replace( addr, data );
+            else m_data.at( addr ) = data;
             addr++;
         }
         checksum += line.mid( i, 2 ).toInt( &ok, 16 );
@@ -218,10 +217,10 @@ bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits
     return false;
 }
 
-bool MemData::loadBin(QVector<int>* toData, QString file, bool resize, int bits )
+bool MemData::loadBin( QString file, bool resize )
 {
-    int bytes = (bits+7)/8;
-    int dataEnd = toData->size()-1;
+    int bytes = (m_bits+7)/8;
+    int dataEnd = m_data.size()-1;
 
     QByteArray ba = fileToByteArray( file, "MemData::loadData" );
     int memSize = ba.size()/bytes;
@@ -229,7 +228,7 @@ bool MemData::loadBin(QVector<int>* toData, QString file, bool resize, int bits 
     if( resize )
     {
         dataEnd = memSize-1;
-        toData->resize( memSize );
+        m_data.resize( memSize );
     }
     for( int i=0; i<memSize; i++ )
     {
@@ -244,31 +243,31 @@ bool MemData::loadBin(QVector<int>* toData, QString file, bool resize, int bits 
             if( by>0 ) val <<= 8*by;
             data += val;
         }
-        toData->replace( i, data );
+        m_data.at(i) = data;
     }
     return true;
 }
 
-void MemData::saveData( QVector<int>* data, int bits )
+void MemData::saveData()
 {
      Simulator::self()->pauseSim();
 
     QString dir = changeExt( Circuit::self()->getFilePath(), ".data" );
 
-    QString fileName = QFileDialog::getSaveFileName( NULL,
+    QString fileName = QFileDialog::getSaveFileName( nullptr,
                        simulideTr( "MemData", "Save Data" ), dir,
                        simulideTr( "MemData", "All files (*.*);;.data (*.data);;.bin (*.bin)"));
 
     if( fileName.isEmpty() ) return; // User cancels saving
 
     QFile outFile( fileName );
-    int bytes = (bits+7)/8;
+    int bytes = (m_bits+7)/8;
     int i = 0;
 
     if( fileName.endsWith(".data") )
     {
         QString output = "";
-        for( int val : *data )
+        for( uint val : m_data )
         {
             QString sval = QString::number( val );
             while( sval.length() < 4) sval.prepend( " " );
@@ -279,7 +278,7 @@ void MemData::saveData( QVector<int>* data, int bits )
         }
         if( !outFile.open( QFile::WriteOnly | QFile::Text ) )
         {
-             QMessageBox::warning(NULL, "MemData::saveData",
+             QMessageBox::warning(nullptr, "MemData::saveData",
              simulideTr( "MemData", "Cannot write file %1:\n%2.").arg(fileName).arg(outFile.errorString()));
         }else{
             QTextStream toFile( &outFile );
@@ -290,10 +289,10 @@ void MemData::saveData( QVector<int>* data, int bits )
     {
         if( !outFile.open( QFile::WriteOnly ) )
         {
-              QMessageBox::warning(NULL, "MemData::saveData",
+              QMessageBox::warning(nullptr, "MemData::saveData",
               simulideTr( "MemData", "Cannot write file %1:\n%2.").arg(fileName).arg(outFile.errorString()));
         }else{
-            for( int val : *data ){
+            for( uint val : m_data ){
                 for( int by=0; by<bytes; by++ ) // Separate bytes little-endian
                 {
                     char byte = val & 0xFF;
@@ -305,31 +304,31 @@ void MemData::saveData( QVector<int>* data, int bits )
     Simulator::self()->resumeSim();
 }
 
-void MemData::saveDat( QVector<int>* data, int bits )
+void MemData::saveDat( int bits )
 {
 
 }
 
-void MemData::saveHex( QVector<int>* data, int bits ) /// TODO
+void MemData::saveHex( int bits ) /// TODO
 {
 
 }
 
-void MemData::saveBin( QVector<int>* data, int bits )
+void MemData::saveBin( int bits )
 {
 
 }
 
-QString MemData::getMem( QVector<int>* data )
+QString MemData::getMem()
 {
     QString m;
-    int size = data->size();
+    uint size = m_data.size();
     if( size > 0 )
     {
         bool empty = true;
         for( int i=size-1; i>=0; --i )
         {
-            int val = data->at( i );
+            int val = m_data.at( i );
             if( val != 0 ) empty = false;
             if( empty ) continue;
             m.prepend( QString::number( val )+"," );
@@ -337,15 +336,16 @@ QString MemData::getMem( QVector<int>* data )
     return m;
 }
 
-void MemData::setMem( QVector<int>* data, QString m )
+void MemData::setMem( QString m )
 {
     if( m.isEmpty() ) return;
 
     QStringList list = m.split(",");
-    int i = 0;
+    uint i = 0;
+    uint size = m_data.size();
     for( QString val : list )
     {
-        if( i >= data->size() ) break;
-        data->replace( i, val.toInt() );
+        if( i >= size ) break;
+        m_data.at(i) = val.toInt();
         i++;
 }   }

@@ -149,8 +149,8 @@ int McuCreator::processFile( QString fileName )
     if( root.hasAttribute("core") ) m_core = root.attribute("core");
 
     if( root.hasAttribute("data") )       createDataMem( root.attribute("data").toUInt(0,0) );
-    if( root.hasAttribute("prog") )       createProgMem( root.attribute("prog").toUInt(0,0) );
-    if( root.hasAttribute("progword") )   mcu->m_wordSize = root.attribute("progword").toUInt(0,0);
+    //if( root.hasAttribute("prog") )       createProgMem( root.attribute("prog").toUInt(0,0) );
+    //if( root.hasAttribute("progword") )   mcu->m_wordSize = root.attribute("progword").toUInt(0,0);
     //if( root.hasAttribute("eeprom") )     createRomMem( root.attribute("eeprom").toUInt(0,0) );
     if( root.hasAttribute("inst_cycle") ) mcu->setInstCycle( root.attribute("inst_cycle").toDouble() );
     if( root.hasAttribute("cpu_cycle") )  mcu->m_cPerTick = root.attribute("cpu_cycle").toDouble();
@@ -165,7 +165,7 @@ int McuCreator::processFile( QString fileName )
 
         if     ( part == "regblock" )   createRegisters( &el );
         else if( part == "datablock" )  createDataBlock( &el );
-        else if( part == "progblock" )  createProgBlock( &el );
+        //else if( part == "progblock" )  createProgBlock( &el );
         else if( part == "stack" )      { m_stackEl = el; m_newStack = true; }
         else if( part == "interrupts" ) createInterrupts( &el );
         else if( part == "port" )       createMcuPort( &el );
@@ -307,13 +307,13 @@ void McuCreator::createCfgWord( QDomElement* e )
     }
 }
 
-void McuCreator::createProgMem( uint32_t size )
+/*void McuCreator::createProgMem( uint32_t size )
 {
     mcu->m_flashSize = size;
     if     ( m_core == "Pic14" )  mcu->m_progMem.resize( size, 0x3FFF );
     else if( m_core == "Pic14e" ) mcu->m_progMem.resize( size, 0x3FFF );
     else                          mcu->m_progMem.resize( size, 0xFFFF );
-}
+}*/
 
 void McuCreator::createDataMem( uint32_t size )
 {
@@ -474,7 +474,7 @@ void McuCreator::getRegisters( QDomElement* e, uint16_t offset )
         node = node.nextSibling();
 }   }
 
-void McuCreator::createProgBlock( QDomElement* p )
+/*void McuCreator::createProgBlock( QDomElement* p )
 {
     QDomNode node = p->firstChild();
     while( !node.isNull() )
@@ -493,7 +493,7 @@ void McuCreator::createProgBlock( QDomElement* p )
             else mcu->setFlashValue( addr, value );
         }
         node = node.nextSibling();
-}   }
+}   }*/
 
 void McuCreator::createIntOsc( QDomElement* p )
 {

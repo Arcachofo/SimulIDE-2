@@ -3,11 +3,11 @@
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-#include "mcueeprom.h"
+#include "mcupgm.h"
 #include "simulator.h"
 #include "e_mcu.h"
 
-McuEeprom::McuEeprom( eMcu* mcu, QString name )
+McuPgm::McuPgm( eMcu* mcu, QString name )
          : McuModule( mcu, name )
          , MemData()
          , eElement( mcu->getId()+"-"+name )
@@ -17,37 +17,37 @@ McuEeprom::McuEeprom( eMcu* mcu, QString name )
     m_dataReg  = nullptr;
 }
 
-McuEeprom::~McuEeprom(){}
+McuPgm::~McuPgm(){}
 
-/*void McuEeprom::initialize()
+/*void McuPgm::initialize()
 {
     m_address = 0;
 }*/
 
-void McuEeprom::reset()
+void McuPgm::reset()
 {
     m_address = 0;
-    if( !m_saveEepr )
-        for( uint i=0; i<m_size; ++i ) m_data[i] = -1;
+    //if( !m_savePgm )
+    //    for( uint i=0; i<m_size; ++i ) m_data[i] = -1;
 }
 
-void McuEeprom::readEeprom()
+void McuPgm::readPgm()
 {
     *m_dataReg = m_data[m_address];
 }
 
-void McuEeprom::writeEeprom()
+void McuPgm::writePgm()
 {
     m_data[m_address] = *m_dataReg;
 }
 
-void McuEeprom::addrWriteL( uint8_t val )
+void McuPgm::addrWriteL( uint8_t val )
 {
     m_address = val;
     if( m_addressH ) m_address += *m_addressH << 8;
 }
 
-void McuEeprom::addrWriteH( uint8_t val )
+void McuPgm::addrWriteH( uint8_t val )
 {
     m_address = (val << 8) + *m_addressL;
 }

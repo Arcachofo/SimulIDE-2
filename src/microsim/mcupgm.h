@@ -3,34 +3,34 @@
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-#ifndef MCUEEPROM_H
-#define MCUEEPROM_H
+#ifndef MCUPGM_H
+#define MCUPGM_H
 
 #include "mcumodule.h"
 #include "memdata.h"
 #include "e-element.h"
 
-class McuEeprom : public McuModule, public MemData, public eElement
+class McuPgm : public McuModule, public MemData, public eElement
 {
         friend class McuCreator;
         friend class Mcu;
 
     public:
-        McuEeprom( eMcu* mcu, QString name );
-        virtual ~McuEeprom();
+        McuPgm( eMcu* mcu, QString name );
+        virtual ~McuPgm();
 
         virtual void setup() override {;}
 
         //virtual void initialize() override;
         virtual void reset() override;
 
-        virtual void readEeprom();
-        virtual void writeEeprom();
+        virtual void readPgm();
+        virtual void writePgm();
 
         virtual void addrWriteL( uint8_t val );
         virtual void addrWriteH( uint8_t val );
 
-        uint32_t size()  { return m_size; }
+        uint32_t size() { return m_size; }
 
         uint8_t  getValue( int address ) { return m_data[address]; }
         void     setValue( int address, uint8_t value ) { m_data[address] = value; }
@@ -44,7 +44,7 @@ class McuEeprom : public McuModule, public MemData, public eElement
         uint8_t* m_dataReg;
 
         uint32_t m_size;
-        bool m_saveEepr;
+        //bool m_savePgm;
 };
 
 #endif

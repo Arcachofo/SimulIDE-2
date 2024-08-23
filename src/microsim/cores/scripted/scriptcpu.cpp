@@ -28,28 +28,28 @@ ScriptCpu::ScriptCpu( eMcu* mcu )
     m_watcher  = nullptr;
 
     m_progWordMask = 0;
-    for( uint i=0; i<mcu->wordSize(); ++i )
+    /*for( uint i=0; i<mcu->wordSize(); ++i )
     {
         m_progWordMask <<= 8;
         m_progWordMask |= 0xFF;
-    }
+    }*/
 
     // Script functions
-    m_reset       = NULL;
-    m_voltChanged = NULL;
-    m_runEvent    = NULL;
-    m_extClock    = NULL;
-    m_extClockF   = NULL;
-    m_INTERRUPT   = NULL;
-    m_getCpuReg   = NULL;
-    m_getStrReg   = NULL;
-    m_command     = NULL;
-    m_setLinkedVal= NULL;
-    m_setLinkedStr= NULL;
-    m_vChangedCtx = NULL;
-    m_runEventCtx = NULL;
-    m_extClockCtx = NULL;
-    m_runStepCtx  = NULL;
+    m_reset       = nullptr;
+    m_voltChanged = nullptr;
+    m_runEvent    = nullptr;
+    m_extClock    = nullptr;
+    m_extClockF   = nullptr;
+    m_INTERRUPT   = nullptr;
+    m_getCpuReg   = nullptr;
+    m_getStrReg   = nullptr;
+    m_command     = nullptr;
+    m_setLinkedVal= nullptr;
+    m_setLinkedStr= nullptr;
+    m_vChangedCtx = nullptr;
+    m_runEventCtx = nullptr;
+    m_extClockCtx = nullptr;
+    m_runStepCtx  = nullptr;
 
     m_mcuComp = m_mcu->component();
 
@@ -246,10 +246,10 @@ int ScriptCpu::compileScript()
     m_setLinkedVal= module->GetFunctionByDecl("void setLinkedValue( double v, int i )");
     m_setLinkedStr= module->GetFunctionByDecl("void setLinkedString( string str, int i )");
 
-    m_vChangedCtx = m_voltChanged ? m_aEngine->CreateContext() : NULL;
-    m_runEventCtx = m_runEvent    ? m_aEngine->CreateContext() : NULL;
-    m_extClockCtx = m_extClockF   ? m_aEngine->CreateContext() : NULL;
-    m_runStepCtx  = m_runStep     ? m_aEngine->CreateContext() : NULL;
+    m_vChangedCtx = m_voltChanged ? m_aEngine->CreateContext() : nullptr;
+    m_runEventCtx = m_runEvent    ? m_aEngine->CreateContext() : nullptr;
+    m_extClockCtx = m_extClockF   ? m_aEngine->CreateContext() : nullptr;
+    m_runStepCtx  = m_runStep     ? m_aEngine->CreateContext() : nullptr;
 
     for( ComProperty* p : m_scriptProps ) // Get properties getters and setters from script
     {

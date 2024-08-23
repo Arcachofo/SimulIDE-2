@@ -35,8 +35,8 @@ MemTable::MemTable( QWidget* parent, int dataSize, int wordBytes )
     setContextMenuPolicy( Qt::CustomContextMenu );
 
     connect( this, &MemTable::customContextMenuRequested, this, &MemTable::on_context_menu_requested );
-    connect( actionSave_Memory_Table, &QAction::triggered, this, &MemTable::saveTable );
-    connect( actionLoad_Memory_Table, &QAction::triggered, this, &MemTable::loadTable );
+    //connect( actionSave_Memory_Table, &QAction::triggered, this, &MemTable::saveTable );
+    //connect( actionLoad_Memory_Table, &QAction::triggered, this, &MemTable::loadTable );
 }
 
 void MemTable::updateTable( QVector<int>* data )
@@ -268,18 +268,18 @@ void MemTable::on_context_menu_requested( const QPoint &pos )
 
 void MemTable::saveTable()
 {
-    if (m_data)
+    /*if (m_data)
         MemData::saveData( m_data );
     else {
         QVector<int> data { toIntVector() };
         MemData::saveData( &data );
-    }
+    }*/
 
 }
 
 void MemTable::loadTable()
 {
-    QVector<int> oldData { toIntVector() };
+    /*QVector<int> oldData { toIntVector() };
     QVector<int> data(m_dataSize);
     if ( MemData::loadData( &data,false ) ) {
         for( int i=0; i<m_dataSize; ++i ) {
@@ -290,7 +290,7 @@ void MemTable::loadTable()
                 emit dataChanged(i, data[i]);
             }
         }
-    }
+    }*/
 }
 
 void MemTable::cellClicked( int row, int col )
