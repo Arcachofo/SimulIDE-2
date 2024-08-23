@@ -73,7 +73,6 @@ class AvrUsi : public McuModule, public eElement
         McuPin* m_CKpin;
 
         McuOcUnit* m_t0OCA;
-        McuOcUnit* m_t0OCB;
 
         Interrupt* m_startInte;
 };
