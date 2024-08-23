@@ -6,6 +6,7 @@
 #include "avradc.h"
 #include "avrtimer.h"
 #include "mcuocunit.h"
+#include "mcuicunit.h"
 #include "mcucomparator.h"
 #include "mcupin.h"
 #include "e_mcu.h"
@@ -15,13 +16,13 @@ AvrAdc* AvrAdc::createAdc( eMcu* mcu, QString name, int type )
 {
     switch ( type ){
         case 00: return new AvrAdc00( mcu, name ); break;
-        case 01: return new AvrAdc01( mcu, name ); break;
         case 02: return new AvrAdc02( mcu, name ); break;
         case 03: return new AvrAdc03( mcu, name ); break;
         case 04: return new AvrAdc04( mcu, name ); break;
         case 10: return new AvrAdc10( mcu, name ); break;
         case 11: return new AvrAdc11( mcu, name ); break;
-        default: return NULL;
+        case 20: return new AvrAdc20( mcu, name ); break;
+        default: return nullptr;
 }   }
 
 AvrAdc::AvrAdc( eMcu* mcu, QString name )
@@ -32,29 +33,34 @@ AvrAdc::~AvrAdc(){}
 
 void AvrAdc::setup()
 {
-    m_ADEN  = getRegBits( "ADEN", m_mcu );
-    m_ADSC  = getRegBits( "ADSC", m_mcu );
-    m_ADATE = getRegBits( "ADATE", m_mcu );
-    m_ADIF  = getRegBits( "ADIF", m_mcu );
-    m_ADPS  = getRegBits( "ADPS0,ADPS1,ADPS2", m_mcu );
+    m_ADEN  = getRegBits("ADEN", m_mcu );
+    m_ADSC  = getRegBits("ADSC", m_mcu );
+    m_ADATE = getRegBits("ADATE", m_mcu );
+    m_ADIF  = getRegBits("ADIF", m_mcu );
+    m_ADPS  = getRegBits("ADPS0,ADPS1,ADPS2", m_mcu );
 
-    m_ADTS  = getRegBits( "ADTS0,ADTS1,ADTS2", m_mcu );
-    m_ACME  = getRegBits( "ACME", m_mcu );
+    m_ADTS  = getRegBits("ADTS0,ADTS1,ADTS2", m_mcu );
+    m_ACME  = getRegBits("ACME", m_mcu );
 
-    m_ADLAR = getRegBits( "ADLAR", m_mcu );
-    m_REFS  = getRegBits( "REFS0,REFS1", m_mcu );
+    m_ADLAR = getRegBits("ADLAR", m_mcu );
+    m_REFS  = getRegBits("REFS0,REFS1", m_mcu );
 
     if( m_mcu->getMcuPort("PORTV") )
     {
-        m_aVccPin = m_mcu->getMcuPin( "PORTV0" );
-        m_aRefPin = m_mcu->getMcuPin( "PORTV1" );
+        m_aVccPin = m_mcu->getMcuPin("PORTV0");
+        m_aRefPin = m_mcu->getMcuPin("PORTV1");
+        if( m_aRefPin ) m_aRefPin->setInputImp( 32000 ); // Internal 32K resistor on the AREF pin
     }
 
-    m_timer0 = (AvrTimer800*)m_mcu->getTimer( "TIMER0" );
-    m_timer1 = NULL;
+    m_int0Ovf = nullptr;
+    m_int0OCA = nullptr;
+    m_intxOCB = nullptr;
+    m_int1Cap = nullptr;
 
-    m_t0OCA = m_timer0->getOcUnit("OCA");
-    m_txOCB = NULL;
+    m_aComp = (McuComp*)m_mcu->getModule("COMP");
+    m_compInt = m_aComp->getInterrupt();
+
+    m_intExt0 = m_mcu->interrupts()->getInterrupt("INT0");
 
     m_vRefN = 0;
 }
@@ -122,19 +128,23 @@ void AvrAdc::updateAcme( uint8_t newVal )
 
 void AvrAdc::toAdcMux() // Connect Comparator with ADC multiplexer
 {
+    if( !m_aComp ) return;
+
     bool connect = m_acme && !m_enabled;
-    if( connect ) m_mcu->comparator()->setPinN( m_adcPin[m_channel] );
-    else          m_mcu->comparator()->setPinN( NULL );
+    if( connect ) m_aComp->setPinN( m_adcPin[m_channel] );
+    else          m_aComp->setPinN( nullptr );
 }
 
 void AvrAdc::setChannel( uint8_t newADMUX ) // ADMUX
 {
-    m_channel = getRegBitsVal( newADMUX, m_MUX ); //newADMUX & 0x0F;
+    m_channel    = getRegBitsVal(  newADMUX, m_MUX );
     m_leftAdjust = getRegBitsBool( newADMUX, m_ADLAR );
     m_refSelect  = getRegBitsVal(  newADMUX, m_REFS );
 
-    if( !m_mcu->comparator() ) return;
-    if( m_acme && !m_enabled ) m_mcu->comparator()->setPinN( m_adcPin[m_channel] );
+    updtVref();
+
+    if( !m_aComp ) return;
+    if( m_acme && !m_enabled ) m_aComp->setPinN( m_adcPin[m_channel] );
 }
 
 void AvrAdc::endConversion()
@@ -149,16 +159,26 @@ void AvrAdc::endConversion()
 AvrAdc00::AvrAdc00( eMcu* mcu, QString name )
         : AvrAdc( mcu, name )
 {
-    m_MUX = getRegBits( "MUX0,MUX1,MUX2,MUX3", mcu );
-
-    m_timer1 = (AvrTimer16bit*)mcu->getTimer("TIMER1");
-    m_txOCB  = m_timer1->getOcUnit("OCB");
-
-    m_fixedVref = 1.1;
 }
 AvrAdc00::~AvrAdc00(){}
 
+void AvrAdc00::setup()
+{
+    AvrAdc::setup();
 
+    m_MUX = getRegBits("MUX0,MUX1,MUX2,MUX3", m_mcu );
+
+    McuTimer* timer1 = m_mcu->getTimer("TIMER1");
+    m_int1Ovf = timer1->getInterrupt();
+    m_intxOCB = timer1->getOcUnit("OCB")->getInterrupt();
+    m_int1Cap = timer1->getIcUnit()->getInterrupt();
+
+    McuTimer* timer0 = m_mcu->getTimer("TIMER0");
+    m_int0Ovf = timer0->getInterrupt();
+    m_int0OCA = timer0->getOcUnit("OCA")->getInterrupt();
+
+    m_fixedVref = 1.1;
+}
 
 void AvrAdc00::autotriggerConf()
 {
@@ -166,44 +186,27 @@ void AvrAdc00::autotriggerConf()
     if( !m_autoTrigger ) trigger = 255;
 
     m_freeRunning = trigger == 0;
-    /// TODO                                     trigger == 1 // Analog Comparator
-    /// TODO                                     trigger == 2 //External Interrupt Request 0
-    m_t0OCA->getInterrupt()->callBack(  this, trigger == 3 ); // Timer/Counter0 Compare Match A
-    m_timer0->getInterrupt()->callBack( this, trigger == 4 ); // Timer/Counter0 Overflow
-    m_txOCB->getInterrupt()->callBack(  this, trigger == 5 ); // Timer/Counter1 Compare Match B
-    m_timer1->getInterrupt()->callBack( this, trigger == 6 ); // Timer/Counter1 Overflow
-    /// TODO                                     trigger == 7 // Timer/Counter1 Capture Event
+    m_compInt->callBack( this, trigger == 1 ); // Analog Comparator
+    m_intExt0->callBack( this, trigger == 2 ); // External Interrupt Request 0
+    m_int0OCA->callBack( this, trigger == 3 ); // Timer/Counter0 Compare Match A
+    m_int0Ovf->callBack( this, trigger == 4 ); // Timer/Counter0 Overflow
+    m_intxOCB->callBack( this, trigger == 5 ); // Timer/Counter1 Compare Match B
+    m_int1Ovf->callBack( this, trigger == 6 ); // Timer/Counter1 Overflow
+    m_int1Cap->callBack( this, trigger == 7 ); // Timer/Counter1 Capture Event
 }
 
 void AvrAdc00::updtVref()
 {
-    m_vRefP = m_mcu->vdd();
-    switch( m_refSelect ){
-        case 0: m_vRefP = m_aRefPin->getVoltage(); break; // AREF
-        case 1: m_vRefP = m_aVccPin->getVoltage(); break; // AVcc
-        case 3: m_vRefP = m_fixedVref;                 // Internal ref Volt
-}   }
+    double vRefP = 0;
 
-//------------------------------------------------------
-//-- AVR ADC Type 01 -----------------------------------
+    if( m_refSelect & 1 ) // Connect aRefPin to multiplexer
+    {
+        if( m_refSelect & 2 ) vRefP = m_fixedVref;
+        else                  vRefP = m_aVccPin->getVoltage();
+    }
+    m_aRefPin->setVoltage( vRefP );
 
-AvrAdc01::AvrAdc01( eMcu* mcu, QString name )
-        : AvrAdc00( mcu, name )
-{
-    m_ADATE = getRegBits( "ADFR", mcu ); // Same bit, different name: Autotrigger
-
-    m_fixedVref = 2.6;
-}
-AvrAdc01::~AvrAdc01(){}
-
-void AvrAdc01::configureB( uint8_t newSFIOR ) // SFIOR(Atmega8)
-{
-    updateAcme( newSFIOR );
-}
-
-void AvrAdc01::autotriggerConf()
-{
-    m_freeRunning = m_autoTrigger;
+    m_vRefP = m_aRefPin->getVoltage();
 }
 
 //------------------------------------------------------
@@ -212,16 +215,21 @@ void AvrAdc01::autotriggerConf()
 AvrAdc02::AvrAdc02( eMcu* mcu, QString name )
         : AvrAdc00( mcu, name )
 {
-    m_MUX = getRegBits( "MUX0,MUX1,MUX2,MUX3,MUX4,MUX5", mcu );
 }
 AvrAdc02::~AvrAdc02(){}
+
+void AvrAdc02::setup()
+{
+    AvrAdc00::setup();
+    m_MUX = getRegBits("MUX0,MUX1,MUX2,MUX3,MUX4,MUX5", m_mcu );
+}
 
 void AvrAdc02::updtVref()
 {
     m_vRefP = m_mcu->vdd();
     switch( m_refSelect ){
         case 1: m_vRefP = m_pRefPin->getVoltage();break; // External voltage reference at PA0 (AREF)
-        case 2: m_vRefP = 1.1;                 break; // Internal Vref. 1.1 Volt
+        case 2: m_vRefP = 1.1;                    break; // Internal Vref. 1.1 Volt
 }   }
 
 //------------------------------------------------------
@@ -230,11 +238,15 @@ void AvrAdc02::updtVref()
 AvrAdc03::AvrAdc03( eMcu* mcu, QString name )
         : AvrAdc00( mcu, name )
 {
-    m_MUX = getRegBits( "MUX0,MUX1,MUX2,MUX3,MUX4", mcu );
-
-    m_fixedVref = 2.6;
 }
 AvrAdc03::~AvrAdc03(){}
+
+void AvrAdc03::setup()
+{
+    AvrAdc00::setup();
+    m_MUX = getRegBits("MUX0,MUX1,MUX2,MUX3,MUX4", m_mcu );
+    m_fixedVref = 2.6;
+}
 
 void AvrAdc03::startConversion()
 {
@@ -284,9 +296,16 @@ void AvrAdc03::specialConv()
 AvrAdc04::AvrAdc04( eMcu* mcu, QString name )
         : AvrAdc03( mcu, name )
 {
-    m_MUX5  = getRegBits( "MUX5", mcu );
+    m_MUX5  = getRegBits("MUX5", mcu );
 }
 AvrAdc04::~AvrAdc04(){}
+
+void AvrAdc04::setup()
+{
+    AvrAdc00::setup();
+    m_MUX5  = getRegBits("MUX5", m_mcu );
+    m_fixedVref = 2.6;
+}
 
 void AvrAdc04::configureB( uint8_t newADCSRB ) // ADCSRB
 {
@@ -303,11 +322,22 @@ void AvrAdc04::configureB( uint8_t newADCSRB ) // ADCSRB
 AvrAdc10::AvrAdc10( eMcu* mcu, QString name )
         : AvrAdc( mcu, name )
 {
-    m_MUX = getRegBits( "MUX0,MUX1", mcu );
-
-    m_txOCB = m_timer0->getOcUnit("OCB");
 }
 AvrAdc10::~AvrAdc10(){}
+
+void AvrAdc10::setup()
+{
+    AvrAdc::setup();
+
+    m_MUX = getRegBits("MUX0,MUX1", m_mcu );
+
+    McuTimer* timer0 = m_mcu->getTimer("TIMER0");
+    m_int0Ovf = timer0->getInterrupt();
+    m_int0OCA = timer0->getOcUnit("OCA")->getInterrupt();
+    m_intxOCB = timer0->getOcUnit("OCB")->getInterrupt();
+
+    m_intPinC = m_mcu->interrupts()->getInterrupt("PCINT");
+}
 
 void AvrAdc10::autotriggerConf()
 {
@@ -315,17 +345,17 @@ void AvrAdc10::autotriggerConf()
     if( !m_autoTrigger ) trigger = 255;
 
     m_freeRunning = trigger == 0;
-    /// TODO                                     trigger == 1 // Analog Comparator
-    /// TODO                                     trigger == 2 //External Interrupt Request 0
-    m_t0OCA->getInterrupt()->callBack( this, trigger == 3 );  // Timer/Counter0 Compare Match A
-    m_timer0->getInterrupt()->callBack( this, trigger == 4 ); // Timer/Counter0 Overflow
-    m_txOCB->getInterrupt()->callBack( this, trigger == 5 );  // Timer/Counter0 Compare Match B
-    /// TODO                                     trigger == 6 // Pin Change Interrupt Request
+    m_compInt->callBack( this, trigger == 1 ); // Analog Comparator
+    m_intExt0->callBack( this, trigger == 2 ); // External Interrupt Request 0
+    m_int0OCA->callBack( this, trigger == 3 ); // Timer/Counter0 Compare Match A
+    m_int0Ovf->callBack( this, trigger == 4 ); // Timer/Counter0 Overflow
+    m_intxOCB->callBack( this, trigger == 5 ); // Timer/Counter0 Compare Match B
+    m_intPinC->callBack( this, trigger == 6 ); // Pin Change Interrupt Request
 }
 
 void AvrAdc10::updtVref()
 {
-    if( m_refSelect == 1 ) m_vRefP = 1.1;///TODO // Internal Vref. = ??? 1.1 Volt
+    if( m_refSelect == 1 ) m_vRefP = 1.1; ///TODO // Internal Vref. = ??? 1.1 Volt
     else                   m_vRefP = m_mcu->vdd();
 }
 
@@ -335,9 +365,15 @@ void AvrAdc10::updtVref()
 AvrAdc11::AvrAdc11( eMcu* mcu, QString name )
         : AvrAdc10( mcu, name )
 {
-    m_MUX = getRegBits( "MUX0,MUX1,MUX2,MUX3", mcu );
 }
 AvrAdc11::~AvrAdc11(){}
+
+void AvrAdc11::setup()
+{
+    AvrAdc10::setup();
+
+    m_MUX = getRegBits("MUX0,MUX1,MUX2,MUX3", m_mcu );
+}
 
 void AvrAdc11::updtVref()
 {
@@ -349,3 +385,45 @@ void AvrAdc11::updtVref()
         case 5: m_vRefP = 2.56; break;  // Internal 2.56V Voltage Reference with external capacitor
 }   }
 
+//------------------------------------------------------
+//-- AVR ADC Type 20 -----------------------------------
+
+AvrAdc20::AvrAdc20( eMcu* mcu, QString name )
+        : AvrAdc( mcu, name )
+{
+}
+AvrAdc20::~AvrAdc20(){}
+
+void AvrAdc20::setup()
+{
+    AvrAdc::setup();
+
+    m_MUX   = getRegBits("MUX0,MUX1,MUX2,MUX3", m_mcu );
+    m_ADATE = getRegBits("ADFR", m_mcu ); // Same bit, different name: Autotrigger
+
+    m_fixedVref = 2.56;
+}
+
+void AvrAdc20::configureB( uint8_t newSFIOR ) // SFIOR(Atmega8)
+{
+    updateAcme( newSFIOR );
+}
+
+void AvrAdc20::autotriggerConf()
+{
+    m_freeRunning = m_autoTrigger;
+}
+
+void AvrAdc20::updtVref()
+{
+    double vRefP = 0;
+
+    if( m_refSelect & 1 ) // Connect aRefPin to multiplexer
+    {
+        if( m_refSelect & 2 ) vRefP = m_fixedVref;
+        else                  vRefP = m_aVccPin->getVoltage();
+    }
+    m_aRefPin->setVoltage( vRefP );
+
+    m_vRefP = m_aRefPin->getVoltage();
+}

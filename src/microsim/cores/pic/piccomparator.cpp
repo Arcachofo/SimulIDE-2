@@ -17,7 +17,7 @@ PicComp* PicComp::createComparator( eMcu* mcu, QString name, int type ) // Stati
         case 03: return new PicComp03( mcu, name );
         case 11: return new PicComp11( mcu, name );
         case 12: return new PicComp12( mcu, name );
-        default: return NULL;
+        default: return nullptr;
     }
 }
 
@@ -29,16 +29,16 @@ PicComp::~PicComp(){}
 
 void PicComp::setup()
 {
-    McuVref* vref = m_mcu->vrefModule();
+    McuVref* vref = (McuVref*)m_mcu->getModule("Vref");
     if( vref ) vref->callBack( this, true ); // Vref Module will update vref if changed.
 }
 
 void PicComp::initialize()
 {
     McuComp::initialize();
-    m_pinP = NULL;
-    m_pinN = NULL;
-    m_pinOut = NULL;
+    m_pinP = nullptr;
+    m_pinN = nullptr;
+    m_pinOut = nullptr;
     m_enabled = false;
 }
 
@@ -128,14 +128,14 @@ void PicComp01::setMode( uint8_t mode )
     McuPin* pinN = m_cis ? m_pins[1] : m_pins[0];
 
     switch ( mode ) {
-        case 0: m_enabled = false; connect( m_pins[0], m_pins[1], NULL      ); break;
-        case 1:                    connect( pinN     , m_pins[2], NULL      ); break;
-        case 2: m_fixVref = true;  connect( pinN     , NULL     , NULL      ); break;
-        case 3:                    connect( m_pins[0], m_pins[2], NULL      ); break;
-        case 4:                    connect( m_pins[0], m_pins[1], NULL      ); break;
-        case 5: m_enabled = false; connect( NULL     , NULL     , NULL      ); break;
-        case 6:                    connect( m_pins[0], NULL     , m_pins[1] ); break;
-        case 7: m_enabled = false; connect( NULL     , NULL     , NULL      ); break;
+        case 0: m_enabled = false; connect( m_pins[0], m_pins[1], nullptr      ); break;
+        case 1:                    connect( pinN     , m_pins[2], nullptr      ); break;
+        case 2: m_fixVref = true;  connect( pinN     , nullptr     , nullptr      ); break;
+        case 3:                    connect( m_pins[0], m_pins[2], nullptr      ); break;
+        case 4:                    connect( m_pins[0], m_pins[1], nullptr      ); break;
+        case 5: m_enabled = false; connect( nullptr     , nullptr     , nullptr      ); break;
+        case 6:                    connect( m_pins[0], nullptr     , m_pins[1] ); break;
+        case 7: m_enabled = false; connect( nullptr     , nullptr     , nullptr      ); break;
     }
 }
 
@@ -156,13 +156,13 @@ void PicComp02::setMode( uint8_t mode )
 
     switch ( mode ) {
         case 0: m_enabled = false;
-        case 1:                    connect( m_pins[0], m_pins[1], NULL      ); break;
-        case 2: m_fixVref = true;  connect( pinN     , NULL     , NULL      ); break;
+        case 1:                    connect( m_pins[0], m_pins[1], nullptr      ); break;
+        case 2: m_fixVref = true;  connect( pinN     , nullptr     , nullptr      ); break;
         case 3:                                                                // Fallthrough
         case 4:                                                                // Fallthrough
         case 5:                    connect( m_pins[0], m_pins[1], m_pins[2] ); break;
-        case 6:                    connect( m_pins[0], m_pins[1], NULL      ); break;
-        case 7: m_enabled = false; connect( NULL     , NULL     , NULL      ); break;
+        case 6:                    connect( m_pins[0], m_pins[1], nullptr      ); break;
+        case 7: m_enabled = false; connect( nullptr     , nullptr     , nullptr      ); break;
     }
 }
 
@@ -179,18 +179,18 @@ PicComp03::~PicComp03(){}
 
 void PicComp03::setMode( uint8_t mode )
 {
-    McuPin* pinO = NULL;
+    McuPin* pinO = nullptr;
     McuPin* pinN = m_cis ? m_pins[1] : m_pins[0];
 
     switch ( mode ) {
-        case 0: m_enabled = false; connect( m_pins[0], m_pins[1], NULL      ); break;
+        case 0: m_enabled = false; connect( m_pins[0], m_pins[1], nullptr      ); break;
         case 1:                    connect( m_pins[0], m_pins[1], m_pins[2] ); break;
-        case 2:                    connect( m_pins[0], m_pins[1], NULL      ); break;
-        case 3: m_fixVref = true;  connect( m_pins[0], NULL     , m_pins[2] ); break;
-        case 4: m_fixVref = true;  connect( m_pins[0], NULL     , NULL      ); break;
+        case 2:                    connect( m_pins[0], m_pins[1], nullptr      ); break;
+        case 3: m_fixVref = true;  connect( m_pins[0], nullptr     , m_pins[2] ); break;
+        case 4: m_fixVref = true;  connect( m_pins[0], nullptr     , nullptr      ); break;
         case 5:                                             pinO = m_pins[2];  // Fallthrough
-        case 6: m_fixVref = true;  connect( pinN     , NULL     , pinO      ); break;
-        case 7: m_enabled = false; connect( NULL     , NULL     , NULL      ); break;
+        case 6: m_fixVref = true;  connect( pinN     , nullptr     , pinO      ); break;
+        case 7: m_enabled = false; connect( nullptr     , nullptr     , nullptr      ); break;
     }
 }
 
@@ -219,11 +219,11 @@ void PicComp1::configureA( uint8_t newCMxCON0 )
     m_enabled = getRegBitsBool( newCMxCON0, m_CxON );
     if( !m_enabled )
     {
-        connect( NULL, NULL, NULL );
+        connect( nullptr, nullptr, nullptr );
         return;
     }
     bool OE = getRegBitsBool( newCMxCON0, m_CxOE );
-    McuPin* pinOut = OE ? m_pins[5] : NULL;
+    McuPin* pinOut = OE ? m_pins[5] : nullptr;
 
     m_inv     = getRegBitsBool( newCMxCON0, m_CINV );
     m_fixVref = getRegBitsBool( newCMxCON0, m_CxR );

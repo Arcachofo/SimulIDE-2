@@ -40,7 +40,7 @@
 
 #define tr(str) simulideTr("Mcu",str)
 
-Mcu* Mcu::m_pSelf = NULL;
+Mcu* Mcu::m_pSelf = nullptr;
 
 listItem_t Mcu::libraryItem(){
     return {
@@ -60,8 +60,8 @@ Component* Mcu::construct( QString type, QString id )
     if( m_error > 0 )
     {
         Circuit::self()->removeComp( mcu );
-        mcu = NULL;
-        m_pSelf = NULL;
+        mcu = nullptr;
+        m_pSelf = nullptr;
         m_error = 0;
     }
     return mcu;
@@ -73,10 +73,10 @@ Mcu::Mcu( QString type, QString id )
 {
     qDebug() << "        Initializing"<<id;
 
-    m_resetPin   = NULL;
-    m_portRstPin = NULL;
-    m_mcuMonitor = NULL;
-    m_scriptLink = NULL;
+    m_resetPin   = nullptr;
+    m_portRstPin = nullptr;
+    m_mcuMonitor = nullptr;
+    m_scriptLink = nullptr;
 
     m_savePGM  = false;
     m_autoLoad = false;
@@ -222,21 +222,23 @@ Mcu::Mcu( QString type, QString id )
 Mcu::~Mcu()
 {
     if( m_mcuMonitor ) delete m_mcuMonitor;
-    if( m_pSelf == this ) m_pSelf = NULL;
+    if( m_pSelf == this ) m_pSelf = nullptr;
     InfoWidget::self()->updtMcu();
 }
 
 void Mcu::setupMcu()
 {
-    if( m_pSelf == NULL ) slotmain();
+    if( m_pSelf == nullptr ) slotmain();
 
     // Main Property Group --------------------------------------
+
+    m_intOsc = (McuIntOsc*)m_eMcu.getModule("intosc");
 
     if( m_packageList.size() > 1 )
     addProperty(tr("Main"), new StrProp<Mcu>("Package", tr("Package"),""
                                             , this, &Mcu::package, &Mcu::setPackage,0,"enum" ) );
 
-    if( m_eMcu.m_intOsc )
+    if( m_intOsc )
     addProperty(tr("Main"),new DoubProp<Mcu>("Frequency", tr("Frequency"),"MHz"
                                             , this, &Mcu::extFreq, &Mcu::setExtFreq ));
 
@@ -264,7 +266,7 @@ void Mcu::setupMcu()
         cg.propList.append(new BoolProp<Mcu>("Rst_enabled", tr("Enable Reset Pin"),""
                                             , this, &Mcu::rstPinEnabled, &Mcu::enableRstPin ) );
 
-    if( m_eMcu.m_intOsc && m_eMcu.m_intOsc->hasClockPins() )
+    if( m_intOsc && m_intOsc->hasClockPins() )
         cg.propList.append(new BoolProp<Mcu>("Ext_Osc", tr("External Oscillator"),""
                                             , this, &Mcu::extOscEnabled, &Mcu::enableExtOsc ) );
 
@@ -272,7 +274,7 @@ void Mcu::setupMcu()
         cg.propList.append(new BoolProp<Mcu>("Wdt_enabled", tr("Enable WatchDog"),""
                                             , this, &Mcu::wdtEnabled, &Mcu::enableWdt ) );
 
-    if( m_eMcu.m_intOsc && m_eMcu.m_intOsc->clkOutPin() )
+    if( m_intOsc && m_intOsc->clkOutPin() )
         cg.propList.append(new BoolProp<Mcu>("Clk_Out", tr("Clock Out"),""
                                             , this, &Mcu::clockOut, &Mcu::setClockOut ) );
 
@@ -485,7 +487,7 @@ void Mcu::slotLoad()
     QDir dir( m_lastFirmDir );
     if( !dir.exists() ) m_lastFirmDir = Circuit::self()->getFilePath();
 
-    QString fileName = QFileDialog::getOpenFileName( NULL, tr("Load Firmware"), m_lastFirmDir,
+    QString fileName = QFileDialog::getOpenFileName( nullptr, tr("Load Firmware"), m_lastFirmDir,
                        tr("All files (*.*);;Hex Files (*.hex)"));
 
     if( fileName.isEmpty() ) return; // User cancels loading
@@ -668,7 +670,7 @@ void Mcu::setLinkedString( QString str, int i )
 Pin* Mcu::addPin( QString id, QString type, QString label,
                   int pos, int xpos, int ypos, int angle, int length, int space )
 {
-    IoPin* pin = NULL;
+    IoPin* pin = nullptr;
     if( type.contains("rst") )
     {
         if( !m_resetPin )
@@ -678,7 +680,7 @@ Pin* Mcu::addPin( QString id, QString type, QString label,
     }
     else pin = m_eMcu.getIoPin( id ); // I/O Port
 
-    if( !pin ) return NULL;
+    if( !pin ) return nullptr;
 
     QColor color = Qt::black;
     if( !m_isLS ) color = QColor( 250, 250, 200 );
@@ -718,18 +720,18 @@ void Mcu::enableRstPin( bool en ) // Called from Property or cfg word
         m_resetPin = m_portRstPin;
         m_portRstPin->setPinMode( input );
     }
-    else m_resetPin = NULL;
+    else m_resetPin = nullptr;
 }
 
 bool Mcu::extOscEnabled()
 {
-    if( m_eMcu.m_intOsc ) return m_eMcu.m_intOsc->extClock();
+    if( m_intOsc ) return m_intOsc->extClock();
     return false;
 }
 
 void Mcu::enableExtOsc( bool en )
 {
-    if( m_eMcu.m_intOsc ) m_eMcu.m_intOsc->enableExtOsc( en );
+    if( m_intOsc ) m_intOsc->enableExtOsc( en );
 }
 
 bool Mcu::wdtEnabled()
@@ -742,11 +744,11 @@ void Mcu::enableWdt( bool en ) { if( m_eMcu.m_wdt ) m_eMcu.m_wdt->enable( en ); 
 
 bool Mcu::clockOut()
 {
-    if( m_eMcu.m_intOsc ) return m_eMcu.m_intOsc->clockOut();
+    if( m_intOsc ) return m_intOsc->clockOut();
     return false;
 }
 
-void Mcu::setClockOut( bool clkOut ) { if( m_eMcu.m_intOsc ) m_eMcu.m_intOsc->setClockOut( clkOut ); }
+void Mcu::setClockOut( bool clkOut ) { if( m_intOsc ) m_intOsc->setClockOut( clkOut ); }
 
 QStringList Mcu::getEnumUids( QString prop )
 {

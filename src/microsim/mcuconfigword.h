@@ -6,11 +6,13 @@
 #ifndef CONFIGWORD_H
 #define CONFIGWORD_H
 
-#include <QHash>
+#include <QMap>
+
+#include "mcumodule.h"
 
 class eMcu;
 
-class ConfigWord
+class ConfigWord : public McuModule
 {
         friend class McuCreator;
     public:
@@ -21,9 +23,7 @@ class ConfigWord
         uint16_t getCfgWord( uint16_t addr=0 );
 
     protected:
-        QString m_name;
-        eMcu*   m_mcu;
 
-        QHash<uint16_t, uint16_t> m_cfgWords; // Config words
+        QMap<uint16_t, uint16_t> m_cfgWords; // Config words
 };
 #endif

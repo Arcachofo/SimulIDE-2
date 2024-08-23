@@ -19,19 +19,17 @@
 #include "basedebugger.h"
 #include "editorwindow.h"
 
-eMcu* eMcu::m_pSelf = NULL;
+#include "mcumodule.h"
+
+eMcu* eMcu::m_pSelf = nullptr;
 
 eMcu::eMcu( Mcu* comp, QString id )
     : DataSpace()
     , eIou( comp, id )
     , m_interrupts( this )
 {
-    m_wdt        = NULL;
-    m_intOsc     = NULL;
-    m_comparator = NULL;
-    m_cfgWord    = NULL;
-    m_vrefModule = NULL;
-    m_sleepModule = NULL;
+    m_wdt         = nullptr;
+    m_sleepModule = nullptr;
 
     m_vdd= 5;
 
@@ -44,11 +42,11 @@ eMcu::eMcu( Mcu* comp, QString id )
     m_ramSize   = 0;
 
     m_firmware = "";
-    m_debugger = NULL;
+    m_debugger = nullptr;
     m_debugging = false;
-    m_saveEepr = true;
+    m_saveEepr  = true;
 
-    m_ramTable = new RamTable( NULL, this, false );
+    m_ramTable = new RamTable( nullptr, this, false );
 }
 
 eMcu::~eMcu()
@@ -56,12 +54,12 @@ eMcu::~eMcu()
     if( m_cpu ) delete m_cpu;
     m_interrupts.remove();
     for( McuModule* module : m_modules ) delete module;
-    if( m_pSelf == this ) m_pSelf = NULL;
+    if( m_pSelf == this ) m_pSelf = nullptr;
 }
 
 void eMcu::setup()
 {
-    for( McuModule* module : m_modules  ) module->setup();
+    for( McuModule* module : m_modules ) module->setup();
 }
 
 void eMcu::stamp()
@@ -151,7 +149,7 @@ void eMcu::reset()
     DataSpace::initialize();
 
     if( m_cpu ) m_cpu->reset(); // Must be after all modules reset
-    else qDebug() << "ERROR: eMcu::reset NULL Cpu";
+    else qDebug() << "ERROR: eMcu::reset nullptr Cpu";
 
     for( McuPort* mcuPort : m_mcuPorts ) mcuPort->readPort( 0 ); // Update Pin Input register
 
@@ -231,38 +229,28 @@ void eMcu::setEeprom( QVector<int>* eep )
 McuTimer* eMcu::getTimer( QString name )
 {
     McuTimer* timer = m_timerList.value( name );
-    if( !timer ) qDebug() << "ERROR: NULL Timer:"<< name;
+    if( !timer ) qDebug() << "ERROR: nullptr Timer:"<< name;
     return timer;
 }
 
 McuPort* eMcu::getMcuPort( QString name )
 {
     McuPort* port = m_mcuPorts.value( name );
-    /// if( !port ) qDebug() << "ERROR: NULL Port:"<< name;
+    /// if( !port ) qDebug() << "ERROR: nullptr Port:"<< name;
     return port;
 }
 
 McuPin* eMcu::getMcuPin( QString pinName )
 {
-    if( pinName.isEmpty() ) return NULL;
-    McuPin* pin = NULL;
+    if( pinName.isEmpty() ) return nullptr;
+    McuPin* pin = nullptr;
 
     for( McuPort* port : m_mcuPorts )
     {
         pin = port->getPin( pinName );
         if( pin ) break;
     }
-    if( !pin ) qDebug() << "ERROR: eMcu::getPin NULL Pin:"<< pinName;
-    return pin;
-}
-
-IoPin*  eMcu::getIoPin( QString pinName )
-{
-    if( pinName.isEmpty() || pinName == "0" ) return NULL;
-    IoPin* pin = eIou::getIoPin( pinName );
-
-    if( !pin ) pin = getMcuPin( pinName );
-    if( !pin ) qDebug() << "ERROR: eMcu::getIoPin NULL Pin:"<< pinName;
+    if( !pin ) qDebug() << "ERROR: eMcu::getPin nullptr Pin:"<< pinName;
     return pin;
 }
 
@@ -274,12 +262,11 @@ void eMcu::enableInterrupts( uint8_t en )
     m_interrupts.enableGlobal( en );
 }
 
-bool eMcu::setCfgWord( uint16_t addr, uint16_t data )
+
+McuModule* eMcu::getModule( QString name )
 {
-    if( m_cfgWord ) return m_cfgWord->setCfgWord( addr, data );
-    return false;
+    for( McuModule* module : m_modules )
+        if( module->name() == name ) return module;
+
+    return nullptr;
 }
-
-McuVref* eMcu::vrefModule() { return m_vrefModule; }
-//McuSleep* eMcu::sleepModule() { return m_sleepModule; }
-

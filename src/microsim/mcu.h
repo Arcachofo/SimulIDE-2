@@ -151,6 +151,8 @@ class Mcu : public Chip, public Linker
 
         eMcu m_eMcu;
 
+        McuIntOsc* m_intOsc;
+
         IoPin*  m_resetPin;
         McuPin* m_portRstPin;
 

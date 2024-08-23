@@ -8,6 +8,7 @@
 #include "mcuconfigword.h"
 
 ConfigWord::ConfigWord( eMcu* mcu, QString name )
+          : McuModule( mcu, name )
 {
     m_mcu  = mcu;
     m_name = name;

@@ -96,14 +96,7 @@ class eMcu : public DataSpace, public eIou
         McuPort* getMcuPort( QString name );
         McuPin*  getMcuPin( QString pinName );
 
-        IoPin*  getIoPin( QString pinName );
-
-        McuWdt* watchDog() { return m_wdt; }
-        McuVref* vrefModule();
-
-        bool setCfgWord( uint16_t addr, uint16_t data );
-        McuIntOsc* intOsc() { return m_intOsc; }
-        McuComp* comparator() { return m_comparator; }
+        McuModule* getModule( QString name );
 
         void wdr();
 
@@ -113,7 +106,7 @@ class eMcu : public DataSpace, public eIou
 
         void setMain() { m_pSelf = this; }
 
-        Interrupts m_interrupts;
+        Interrupts* interrupts() { return &m_interrupts; }
 
     protected:
  static eMcu* m_pSelf;
@@ -140,12 +133,11 @@ class eMcu : public DataSpace, public eIou
 
         QHash<QString, McuTimer*> m_timerList;// Access TIMERS by name
         QHash<QString, McuPort*>  m_mcuPorts; // Access PORTS by name
-        ConfigWord* m_cfgWord;
-        McuSleep*   m_sleepModule;
-        McuVref*    m_vrefModule;
-        McuWdt*     m_wdt;
-        McuIntOsc*  m_intOsc;
-        McuComp*    m_comparator;
+
+        McuSleep* m_sleepModule;
+        McuWdt*   m_wdt;
+
+        Interrupts m_interrupts;
 
         double m_vdd;
 

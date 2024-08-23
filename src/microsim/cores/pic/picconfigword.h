@@ -10,6 +10,7 @@
 #include "e-element.h"
 
 class McuPin;
+class McuIntOsc;
 
 class PicConfigWord : public ConfigWord
 {
@@ -17,12 +18,16 @@ class PicConfigWord : public ConfigWord
         PicConfigWord( eMcu* mcu, QString name );
         ~PicConfigWord();
 
+        virtual void setup() override;
+
  static ConfigWord* createCfgWord( eMcu* mcu, QString name, QString type );
 
     protected:
         void configClk( uint8_t fosc );
         void configWdt( bool wdte );
         void configRst( bool mclr );
+
+        McuIntOsc* m_intOsc;
 };
 
 class PicConfigWord00 : public PicConfigWord

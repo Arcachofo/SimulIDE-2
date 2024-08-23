@@ -191,7 +191,11 @@ bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits
             //qDebug()<< "MemData::loadHex"<<addrBase/WordSize<< addr <<data;
             if( addr > dataEnd ){
                 bool ok = false;
-                if( m_eMcu ) ok = m_eMcu->setCfgWord( addr, data );
+                if( m_eMcu )
+                {
+                    ConfigWord* cfgWord = (ConfigWord*)m_eMcu->getModule("cfgword");
+                    if( cfgWord ) ok = cfgWord->setCfgWord( addr, data );
+                }
                 if( !ok )
                 {
                     qDebug() << "    Warning: PGM End reached at Line"<<QString::number( nLine )

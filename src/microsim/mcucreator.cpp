@@ -91,10 +91,10 @@ QString McuCreator::m_core = "";
 QString McuCreator::m_CompName = "";
 QString McuCreator::m_basePath = "";
 QString McuCreator::m_txRegName = "";
-Mcu*    McuCreator::m_mcuComp = NULL;
-eMcu*   McuCreator::mcu = NULL;
-McuTwi* McuCreator::m_twi = NULL;
-McuSpi* McuCreator::m_spi = NULL;
+Mcu*    McuCreator::m_mcuComp = nullptr;
+eMcu*   McuCreator::mcu = nullptr;
+McuTwi* McuCreator::m_twi = nullptr;
+McuSpi* McuCreator::m_spi = nullptr;
 bool    McuCreator::m_newStack;
 QDomElement McuCreator::m_stackEl;
 std::vector<ScriptPerif*> McuCreator::m_scriptPerif;
@@ -285,11 +285,12 @@ void McuCreator::createCfgWord( QDomElement* e )
     QString name = e->attribute("name");
     QString type = e->attribute("type");
 
-    ConfigWord* cfgWord = NULL;
+    ConfigWord* cfgWord = nullptr;
     if( m_core.startsWith("Pic14") ) cfgWord = PicConfigWord::createCfgWord( mcu, name, type );
     if( !cfgWord ) return;
 
-    mcu->m_cfgWord = cfgWord;
+    //mcu->m_cfgWord = cfgWord;
+    mcu->m_modules.emplace_back( cfgWord );
 
     QDomNode node = e->firstChild();
     while( !node.isNull() )
@@ -298,8 +299,8 @@ void McuCreator::createCfgWord( QDomElement* e )
         if( el.tagName() == "word" )
         {
             //QString name = el.attribute("name");
-            uint16_t addr  = el.attribute("address").toUInt( NULL, 16 );
-            uint16_t value = el.attribute("value").toUInt( NULL, 16 );
+            uint16_t addr  = el.attribute("address").toUInt( nullptr, 16 );
+            uint16_t value = el.attribute("value").toUInt( nullptr, 16 );
             cfgWord->m_cfgWords.insert( addr, value );
         }
         node = node.nextSibling();
@@ -332,7 +333,7 @@ void McuCreator::createRomMem( uint32_t size )
 
 void McuCreator::createEeprom( QDomElement* e )
 {
-    McuEeprom* eeprom = NULL;
+    McuEeprom* eeprom = nullptr;
     QString eepromName = e->attribute("name");
 
     if     ( m_core == "AVR" )    eeprom = new AvrEeprom( mcu, eepromName );
@@ -497,30 +498,30 @@ void McuCreator::createIntOsc( QDomElement* p )
     QString name = p->attribute("name");
     QString type = p->attribute("type");
 
-    McuIntOsc* intOsc = NULL;
+    McuIntOsc* intOsc = nullptr;
     if( m_core.startsWith("Pic14") ) intOsc = PicIntOsc::createIntOsc( mcu, name, type );
-    else                             intOsc = new McuIntOsc( mcu, "intOsc");
+    else                             intOsc = new McuIntOsc( mcu, "intosc");
 
     mcu->m_modules.emplace_back( intOsc );
-    mcu->m_intOsc = intOsc;
+    //mcu->m_intOsc = intOsc;
 
     setConfigRegs( p, intOsc );
 
     if( p->hasAttribute("clockpins") )
     {
-        if( !mcu->m_intOsc )
+        if( !intOsc )
         {
-            McuIntOsc* intOsc = new McuIntOsc( mcu, "intOsc");
+            intOsc = new McuIntOsc( mcu, "intosc");
             mcu->m_modules.emplace_back( intOsc );
-            mcu->m_intOsc = intOsc;
+            //mcu->m_intOsc = intOsc;
         }
         QStringList pins = p->attribute("clockpins").split(",");
         for( int i=0; i<pins.size(); ++i )
-            mcu->m_intOsc->setPin( i, mcu->getMcuPin( pins.value(i) ) );
+            intOsc->setPin( i, mcu->getMcuPin( pins.value(i) ) );
     }
     if( p->hasAttribute("clockoutpin") )
     {
-        mcu->m_intOsc->setPin( 2, mcu->getMcuPin( p->attribute("clockoutpin") ) );
+        if( intOsc ) intOsc->setPin( 2, mcu->getMcuPin( p->attribute("clockoutpin") ) );
     }
 }
 
@@ -700,7 +701,7 @@ void McuCreator::createMcuPort( QDomElement* p )
 
 void McuCreator::createTimer( QDomElement* t )
 {
-    McuTimer* timer = NULL;
+    McuTimer* timer = nullptr;
     QString timerName = t->attribute("name");
     int type = t->attribute("type").toInt();
 
@@ -763,7 +764,7 @@ void McuCreator::createTimer( QDomElement* t )
         if( el.tagName() == "ocunit" )
         {
             QString ocName = el.attribute("name");
-            McuOcUnit* ocUnit = NULL;
+            McuOcUnit* ocUnit = nullptr;
             if     ( m_core == "AVR" ) ocUnit = new AvrOcUnit( mcu, ocName );
             //else if( m_core == "Pic14" ) ocUnit = new PicOcUnit( mcu, el.attribute("name") );
             if( !ocUnit ) { node = node.nextSibling(); continue; }
@@ -804,7 +805,7 @@ void McuCreator::createTimer( QDomElement* t )
         else if( el.tagName() == "icunit" )
         {
             QString icName = el.attribute("name");
-            McuIcUnit* icUnit = NULL;
+            McuIcUnit* icUnit = nullptr;
             if( m_core == "AVR" ) icUnit = new AvrIcUnit( mcu, icName );
             if( !icUnit ) { node = node.nextSibling(); continue; }
 
@@ -828,7 +829,7 @@ void McuCreator::createTimer( QDomElement* t )
 
 void McuCreator::createOcm( QDomElement* e )
 {
-    McuOcm* ocm = NULL;
+    McuOcm* ocm = nullptr;
     QString name = e->attribute("name");
 
     if( m_core == "AVR" ) ocm = new AvrOcm( mcu, name );
@@ -852,7 +853,7 @@ void McuCreator::createOcm( QDomElement* e )
 
 void McuCreator::createCcpUnit( QDomElement* c )
 {
-    PicCcpUnit* ccpUnit = NULL;
+    PicCcpUnit* ccpUnit = nullptr;
     if     ( m_core == "Pic14" ) ccpUnit = new PicCcpUnit( mcu, c->attribute("name"), c->attribute("type").toInt() );
     else if( m_core == "Pic14e") ccpUnit = new PicCcpUnit( mcu, c->attribute("name"), c->attribute("type").toInt() );
     if( !ccpUnit ) return;
@@ -933,7 +934,7 @@ void McuCreator::createUsart( QDomElement* u )
 
         if( el.tagName() == "trunit" )
         {
-            UartTR* trUnit = NULL;
+            UartTR* trUnit = nullptr;
             QString type = el.attribute( "type" );
             if( type == "tx" )
             {
@@ -970,7 +971,7 @@ void McuCreator::createUsart( QDomElement* u )
 
 void McuCreator::createAdc( QDomElement* e )
 {
-    McuAdc* adc = NULL;
+    McuAdc* adc = nullptr;
     QString name = e->attribute( "name" );
     int type = e->attribute("type").toInt();
 
@@ -1024,7 +1025,7 @@ void McuCreator::createAdc( QDomElement* e )
 
 void McuCreator::createDac( QDomElement* e )
 {
-    McuDac* dac = NULL;
+    McuDac* dac = nullptr;
     QString name = e->attribute( "name" );
 
     if( m_core == "Pic14e") dac = new PicDac( mcu, name );
@@ -1052,7 +1053,7 @@ void McuCreator::createDac( QDomElement* e )
 
 void McuCreator::createAcomp( QDomElement* e )
 {
-    McuComp* comp = NULL;
+    McuComp* comp = nullptr;
     QString name = e->attribute( "name" );
     int type = e->attribute("type").toInt();
 
@@ -1062,7 +1063,7 @@ void McuCreator::createAcomp( QDomElement* e )
     if( !comp ) return;
 
     mcu->m_modules.emplace_back( comp );
-    mcu->m_comparator = comp;
+    //mcu->m_comparator = comp;
     setConfigRegs( e, comp );
 
     QStringList pins = e->attribute( "pins" ).split(",");
@@ -1077,13 +1078,13 @@ void McuCreator::createAcomp( QDomElement* e )
 void McuCreator::createVref( QDomElement* e )
 {
     QString name = e->attribute( "name" );
-    McuVref* vref = NULL;
+    McuVref* vref = nullptr;
     if     ( m_core == "Pic14" )  vref = new PicVref( mcu, name );
     else if( m_core == "Pic14e" ) vref = new PicVrefE( mcu, name );
     if( !vref ) return;
 
     mcu->m_modules.emplace_back( vref );
-    mcu->m_vrefModule = vref;
+    //mcu->m_vrefModule = vref;
 
     setConfigRegs( e, vref );
 
@@ -1243,7 +1244,7 @@ void McuCreator::createDisplay( QDomElement* e )
     int width  = e->attribute("width").toInt();
     int height = e->attribute("height").toInt();
 
-    Display* display = NULL;
+    Display* display = nullptr;
     if( m_core == "scripted" )
     {
         ScriptDisplay* d = new ScriptDisplay( width, height, name, CircuitWidget::self() );
@@ -1300,7 +1301,7 @@ void McuCreator::createInterrupt( QDomElement* el )
 
     uint16_t intVector  = el->attribute("vector").toUInt(0,0);
 
-    Interrupt* iv = NULL;
+    Interrupt* iv = nullptr;
     //if     ( m_core == "8051" )  iv = I51Interrupt::getInterrupt( intName, intVector, mcu );
     //else if( m_core == "AVR" )   iv = AVRInterrupt::getInterrupt( intName, intVector, mcu );
     if     ( m_core == "Pic14" ) iv = new PicInterrupt( intName, intVector, mcu );

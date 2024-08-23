@@ -29,6 +29,11 @@ PicConfigWord::PicConfigWord( eMcu* mcu, QString name )
 }
 PicConfigWord::~PicConfigWord(){}
 
+void PicConfigWord::setup()
+{
+    m_intOsc = (McuIntOsc*) m_mcu->getModule("intosc");
+}
+
 void PicConfigWord::configClk( uint8_t fosc )
 {
     bool ioI = false; // m_CLKIN is IO?
@@ -47,7 +52,7 @@ void PicConfigWord::configClk( uint8_t fosc )
         case 7: clO = true;       msg +="RC:       CLKOUT OSC2, RC OSC1 "; break; // CLKOUT function on RA6/OSC2/CLKOUT, RC on RA7/OSC1/CLKIN
     }
     qDebug()<<msg;
-    if( m_mcu->intOsc() ) m_mcu->intOsc()->configPins( ioI, ioO, clO );
+    if( m_intOsc ) m_intOsc->configPins( ioI, ioO, clO );
     else qDebug() <<"PicConfigWord::setCfgWord Error: IntOsc does not exist";
 }
 
@@ -136,7 +141,7 @@ bool PicConfigWord02::setCfgWord( uint16_t addr, uint16_t data )
         }
         qDebug()<<msg;
 
-        if( m_mcu->intOsc() ) m_mcu->intOsc()->configPins( false, clO, clO );
+        if( m_intOsc ) m_intOsc->configPins( false, clO, clO );
         else qDebug() <<"PicConfigWord02::setCfgWord Error: IntOsc does not exist";
 
         configWdt( data & 1<<2 );
@@ -180,8 +185,7 @@ bool PicConfigWord04::setCfgWord( uint16_t addr, uint16_t data )
     bool ok = ConfigWord::setCfgWord( addr, data ); // Actually a cfg word address?
     if( !ok ) return false;
 
-    McuIntOsc* intOsc = m_mcu->intOsc();
-    if( !intOsc ) qDebug() <<"PicConfigWord04::setCfgWord Error: IntOsc does not exist";
+    if( !m_intOsc ) qDebug() <<"PicConfigWord04::setCfgWord Error: IntOsc does not exist";
 
     if( addr == 0x8007 ) // Config word 1
     {
@@ -203,7 +207,7 @@ bool PicConfigWord04::setCfgWord( uint16_t addr, uint16_t data )
             case 7:                    msg +="RC:       Ext Clock on OSC1    "; break; // External Clock on RA7/OSC1/CLKIN
         }
         qDebug()<<msg;
-        if( intOsc ) intOsc->configPins( ioI, ioO, clO );
+        if( m_intOsc ) m_intOsc->configPins( ioI, ioO, clO );
 
         configWdt( data & 1<<4 );
         configRst( data & 1<<6 );
@@ -213,7 +217,7 @@ bool PicConfigWord04::setCfgWord( uint16_t addr, uint16_t data )
         bool pllen = data & 1<<8;
         if( pllen ){
             qDebug()<<"      PLL:      Enabled";
-            if( intOsc ) intOsc->setMultiplier( 4 );
+            if( m_intOsc ) m_intOsc->setMultiplier( 4 );
         }
         else qDebug()<<"      PLL:      Disabled";
     }

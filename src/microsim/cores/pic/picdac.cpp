@@ -30,7 +30,7 @@ void PicDac::setup()
 
     m_DACR = getRegBits("DACR0,DACR1,DACR2,DACR3,DACR4", m_mcu );
 
-    m_fvr = (PicVrefE*)m_mcu->vrefModule();
+    m_fvr = (PicVrefE*)m_mcu->getModule("Vref");
 }
 
 void PicDac::initialize()

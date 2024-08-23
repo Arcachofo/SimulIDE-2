@@ -100,6 +100,8 @@ class Interrupts
         void addToPending( Interrupt* newInt );
         void remFromPending( Interrupt* remInt );
 
+        Interrupt* getInterrupt( QString namne );
+
     protected:
         eMcu* m_mcu;
 
