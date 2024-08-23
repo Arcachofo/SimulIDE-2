@@ -23,6 +23,7 @@ class PicAdc : public McuAdc
 
  static PicAdc* createAdc( eMcu* mcu, QString name, int type );
 
+        virtual void setup() override;
         virtual void initialize() override;
 
         virtual void configureA( uint8_t newADCON0 ) override;

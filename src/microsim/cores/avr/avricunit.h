@@ -14,6 +14,8 @@ class AvrIcUnit : public McuIcUnit
         AvrIcUnit( eMcu* mcu, QString name );
         virtual ~AvrIcUnit();
 
+        virtual void setup() override{;}
+
         virtual void configureA( uint8_t val ) override;
 };
 

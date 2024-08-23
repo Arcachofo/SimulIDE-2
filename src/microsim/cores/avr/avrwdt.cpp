@@ -21,15 +21,19 @@ AvrWdt* AvrWdt::createWdt( eMcu* mcu, QString name )
 AvrWdt::AvrWdt( eMcu* mcu, QString name )
       : McuWdt( mcu, name )
 {
-    //m_WDTCSR = mcu->getReg( "WDTCSR" );
-
-    m_WDCE = getRegBits( "WDCE", mcu );
-    m_WDE  = getRegBits( "WDE", mcu );
-    m_WDP02 = getRegBits( "WDP0,WDP1,WDP2", mcu );
-
-    m_WDRF = getRegBits( "WDRF", mcu );
 }
 AvrWdt::~AvrWdt(){}
+
+void AvrWdt::setup()
+{
+    //m_WDTCSR = m_mcu->getReg( "WDTCSR" );
+
+    m_WDCE = getRegBits( "WDCE", m_mcu );
+    m_WDE  = getRegBits( "WDE", m_mcu );
+    m_WDP02 = getRegBits( "WDP0,WDP1,WDP2", m_mcu );
+
+    m_WDRF = getRegBits( "WDRF", m_mcu );
+}
 
 void AvrWdt::initialize()
 {

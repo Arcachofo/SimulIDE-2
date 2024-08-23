@@ -19,7 +19,9 @@ class ScriptUsart : public McuUsart, public ScriptPerif
         ScriptUsart( eMcu* mcu, QString name, int number );
         ~ScriptUsart();
 
+        virtual void setup() override{;}
         virtual void reset() override;
+
         virtual void byteReceived( uint8_t data ) override;
         virtual void frameSent( uint8_t data ) override;
 

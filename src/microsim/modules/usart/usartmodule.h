@@ -131,6 +131,7 @@ class UartTR : public McuModule, public eElement
             usartRECEIVE,
         };
 
+        virtual void setup() override{;}
         virtual void initialize() override;
 
         virtual void enable( uint8_t ){;}

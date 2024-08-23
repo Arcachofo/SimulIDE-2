@@ -21,12 +21,14 @@ class McuModule
         McuModule( eMcu* mcu, QString name );
         virtual ~McuModule();
 
+        virtual void setup()=0;
+
         virtual void reset(){;}
 
         virtual void configureA( uint8_t ){;}
         virtual void configureB( uint8_t ){;}
         virtual void configureC( uint8_t ){;}
-        virtual void callBackDoub( double ) {;}
+        virtual void callBackDoub( double ){;}
         virtual void callBack() {;}
         virtual void sleep( int mode );
 

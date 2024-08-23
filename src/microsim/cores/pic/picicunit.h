@@ -17,6 +17,7 @@ class PicIcUnit : public McuIcUnit
         PicIcUnit( eMcu* mcu, QString name );
         virtual ~PicIcUnit();
 
+        virtual void setup() override{;}
         virtual void initialize() override;
         virtual void voltChanged() override;
 

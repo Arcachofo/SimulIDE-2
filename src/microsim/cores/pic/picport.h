@@ -19,6 +19,8 @@ class PicPort : public McuPort
         PicPort( eMcu* mcu, QString name );
         ~PicPort();
 
+        virtual void setup() override{;}
+
         virtual void configureA( uint8_t newANSEL ) override;
 
         virtual void outChanged( uint8_t val ) override;

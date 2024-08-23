@@ -17,6 +17,7 @@ class ScriptTwi : public McuTwi, public ScriptPerif
         ScriptTwi( eMcu* mcu, QString name );
         ~ScriptTwi();
 
+        virtual void setup() override{;}
         virtual void reset() override;
 
         void setAddress( uint8_t a );

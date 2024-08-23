@@ -13,5 +13,7 @@ class PicSleep : public McuSleep
     public:
         PicSleep( eMcu* mcu, QString name );
         ~PicSleep();
+
+        virtual void setup() override{;}
 };
 #endif

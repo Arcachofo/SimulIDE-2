@@ -25,7 +25,9 @@ class McuPort : public McuModule
         McuPort( eMcu* mcu, QString name );
         ~McuPort();
 
+        virtual void setup() override{;}
         virtual void reset() override;
+
         virtual void pinChanged( uint8_t pinMask, uint8_t val );
 
         void setPullups( uint8_t puMask );

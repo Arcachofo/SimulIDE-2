@@ -16,6 +16,7 @@ class PicTimer : public McuTimer
 
  static McuTimer* createTimer( eMcu* mcu, QString name, int type  );
 
+        virtual void setup() override{;}
         virtual void initialize() override;
 
         virtual void configureA( uint8_t val ) override;

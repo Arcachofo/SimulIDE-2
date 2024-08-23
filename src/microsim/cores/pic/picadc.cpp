@@ -24,16 +24,20 @@ PicAdc* PicAdc::createAdc( eMcu* mcu, QString name, int type )
 PicAdc::PicAdc( eMcu* mcu, QString name )
       : McuAdc( mcu, name )
 {
-    m_sleepMode = 0xFF;
-
-    m_ADON = getRegBits( "ADON", mcu );
-    m_GODO = getRegBits( "GO/DONE", mcu );
-    m_ADFM = getRegBits( "ADFM", mcu );
-
-    m_pRefPin = NULL;
-    m_nRefPin = NULL;
 }
 PicAdc::~PicAdc(){}
+
+void PicAdc::setup()
+{
+    m_sleepMode = 0xFF;
+
+    m_ADON = getRegBits( "ADON", m_mcu );
+    m_GODO = getRegBits( "GO/DONE", m_mcu );
+    m_ADFM = getRegBits( "ADFM", m_mcu );
+
+    m_pRefPin = nullptr;
+    m_nRefPin = nullptr;
+}
 
 void PicAdc::initialize()
 {

@@ -24,10 +24,14 @@ PicComp* PicComp::createComparator( eMcu* mcu, QString name, int type ) // Stati
 PicComp::PicComp( eMcu* mcu, QString name )
        : McuComp( mcu, name )
 {
-    McuVref* vref = mcu->vrefModule();
-    if( vref ) vref->callBack( this, true ); // Vref Module will update vref if changed.
 }
 PicComp::~PicComp(){}
+
+void PicComp::setup()
+{
+    McuVref* vref = m_mcu->vrefModule();
+    if( vref ) vref->callBack( this, true ); // Vref Module will update vref if changed.
+}
 
 void PicComp::initialize()
 {

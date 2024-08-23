@@ -14,6 +14,7 @@ class PicComp : public McuComp
         PicComp( eMcu* mcu, QString name );
         ~PicComp();
 
+        virtual void setup() override;
         virtual void initialize() override;
         virtual void voltChanged() override;
 

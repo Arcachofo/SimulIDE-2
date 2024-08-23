@@ -14,6 +14,7 @@ class PicIntOsc : public McuIntOsc
         PicIntOsc( eMcu* mcu, QString name );
         ~PicIntOsc();
 
+        virtual void setup() override;
         virtual void stamp() override;
 
         virtual void setPin( int n, McuPin* p ) override;

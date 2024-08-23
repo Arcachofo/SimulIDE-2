@@ -15,6 +15,8 @@ class I51Port : public McuPort
         I51Port( eMcu* mcu, QString name );
         ~I51Port();
 
+        virtual void setup() override{;}
+
         virtual void reset() override;
 
         virtual void readPort( uint8_t ) override;

@@ -19,6 +19,8 @@ class McuIntOsc : public McuModule, public eElement
         McuIntOsc( eMcu* mcu, QString name );
         ~McuIntOsc();
 
+        virtual void setup() override;
+
         virtual void stamp() override;
         virtual void runEvent() override;
 

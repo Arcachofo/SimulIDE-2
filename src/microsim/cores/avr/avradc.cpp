@@ -27,25 +27,30 @@ AvrAdc* AvrAdc::createAdc( eMcu* mcu, QString name, int type )
 AvrAdc::AvrAdc( eMcu* mcu, QString name )
       : McuAdc( mcu, name )
 {
-    m_ADEN  = getRegBits( "ADEN", mcu );
-    m_ADSC  = getRegBits( "ADSC", mcu );
-    m_ADATE = getRegBits( "ADATE", mcu );
-    m_ADIF  = getRegBits( "ADIF", mcu );
-    m_ADPS  = getRegBits( "ADPS0,ADPS1,ADPS2", mcu );
+}
+AvrAdc::~AvrAdc(){}
 
-    m_ADTS  = getRegBits( "ADTS0,ADTS1,ADTS2", mcu );
-    m_ACME  = getRegBits( "ACME", mcu );
+void AvrAdc::setup()
+{
+    m_ADEN  = getRegBits( "ADEN", m_mcu );
+    m_ADSC  = getRegBits( "ADSC", m_mcu );
+    m_ADATE = getRegBits( "ADATE", m_mcu );
+    m_ADIF  = getRegBits( "ADIF", m_mcu );
+    m_ADPS  = getRegBits( "ADPS0,ADPS1,ADPS2", m_mcu );
 
-    m_ADLAR = getRegBits( "ADLAR", mcu );
-    m_REFS  = getRegBits( "REFS0,REFS1", mcu );
+    m_ADTS  = getRegBits( "ADTS0,ADTS1,ADTS2", m_mcu );
+    m_ACME  = getRegBits( "ACME", m_mcu );
 
-    if( mcu->getMcuPort("PORTV") )
+    m_ADLAR = getRegBits( "ADLAR", m_mcu );
+    m_REFS  = getRegBits( "REFS0,REFS1", m_mcu );
+
+    if( m_mcu->getMcuPort("PORTV") )
     {
-        m_aVccPin = mcu->getMcuPin( "PORTV0" );
-        m_aRefPin = mcu->getMcuPin( "PORTV1" );
+        m_aVccPin = m_mcu->getMcuPin( "PORTV0" );
+        m_aRefPin = m_mcu->getMcuPin( "PORTV1" );
     }
 
-    m_timer0 = (AvrTimer800*)mcu->getTimer( "TIMER0" );
+    m_timer0 = (AvrTimer800*)m_mcu->getTimer( "TIMER0" );
     m_timer1 = NULL;
 
     m_t0OCA = m_timer0->getOcUnit("OCA");
@@ -53,7 +58,6 @@ AvrAdc::AvrAdc( eMcu* mcu, QString name )
 
     m_vRefN = 0;
 }
-AvrAdc::~AvrAdc(){}
 
 void AvrAdc::initialize()
 {
@@ -153,6 +157,8 @@ AvrAdc00::AvrAdc00( eMcu* mcu, QString name )
     m_fixedVref = 1.1;
 }
 AvrAdc00::~AvrAdc00(){}
+
+
 
 void AvrAdc00::autotriggerConf()
 {

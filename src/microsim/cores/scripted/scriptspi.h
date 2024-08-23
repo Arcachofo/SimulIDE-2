@@ -18,6 +18,8 @@ class ScriptSpi : public McuSpi, public ScriptPerif
         ScriptSpi( eMcu* mcu, QString name );
         ~ScriptSpi();
 
+        virtual void setup() override{;}
+
         void byteReceived( uint8_t data );
         void sendByte( uint8_t data );
 

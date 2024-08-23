@@ -69,6 +69,8 @@ class AvrTimer800 : public AvrTimer8bit
     public:
         AvrTimer800( eMcu* mcu, QString name );
         ~AvrTimer800();
+
+        virtual void setup() override;
 };
 
 class AvrTimer801 : public McuTimer
@@ -77,6 +79,7 @@ class AvrTimer801 : public McuTimer
         AvrTimer801( eMcu* mcu, QString name );
         ~AvrTimer801();
 
+        virtual void setup() override{;}
         virtual void initialize() override;
 
         virtual void configureA( uint8_t newTCCR0 ) override;
@@ -90,6 +93,8 @@ class AvrTimer810 : public AvrTimer
     public:
         AvrTimer810( eMcu* mcu, QString name );
         ~AvrTimer810();
+
+        virtual void setup() override;
 
         virtual void configureA( uint8_t newTCCR1 ) override;
         virtual void configureB( uint8_t newGTCCR ) override;
@@ -114,6 +119,8 @@ class AvrTimer820 : public AvrTimer8bit
     public:
         AvrTimer820( eMcu* mcu, QString name );
         ~AvrTimer820();
+
+        virtual void setup() override;
 };
 
 class AvrTimer821 : public AvrTimer8bit
@@ -121,6 +128,8 @@ class AvrTimer821 : public AvrTimer8bit
     public:
         AvrTimer821( eMcu* mcu, QString name );
         ~AvrTimer821();
+
+        virtual void setup() override{;}
 
         virtual void configureA( uint8_t newTCCRx ) override;
 };
@@ -131,6 +140,8 @@ class AvrTimer16bit : public AvrTimer
     public:
         AvrTimer16bit( eMcu* mcu, QString name );
         ~AvrTimer16bit();
+
+        virtual void setup() override;
 
         virtual void runEvent() override;
 

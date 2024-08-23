@@ -13,6 +13,11 @@ McuIntOsc::McuIntOsc( eMcu* mcu, QString name )
          : McuModule( mcu, name )
          , eElement( name )
 {
+}
+McuIntOsc::~McuIntOsc(){}
+
+void McuIntOsc::setup()
+{
     m_clkInIO  = true;
     m_clkOutIO = true;
     m_clkOut   = false;
@@ -20,13 +25,12 @@ McuIntOsc::McuIntOsc( eMcu* mcu, QString name )
 
     m_multiplier = 1;
 
-    m_clkOutPin = NULL;
-    m_clkInPin  = NULL;
+    m_clkOutPin = nullptr;
+    m_clkInPin  = nullptr;
 
-    m_clkPin[0] = NULL;
-    m_clkPin[1] = NULL;
+    m_clkPin[0] = nullptr;
+    m_clkPin[1] = nullptr;
 }
-McuIntOsc::~McuIntOsc(){}
 
 void McuIntOsc::stamp()
 {
@@ -60,7 +64,7 @@ void McuIntOsc::enableExtOsc( bool en ) // From Mcu, AVR or PIC with no cfg word
 {
     m_extClock = en;
     /// if( m_mcu->cfgWord() ) return;     // Controlled by Config word.
-    if( m_clkPin[0] == NULL ) return;
+    if( m_clkPin[0] == nullptr ) return;
 
     for( int i=0; i<2; ++i )
         if( m_clkPin[i] ){
@@ -100,5 +104,5 @@ void McuIntOsc::setPin( int n, McuPin* p )
 /*McuPin* McuIntOsc::getClkPin( int n )
 {
     if( n < 2 ) return m_clkPin[n];
-    return NULL;
+    return nullptr;
 }*/

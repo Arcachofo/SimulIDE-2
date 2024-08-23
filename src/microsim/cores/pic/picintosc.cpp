@@ -23,11 +23,17 @@ PicIntOsc* PicIntOsc::createIntOsc( eMcu* mcu, QString name, QString type )
 PicIntOsc::PicIntOsc( eMcu* mcu, QString name )
          : McuIntOsc( mcu, name )
 {
+}
+PicIntOsc::~PicIntOsc(){}
+
+void PicIntOsc::setup()
+{
+    McuIntOsc::setup();
+
     m_cfgWordCtrl = true;
 
     m_intOscFreq = 4*1e6; // 4 MHz (default)
 }
-PicIntOsc::~PicIntOsc(){}
 
 void PicIntOsc::stamp()
 {

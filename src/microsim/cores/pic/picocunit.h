@@ -18,8 +18,9 @@ class PicOcUnit : public McuOcUnit
         PicOcUnit( eMcu* mcu, QString name );
         ~PicOcUnit();
 
-static PicPwmUnit* createPwmUnit( eMcu* mcu, QString name, int type );
+ static PicPwmUnit* createPwmUnit( eMcu* mcu, QString name, int type );
 
+        virtual void setup() override;
         //virtual void initialize() override;
         virtual void runEvent();
 
@@ -67,6 +68,8 @@ class PicPwmUnit00 : public PicPwmUnit
     public:
         PicPwmUnit00( eMcu* mcu, QString name );
         ~PicPwmUnit00();
+
+        virtual void setup() override;
 };
 
 class PicPwmUnit01 : public PicPwmUnit
@@ -74,6 +77,8 @@ class PicPwmUnit01 : public PicPwmUnit
     public:
         PicPwmUnit01( eMcu* mcu, QString name );
         ~PicPwmUnit01();
+
+        virtual void setup() override;
 };
 
 #endif
