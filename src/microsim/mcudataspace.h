@@ -6,7 +6,7 @@
 #ifndef MCUDATASPACE_H
 #define MCUDATASPACE_H
 
-#include <QHash>
+#include <QMap>
 #include <vector>
 
 #include "mcutypes.h"
@@ -22,7 +22,7 @@ class DataSpace
 
         void initialize();
 
-        uint32_t ramSize()  { return m_ramSize; }
+        uint32_t ramSize()  { return m_dataMem.size(); }
         uint8_t  getRamValue( int address );
         void     setRamValue( int address, uint8_t value );
         uint8_t* getRam() { return m_dataMem.data(); }  // Get pointer to Ram data
@@ -54,7 +54,7 @@ class DataSpace
         uint16_t m_regEnd;                        // Last  address of SFR Section
 
         bool m_isCpuRead;
-        uint32_t m_ramSize;
+
         std::vector<uint8_t>  m_dataMem;          // Whole Ram space including Registers
         std::vector<uint16_t> m_addrMap;          // Maps addresses in Data space
         std::vector<uint8_t>  m_regMask;          // Registers Write mask

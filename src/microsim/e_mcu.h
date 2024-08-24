@@ -65,8 +65,6 @@ class eMcu : public DataSpace, public eIou
         void sleep( bool s );
         void start();
 
-        //QString getFileName() { return m_firmware; }
-
         double vdd() { return m_vdd; }
 
         double freq() { return m_freq; }

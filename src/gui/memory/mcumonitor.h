@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *   Copyright (C) 2021 by Santiago González                               *
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
@@ -26,10 +26,9 @@ class MCUMonitor : public QDialog, private Ui::McuMonitor
         void updateStep();
         void updateRamTable();
 
+        void addTable( MemTable* table, QString tittle );
+
     public slots:
-        void ramDataChanged( int address, int val );
-        void flashDataChanged( int address, int val );
-        void eepromDataChanged( int address, int val );
         void tabChanged(int);
         void on_byteButton_toggled( bool byte );
         void on_jumpButton_toggled( bool jump );
@@ -41,11 +40,8 @@ class MCUMonitor : public QDialog, private Ui::McuMonitor
 
         uint8_t* m_statusReg;  // STATUS register
 
-        Watcher* m_watcher;
+        Watcher*  m_watcher;
         RamTable* m_ramTable;
-        MemTable* m_ramMonitor;
-        MemTable* m_flashMonitor;
-        MemTable* m_romMonitor;
 
         QTableWidget m_status;
         QTableWidget m_pc;

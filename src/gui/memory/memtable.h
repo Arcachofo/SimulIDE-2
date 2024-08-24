@@ -10,8 +10,6 @@
 
 #include "ui_memtable.h"
 
-//class Component;
-//class QAction;
 class Memory;
 
 class MemTable : public QWidget, private Ui::MemTable

@@ -12,7 +12,6 @@
 DataSpace::DataSpace()
 {
     m_sregAddr = 0;
-    m_ramSize   = 0;
     m_regStart = 0xFFFF;
     m_regEnd   = 0;
 }

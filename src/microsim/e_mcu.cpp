@@ -6,7 +6,6 @@
 #include "e_mcu.h"
 #include "mcu.h"
 #include "cpubase.h"
-#include "mcuconfigword.h"
 #include "mcuport.h"
 #include "mcupin.h"
 #include "ioport.h"
@@ -14,7 +13,6 @@
 #include "mcuwdt.h"
 #include "usartmodule.h"
 #include "usartrx.h"
-#include "mcuvref.h"
 #include "simulator.h"
 #include "basedebugger.h"
 #include "editorwindow.h"
@@ -36,15 +34,8 @@ eMcu::eMcu( Mcu* comp, QString id )
     m_freq = 0;
     m_cPerInst = 1;
 
-    //m_wordSize  = 2;
-    //m_flashSize = 0;
-    //m_romSize   = 0;
-    m_ramSize   = 0;
-
-    //m_firmware = "";
     m_debugger = nullptr;
     m_debugging = false;
-    //m_saveEepr  = true;
 
     m_ramTable = new RamTable( nullptr, this, false );
 }

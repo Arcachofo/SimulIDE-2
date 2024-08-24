@@ -345,8 +345,6 @@ void McuCreator::createEeprom( QDomElement* e )
 
     setConfigRegs( e, eeprom );
 
-
-
     if( e->hasAttribute("dataregs") )
         eeprom->m_dataReg = mcu->getReg( e->attribute("dataregs") );
 

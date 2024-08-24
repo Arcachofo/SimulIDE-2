@@ -64,6 +64,12 @@ void Memory::showTable()
     m_memTable->show();
 }
 
+MemTable* Memory::getTable()
+{
+    showTable();
+    return m_memTable;
+}
+
 bool Memory::loadData( bool resize )
 {
     Simulator::self()->pauseSim();

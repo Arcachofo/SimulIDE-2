@@ -41,6 +41,7 @@ class Memory
 
         virtual void showTable();
 
+        MemTable* getTable();
 
     protected:
         void saveDat( int bits );
