@@ -235,7 +235,7 @@ void Mcu::setupMcu()
     // Main Property Group --------------------------------------
 
     m_intOsc = (McuIntOsc*)m_eMcu.getModule("intosc");
-    m_eeprom = (McuEeprom*)m_eMcu.getModule("rom");
+    m_rom    = (McuEeprom*)m_eMcu.getModule("rom");
     m_pgm    = (McuPgm*)   m_eMcu.getModule("pgm");
 
     if( m_packageList.size() > 1 )
@@ -257,7 +257,7 @@ void Mcu::setupMcu()
     addProperty(tr("Main"),new BoolProp<Mcu>("Auto_Load", tr("Reload hex at Simulation Start"),""
                                             , this, &Mcu::autoLoad, &Mcu::setAutoLoad ));
     }
-    if( m_eeprom )
+    if( m_rom )
     addProperty(tr("Main"),new BoolProp<Mcu>("saveEepr", tr("EEPROM persitent"),""
                                             , this, &Mcu::saveEepr, &Mcu::setSaveEepr ));
 
@@ -295,10 +295,10 @@ void Mcu::setupMcu()
     hi.propList.append( new BoolProp<Mcu>("MainMcu","","", this, &Mcu::mainMcu , &Mcu::setMainMcu ) );
 
     if( m_pgm )
-    hi.propList.append( new StrProp<Mcu>("pgm"   ,"","", this, &Mcu::getPGM, &Mcu::setPGM ) );
+    hi.propList.append( new StrProp<Mcu>("pgm","","", this, &Mcu::getPGM, &Mcu::setPGM ) );
 
-    if( m_eeprom )
-    hi.propList.append( new StrProp<Mcu>("eeprom"   ,"","", this, &Mcu::getEeprom, &Mcu::setEeprom ) );
+    if( m_rom )
+    hi.propList.append( new StrProp<Mcu>("eeprom","","", this, &Mcu::getEeprom, &Mcu::setEeprom ) );
 
     if( m_eMcu.m_usarts.size() )
     hi.propList.append( new IntProp<Mcu>("SerialMon","","", this, &Mcu::serialMon, &Mcu::setSerialMon ) );
@@ -344,7 +344,7 @@ void Mcu::stamp()
     else m_eMcu.start();
 
     if( m_autoLoad )
-    { if( !m_eMcu.m_firmware.isEmpty() ) load( m_eMcu.m_firmware ); }
+    { if( !m_firmware.isEmpty() ) load( m_firmware ); }
 }
 
 void Mcu::updateStep()
@@ -367,12 +367,12 @@ void Mcu::voltChanged() // Reset Pin callBack
     m_eMcu.hardReset( m_resetPin->getInpState() == m_resetPol );
 }
 
-void Mcu::setProgram( QString pro )
+void Mcu::setProgram( QString file )
 {
     if( m_savePGM ) return;
-    if( pro == "" ) return;
-    if( Circuit::self()->isSubc() ) m_eMcu.m_firmware = pro; // Let Subcircuit load firmware with path to subc dir
-    else load( pro );
+    if( file.isEmpty() ) return;
+    if( Circuit::self()->isSubc() ) m_firmware = file; // Let Subcircuit load firmware with path to subc dir
+    else load( file );
 }
 
 QString Mcu::varList()
@@ -438,27 +438,27 @@ void Mcu::setPGM( QString pgm )
     m_pgm->loadDatStr( pgm, false );
 }
 
-bool Mcu::saveEepr() { return m_eeprom->m_saveEepr; }
-void Mcu::setSaveEepr( bool s ) { m_eeprom->m_saveEepr = s; }
+bool Mcu::saveEepr() { return m_rom->m_saveEepr; }
+void Mcu::setSaveEepr( bool s ) { m_rom->m_saveEepr = s; }
 
 void Mcu::setEeprom( QString eep )
 {
     if( eep.isEmpty() ) return;
-    m_eeprom->loadDatStr( eep, false );
+    m_rom->loadDatStr( eep, false );
 }
 
 QString Mcu::getEeprom()  // Used by property, stripped to last written value.
 {
     QString eeprom;
-    if( m_eeprom->m_saveEepr )
+    if( m_rom->m_saveEepr )
     {
-        int size = m_eeprom->size();
+        int size = m_rom->size();
         if( size > 0 )
         {
             bool empty = true;
             for( int i=size-1; i>=0; --i )
             {
-                uint8_t val = m_eeprom->getValue( i );
+                uint8_t val = m_rom->getValue( i );
                 if( val < 0xFF ) empty = false;
                 if( empty ) continue;
                 eeprom.prepend( QString::number( val )+"," );
@@ -468,14 +468,14 @@ QString Mcu::getEeprom()  // Used by property, stripped to last written value.
 
 void Mcu::loadEEPROM()
 {
-    if( !m_eeprom ) return;
+    if( !m_rom ) return;
 
-   m_eeprom->loadData();
+   m_rom->loadData();
 
    if( m_mcuMonitor ) m_mcuMonitor->tabChanged( 1 );
 }
 
-void Mcu::saveEEPROM() { m_eeprom->saveData(); }
+void Mcu::saveEEPROM() { m_rom->saveData(); }
 
 void Mcu::slotLoad()
 {
@@ -492,7 +492,7 @@ void Mcu::slotLoad()
 
 void Mcu::slotReload()
 {
-    if( !m_eMcu.m_firmware.isEmpty() ) load( m_eMcu.m_firmware );
+    if( !m_firmware.isEmpty() ) load( m_firmware );
     else QMessageBox::warning( 0, "Mcu::slotReload", tr("No File to reload ") );
 }
 
@@ -518,8 +518,8 @@ bool Mcu::load( QString fileName )
     qDebug() << "Firmware successfully loaded\n";
 
     QString firmware = circuitDir.relativeFilePath( cleanPathAbs );
-    if( m_eMcu.m_firmware != firmware ) Circuit::self()->setChanged();
-    m_eMcu.m_firmware = firmware;
+    if( m_firmware != firmware ) Circuit::self()->setChanged();
+    m_firmware = firmware;
 
     m_lastFirmDir = QFileInfo( cleanPathAbs ).absolutePath();
     if( m_propDialog ) m_propDialog->updtValues();
@@ -552,7 +552,7 @@ void Mcu::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
         menu->addSeparator();
     }
 
-    if( m_eeprom )
+    if( m_rom )
     {
         QAction* loadDaAction = menu->addAction( QIcon(":/open.png"),tr("Load EEPROM data from file") );
         QObject::connect( loadDaAction, &QAction::triggered, [=](){ loadEEPROM(); } );
@@ -607,7 +607,12 @@ void Mcu::setIdLabel( QString id )
 
 void Mcu::slotOpenMcuMonitor()
 {
-    if( !m_mcuMonitor ) m_mcuMonitor = new MCUMonitor( CircuitWidget::self(), &m_eMcu );
+    if( !m_mcuMonitor )
+    {
+        m_mcuMonitor = new MCUMonitor( CircuitWidget::self(), &m_eMcu );
+        if( m_rom ) m_mcuMonitor->addTable( m_rom->getTable() );
+        if( m_pgm ) m_mcuMonitor->addTable( m_pgm->getTable() );
+    }
     m_mcuMonitor->setWindowTitle( findIdLabel() );
     m_mcuMonitor->show();
 }

@@ -59,18 +59,13 @@ class eMcu : public DataSpace, public eIou
         void setDebugger( BaseDebugger* deb );
         void setDebugging( bool d );
 
-        /*uint16_t getFlashValue( int address ) { return m_progMem[address]; }
-        void     setFlashValue( int address, uint16_t value ) { m_progMem[address] = value; }
-        uint32_t flashSize(){ return m_flashSize; }
-        uint32_t wordSize() { return m_wordSize; }*/
-
         uint64_t cycle(){ return m_cycle; }
 
         void hardReset( bool r );
         void sleep( bool s );
         void start();
 
-        QString getFileName() { return m_firmware; }
+        //QString getFileName() { return m_firmware; }
 
         double vdd() { return m_vdd; }
 
@@ -100,14 +95,9 @@ class eMcu : public DataSpace, public eIou
 
         void reset();
 
-        QString m_firmware;     // firmware file loaded
-
         mcuState_t m_state;
 
         uint64_t m_cycle;
-        //std::vector<uint16_t> m_progMem;  // Program memory
-        //uint32_t m_flashSize;
-        //uint8_t  m_wordSize; // Size of Program memory word in bytes
 
         std::vector<McuModule*> m_modules;
         std::vector<McuUsart*> m_usarts;

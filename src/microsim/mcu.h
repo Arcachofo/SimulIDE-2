@@ -44,8 +44,8 @@ class Mcu : public Chip, public Linker
         bool mainMcu() { return m_pSelf == this; }
         void setMainMcu( bool m ) { if( m ) slotmain(); }
 
-        QString program() { return m_eMcu.getFileName(); }
-        void setProgram( QString pro );
+        QString program() { return m_firmware; }
+        void setProgram( QString file );
 
         bool autoLoad() { return m_autoLoad; }
         void setAutoLoad( bool al ) { m_autoLoad = al; }
@@ -137,6 +137,8 @@ class Mcu : public Chip, public Linker
 
         QString findIdLabel();
 
+        QString m_firmware;     // firmware file loaded
+
         //deviceType_t m_deviceType;
         bool m_isTQFP;
 
@@ -155,7 +157,7 @@ class Mcu : public Chip, public Linker
         eMcu m_eMcu;
 
         McuIntOsc* m_intOsc;
-        McuEeprom* m_eeprom;
+        McuEeprom* m_rom;
         McuPgm*    m_pgm;
 
         IoPin*  m_resetPin;

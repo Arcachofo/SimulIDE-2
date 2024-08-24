@@ -41,7 +41,7 @@ eMcu::eMcu( Mcu* comp, QString id )
     //m_romSize   = 0;
     m_ramSize   = 0;
 
-    m_firmware = "";
+    //m_firmware = "";
     m_debugger = nullptr;
     m_debugging = false;
     //m_saveEepr  = true;
