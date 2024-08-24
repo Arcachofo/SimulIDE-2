@@ -29,7 +29,7 @@
 #include "mcuuart.h"
 #include "mcuintosc.h"
 #include "mcupgm.h"
-#include "mcueeprom.h"
+#include "mcurom.h"
 #include "utils.h"
 #include "watcher.h"
 
@@ -235,8 +235,8 @@ void Mcu::setupMcu()
     // Main Property Group --------------------------------------
 
     m_intOsc = (McuIntOsc*)m_eMcu.getModule("intosc");
-    m_rom    = (McuEeprom*)m_eMcu.getModule("rom");
-    m_pgm    = (McuPgm*)   m_eMcu.getModule("pgm");
+    m_rom = (McuRom*)m_eMcu.getModule("rom");
+    m_pgm = (McuPgm*)m_eMcu.getModule("pgm");
 
     if( m_packageList.size() > 1 )
     addProperty(tr("Main"), new StrProp<Mcu>("Package", tr("Package"),""
@@ -610,8 +610,8 @@ void Mcu::slotOpenMcuMonitor()
     if( !m_mcuMonitor )
     {
         m_mcuMonitor = new MCUMonitor( CircuitWidget::self(), &m_eMcu );
-        if( m_rom ) m_mcuMonitor->addTable( m_rom->getTable() );
-        if( m_pgm ) m_mcuMonitor->addTable( m_pgm->getTable() );
+        if( m_rom ) m_mcuMonitor->addTable( m_rom->getTable(), "ROM" );
+        if( m_pgm ) m_mcuMonitor->addTable( m_pgm->getTable(), "PGM" );
     }
     m_mcuMonitor->setWindowTitle( findIdLabel() );
     m_mcuMonitor->show();

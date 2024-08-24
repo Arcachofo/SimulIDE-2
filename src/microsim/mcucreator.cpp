@@ -317,7 +317,7 @@ void McuCreator::createCfgWord( QDomElement* e )
 
 void McuCreator::createDataMem( uint32_t size )
 {
-    mcu->m_ramSize = size;
+    //mcu->m_ramSize = size;
     mcu->m_dataMem.resize( size, 0 );
     mcu->m_addrMap.resize( size, 0xFFFF ); // Not Maped values = 0xFFFF -> don't exist
 }
@@ -333,7 +333,7 @@ void McuCreator::createDataMem( uint32_t size )
 
 void McuCreator::createEeprom( QDomElement* e )
 {
-    McuEeprom* eeprom = nullptr;
+    McuRom* eeprom = nullptr;
     QString eepromName = e->attribute("name");
 
     if     ( m_core == "AVR" )    eeprom = new AvrEeprom( mcu, eepromName );
@@ -358,11 +358,11 @@ void McuCreator::createEeprom( QDomElement* e )
 
         if( !lowByte.isEmpty() ){
             eeprom->m_addressL = mcu->getReg( lowByte );
-            watchRegNames( lowByte, R_WRITE, eeprom, &McuEeprom::addrWriteL, mcu );
+            watchRegNames( lowByte, R_WRITE, eeprom, &McuRom::addrWriteL, mcu );
         }
         if( !highByte.isEmpty() ){
             eeprom->m_addressH = mcu->getReg( highByte );
-            watchRegNames( highByte, R_WRITE, eeprom, &McuEeprom::addrWriteH, mcu );
+            watchRegNames( highByte, R_WRITE, eeprom, &McuRom::addrWriteH, mcu );
     }   }
     setInterrupt( e->attribute("interrupt"), eeprom );
 }
@@ -373,10 +373,10 @@ void McuCreator::createDataBlock( QDomElement* d )
     uint16_t datEnd   = d->attribute("end").toUInt(0,0);
     uint16_t mapTo    = datStart;
 
-    if( datEnd >= mcu->m_ramSize )
+    if( datEnd >= mcu->ramSize() )
     {
         qDebug() << "McuCreator::createDataBlock  ERROR creating DataBlock";
-        qDebug() << "dataMemSize  = " << mcu->m_ramSize;
+        qDebug() << "dataMemSize  = " << mcu->ramSize();
         qDebug() << "dataBlockEnd = " << datEnd;
         return;
     }
@@ -396,10 +396,10 @@ void McuCreator::createRegisters( QDomElement* e )
     uint16_t regEnd   = e->attribute("end").toUInt(0,0);
     uint16_t offset   = e->attribute("offset").toUInt(0,0);
 
-    if( regEnd >= mcu->m_ramSize )
+    if( regEnd >= mcu->ramSize() )
     {
         qDebug() << "McuCreator::createRegisters  ERROR creating Registers";
-        qDebug() << "dataMemSize  = " << mcu->m_ramSize;
+        qDebug() << "dataMemSize  = " << mcu->ramSize();
         qDebug() << "RegistersEnd = " << regEnd;
         return;
     }
@@ -426,10 +426,10 @@ void McuCreator::getRegisters( QDomElement* e, uint16_t offset )
             QString  regName = el.attribute("name");
             uint16_t regAddr = el.attribute("addr").toUInt(0,0)+offset;
 
-            if( regAddr >= mcu->m_ramSize )
+            if( regAddr >= mcu->ramSize() )
             {
                 qDebug() << "McuCreator::getRegisters  ERROR creating Register"<< regName ;
-                qDebug() << "dataMemSize  = " << mcu->m_ramSize;
+                qDebug() << "dataMemSize  = " << mcu->ramSize();
                 qDebug() << "Register Address = " << regAddr<<"\n";
             }
             else{

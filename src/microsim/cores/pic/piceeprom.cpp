@@ -9,7 +9,7 @@
 #include "simulator.h"
 
 PicEeprom::PicEeprom( eMcu* mcu, QString name )
-         : McuEeprom( mcu, name )
+         : McuRom( mcu, name )
 {
 }
 PicEeprom::~PicEeprom(){}
@@ -17,10 +17,10 @@ PicEeprom::~PicEeprom(){}
 void PicEeprom::setup()
 {
     //m_EECR  = m_mcu->getReg( "EECR" );
-    m_WRERR = getRegBits( "WRERR", m_mcu );
-    m_WREN  = getRegBits( "WREN", m_mcu );
-    m_WR    = getRegBits( "WR", m_mcu );
-    m_RD    = getRegBits( "RD", m_mcu );
+    m_WRERR = getRegBits("WRERR", m_mcu );
+    m_WREN  = getRegBits("WREN", m_mcu );
+    m_WR    = getRegBits("WR", m_mcu );
+    m_RD    = getRegBits("RD", m_mcu );
 }
 
 void PicEeprom::initialize()
@@ -28,7 +28,7 @@ void PicEeprom::initialize()
     m_writeEnable = false;
     m_nextCycle = 0;
     m_wrMask = 0;
-    McuEeprom::initialize();
+    McuRom::initialize();
 }
 
 void PicEeprom::runEvent() // Write cycle end reached

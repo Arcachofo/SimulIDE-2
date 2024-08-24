@@ -6,9 +6,9 @@
 #ifndef AVREEPROM_H
 #define AVREEPROM_H
 
-#include "mcueeprom.h"
+#include "mcurom.h"
 
-class AvrEeprom : public McuEeprom
+class AvrEeprom : public McuRom
 {
         friend class McuCreator;
 

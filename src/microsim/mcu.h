@@ -21,7 +21,7 @@
 
 class MCUMonitor;
 class ScriptCpu;
-class McuEeprom;
+class McuRom;
 class McuPgm;
 class McuIntOsc;
 
@@ -133,11 +133,8 @@ class Mcu : public Chip, public Linker
         void setPGM( QString pgm );
 
         virtual void contextMenu( QGraphicsSceneContextMenuEvent* e, QMenu* m ) override;
-        //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
         QString findIdLabel();
-
-        QString m_firmware;     // firmware file loaded
 
         //deviceType_t m_deviceType;
         bool m_isTQFP;
@@ -151,19 +148,18 @@ class Mcu : public Chip, public Linker
 
         int m_serialMon;
 
+        QString m_firmware;     // firmware file loaded
         QString m_lastFirmDir;  // Last firmware folder used
         QString m_device;       // Name of device
 
         eMcu m_eMcu;
 
         McuIntOsc* m_intOsc;
-        McuEeprom* m_rom;
-        McuPgm*    m_pgm;
+        McuRom* m_rom;
+        McuPgm* m_pgm;
 
         IoPin*  m_resetPin;
         McuPin* m_portRstPin;
-
-        QList<Pin*> m_pinList;
 
         MCUMonitor* m_mcuMonitor;
 

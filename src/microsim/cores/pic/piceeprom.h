@@ -6,9 +6,9 @@
 #ifndef PICEEPROM_H
 #define PICEEPROM_H
 
-#include "mcueeprom.h"
+#include "mcurom.h"
 
-class PicEeprom : public McuEeprom
+class PicEeprom : public McuRom
 {
         friend class McuCreator;
 

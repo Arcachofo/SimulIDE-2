@@ -3,21 +3,21 @@
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-#ifndef MCUEEPROM_H
-#define MCUEEPROM_H
+#ifndef MCUROM_H
+#define MCUROM_H
 
 #include "mcumodule.h"
 #include "memory.h"
 #include "e-element.h"
 
-class McuEeprom : public McuModule, public Memory, public eElement
+class McuRom : public McuModule, public Memory, public eElement
 {
         friend class McuCreator;
         friend class Mcu;
 
     public:
-        McuEeprom( eMcu* mcu, QString name );
-        virtual ~McuEeprom();
+        McuRom( eMcu* mcu, QString name );
+        virtual ~McuRom();
 
         virtual void setup() override {;}
 

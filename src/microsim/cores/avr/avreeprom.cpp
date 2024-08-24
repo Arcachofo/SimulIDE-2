@@ -14,7 +14,7 @@
 #include "simulator.h"
 
 AvrEeprom::AvrEeprom( eMcu* mcu, QString name )
-         : McuEeprom( mcu, name )
+         : McuRom( mcu, name )
 {
 }
 AvrEeprom::~AvrEeprom(){}
@@ -31,7 +31,7 @@ void AvrEeprom::setup()
 void AvrEeprom::initialize()
 {
     m_mode = 0;
-    McuEeprom::initialize();
+    McuRom::initialize();
 }
 
 void AvrEeprom::runEvent() // Write cycle end reached
