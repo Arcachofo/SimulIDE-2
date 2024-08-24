@@ -1,21 +1,22 @@
-/***************************************************************************
+﻿/***************************************************************************
  *   Copyright (C) 2018 by Santiago González                               *
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-#ifndef MEMDATA_H
-#define MEMDATA_H
+#ifndef MEMORY_H
+#define MEMORY_H
 
-#include <QVector>
+#include <vector>
+#include <QString>
 
 class MemTable;
 class eMcu;
 
-class MemData
+class Memory
 {
     public:
-        MemData();
-        ~MemData();
+        Memory();
+        ~Memory();
 
         bool loadData( bool resize=false );
         void saveData();
@@ -29,16 +30,17 @@ class MemData
         QString getMem();
         void setMem( QString m );
 
-        void setBits( int b ) { m_bits = b; }
+        void setBits( int b );
 
-        virtual void showTable( int dataSize=256, int wordBytes=1 );
+        virtual void showTable();
 
     protected:
         void saveDat( int bits );
         void saveHex( int bits ); /// TODO
         void saveBin( int bits );
 
-        int m_bits;
+        int m_wordBits;
+        int m_wordBytes;
 
         MemTable* m_memTable;
         eMcu* m_eMcu;
@@ -47,5 +49,3 @@ class MemData
 };
 
 #endif
-
-

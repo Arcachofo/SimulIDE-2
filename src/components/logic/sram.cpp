@@ -5,7 +5,7 @@
 
 #include <math.h>
 
-#include "memory.h"
+#include "sram.h"
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -17,21 +17,21 @@
 #include "boolprop.h"
 #include "intprop.h"
 
-#define tr(str) simulideTr("Memory",str)
+#define tr(str) simulideTr("SRAM",str)
 
-listItem_t Memory::libraryItem(){
+listItem_t SRAM::libraryItem(){
     return {
         tr("Ram/Rom"),
-        "Memory",
+        "SRAM",
         "2to3g.png",
-        "Memory",
-        [](QString id){ return (Component*)new Memory("Memory", id ); } };
+        "SRAM",
+        [](QString id){ return (Component*)new SRAM("SRAM", id ); } };
 }
 
-Memory::Memory( QString type, QString id )
-      : IoComponent( type, id )
-      , eElement( id )
-      , MemData()
+SRAM::SRAM( QString type, QString id )
+    : IoComponent( type, id )
+    , eElement( id )
+    , Memory()
 {
     m_width  = 4;
     m_height = 11;
@@ -65,17 +65,17 @@ Memory::Memory( QString type, QString id )
     Simulator::self()->addToUpdateList( this );
 
     addPropGroup( { tr("Main"), {
-        new IntProp <Memory>("Address_Bits", tr("Address Size"),"_bits"
-                            , this, &Memory::addrBits, &Memory::setAddrBits, propNoCopy,"uint" ),
+        new IntProp <SRAM>("Address_Bits", tr("Address Size"),"_bits"
+                            , this, &SRAM::addrBits, &SRAM::setAddrBits, propNoCopy,"uint" ),
 
-        new IntProp <Memory>("Data_Bits", tr("Data Size"),"_bits"
-                            , this, &Memory::dataBits, &Memory::setDataBits, propNoCopy,"uint" ),
+        new IntProp <SRAM>("Data_Bits", tr("Data Size"),"_bits"
+                            , this, &SRAM::dataBits, &SRAM::setDataBits, propNoCopy,"uint" ),
 
-        new BoolProp<Memory>("Persistent", tr("Persistent"),""
-                            , this, &Memory::persistent, &Memory::setPersistent ),
+        new BoolProp<SRAM>("Persistent", tr("Persistent"),""
+                            , this, &SRAM::persistent, &SRAM::setPersistent ),
 
-        new BoolProp<Memory>("Asynch", tr("Asynchronous"),""
-                            , this, &Memory::asynchro, &Memory::setAsynchro )
+        new BoolProp<SRAM>("Asynch", tr("Asynchronous"),""
+                            , this, &SRAM::asynchro, &SRAM::setAsynchro )
     }, groupNoCopy} );
 
     addPropGroup( { tr("Electric")
@@ -89,13 +89,13 @@ Memory::Memory( QString type, QString id )
     ,0 } );
 
     addPropGroup( { "Hidden", {
-new StrProp<Memory>("Mem","",""
-                   , this, &Memory::getMem, &Memory::setMem)
+new StrProp<SRAM>("Mem","",""
+                   , this, &SRAM::getMem, &SRAM::setMem)
     }, groupHidden} );
 }
-Memory::~Memory(){}
+SRAM::~SRAM(){}
 
-void Memory::stamp()                   // Called at Simulation Start
+void SRAM::stamp()                   // Called at Simulation Start
 {
     m_oe = false;
     m_cs = true;
@@ -114,7 +114,7 @@ void Memory::stamp()                   // Called at Simulation Start
     m_OePin->changeCallBack( this );
 }
 
-void Memory::updateStep()
+void SRAM::updateStep()
 {
     if( m_changed )
     {
@@ -125,7 +125,7 @@ void Memory::updateStep()
     ///if( m_memTable ) m_memTable->updateTable( &m_data );
 }
 
-void Memory::voltChanged()        // Some Pin Changed State, Manage it
+void SRAM::voltChanged()        // Some Pin Changed State, Manage it
 {
     bool cs = m_CsPin->getInpState();
     bool we = m_WePin->getInpState();
@@ -166,26 +166,26 @@ void Memory::voltChanged()        // Some Pin Changed State, Manage it
         IoComponent::scheduleOutPuts( this );
 }   }
 
-void Memory::setAsynchro( bool a )
+void SRAM::setAsynchro( bool a )
 {
     m_asynchro = a;
     m_changed = true;
 }
 
-/*void Memory::setMem( QString m )
+/*void SRAM::setMem( QString m )
 {
     if( m.isEmpty() ) return;
-    MemData::setMem( &m_data, m );
+    Memory::setMem( &m_data, m );
 }
 
-QString Memory::getMem()
+QString SRAM::getMem()
 {
     QString m;
     if( !m_persistent ) return m;
-    return MemData::getMem( &m_data );
+    return Memory::getMem( &m_data );
 }*/
 
-void Memory::updatePins()
+void SRAM::updatePins()
 {
     int h = m_addrBits+1;
     if( m_dataBits > h ) h = m_dataBits;
@@ -215,7 +215,7 @@ void Memory::updatePins()
     m_area = QRect(-(m_width/2)*8, origY, m_width*8, m_height*8 );
 }
 
-void Memory::setAddrBits( int bits )
+void SRAM::setAddrBits( int bits )
 {
     if( bits == m_addrBits ) return;
     if( bits == 0 ) bits = 8;
@@ -235,7 +235,7 @@ void Memory::setAddrBits( int bits )
     Circuit::self()->update();
 }
 
-void Memory::createAddrBits( int bits )
+void SRAM::createAddrBits( int bits )
 {
     int chans = m_addrBits + bits;
     int origY = -(m_height/2)*8;
@@ -252,10 +252,10 @@ void Memory::createAddrBits( int bits )
         initPin( m_inPin[i] );
 }   }
 
-void Memory::deleteAddrBits( int bits )
+void SRAM::deleteAddrBits( int bits )
 { IoComponent::deletePins( &m_inPin, bits ); }
 
-void Memory::setDataBits( int bits )
+void SRAM::setDataBits( int bits )
 {
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
 
@@ -274,7 +274,7 @@ void Memory::setDataBits( int bits )
     Circuit::self()->update();
 }
 
-void Memory::createDataBits( int bits )
+void SRAM::createDataBits( int bits )
 {
     int chans = m_dataBits + bits;
     int origY = -(m_height/2)*8;
@@ -291,10 +291,10 @@ void Memory::createDataBits( int bits )
         initPin( m_outPin[i] );
 }   }
 
-void Memory::deleteDataBits( int bits )
+void SRAM::deleteDataBits( int bits )
 { IoComponent::deletePins( &m_outPin, bits ); }
 
-void Memory::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
+void SRAM::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
 {
     QAction* loadAction = menu->addAction( QIcon(":/load.svg"),tr("Load data") );
     QObject::connect( loadAction, &QAction::triggered, [=](){ loadData(); } );
@@ -302,24 +302,24 @@ void Memory::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
     QAction* saveAction = menu->addAction(QIcon(":/save.png"), tr("Save data") );
     QObject::connect( saveAction, &QAction::triggered, [=](){ saveData(); } );
 
-    QAction* showEepAction = menu->addAction(QIcon(":/save.png"), tr("Show Memory Table") );
+    QAction* showEepAction = menu->addAction(QIcon(":/save.png"), tr("Show SRAM Table") );
     QObject::connect( showEepAction, &QAction::triggered, [=](){ slotShowTable(); } );
 
     menu->addSeparator();
     Component::contextMenu( event, menu );
 }
 
-/*void Memory::loadData()
+/*void SRAM::loadData()
 {
-    MemData::loadData( &m_data, false, m_dataBits );
+    Memory::loadData( &m_data, false, m_dataBits );
     if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
 }
 
-void Memory::saveData() { MemData::saveData( &m_data, m_dataBits ); }*/
+void SRAM::saveData() { Memory::saveData( &m_data, m_dataBits ); }*/
 
-void Memory::slotShowTable()
+void SRAM::slotShowTable()
 {
-    MemData::showTable( m_data.size(), m_dataBytes );
+    Memory::showTable();
     if( m_persistent ) m_memTable->setWindowTitle( "ROM: "+idLabel() );
     else               m_memTable->setWindowTitle( "RAM: "+idLabel() );
     ///m_memTable->setData( &m_data, m_dataBytes );

@@ -18,10 +18,10 @@ class MemTable : public QWidget, private Ui::MemTable
     Q_OBJECT
     
     public:
-        MemTable( QWidget* parent=0, int dataSize=256, int wordBytes=1 );
+        MemTable( QWidget* parent, std::vector<uint64_t>* data, int wordBytes=1 );
 
-        void updateTable( QVector<int>* data );
-        void setData( QVector<int>* data, int wordBytes=1 );
+        //void updateTable( QVector<int>* data );
+        //void setData( QVector<int>* data, int wordBytes=1 );
         void setValue( int address, int val );
         void setCellBytes( int bytes );
         void setAddrSelected( int addr ,bool jump );
@@ -56,7 +56,7 @@ class MemTable : public QWidget, private Ui::MemTable
         bool m_canSaveLoad;
 
         QTableWidgetItem* m_hoverItem;
-        QVector<int>* m_data;
+        std::vector<uint64_t>* m_data;
 };
 
 #endif

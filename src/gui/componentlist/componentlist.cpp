@@ -637,7 +637,7 @@ void ComponentList::writeSettings()
 #include "ds1307.h"
 #include "ds1621.h"
 #include "ds18b20.h"
-#include "dynamic_memory.h"
+#include "dram.h"
 #include "elcapacitor.h"
 #include "ellipse.h"
 #include "esp01.h"
@@ -677,7 +677,6 @@ void ComponentList::writeSettings()
 #include "magnitudecomp.h"
 #include "max72xx_matrix.h"
 #include "mcu.h"
-#include "memory.h"
 #include "mosfet.h"
 #include "mux.h"
 #include "mux_analog.h"
@@ -701,6 +700,7 @@ void ComponentList::writeSettings()
 #include "shiftreg.h"
 #include "socket.h"
 #include "sr04.h"
+#include "sram.h"
 #include "scr.h"
 #include "ssd1306.h"
 #include "stepper.h"
@@ -861,8 +861,8 @@ void ComponentList::LoadLibraryItems()
     addItem( FlipFlopRS::libraryItem() );
     addItem( FlipFlopJK::libraryItem() );
     addItem( LatchD::libraryItem() );
-    addItem( Memory::libraryItem() );
-    addItem( DynamicMemory::libraryItem() );
+    addItem( SRAM::libraryItem() );
+    addItem( DRAM::libraryItem() );
     addItem( I2CRam::libraryItem() );
 
     addCategory( tr("Converters"),"Converters", "Logic", "1to2.png" );

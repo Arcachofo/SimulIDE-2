@@ -9,7 +9,7 @@
 
 McuPgm::McuPgm( eMcu* mcu, QString name )
          : McuModule( mcu, name )
-         , MemData()
+         , Memory()
          , eElement( mcu->getId()+"-"+name )
 {
     m_addressL = nullptr;

@@ -7,10 +7,10 @@
 #define MCUPGM_H
 
 #include "mcumodule.h"
-#include "memdata.h"
+#include "memory.h"
 #include "e-element.h"
 
-class McuPgm : public McuModule, public MemData, public eElement
+class McuPgm : public McuModule, public Memory, public eElement
 {
         friend class McuCreator;
         friend class Mcu;

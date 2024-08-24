@@ -7,10 +7,10 @@
 #define MCUEEPROM_H
 
 #include "mcumodule.h"
-#include "memdata.h"
+#include "memory.h"
 #include "e-element.h"
 
-class McuEeprom : public McuModule, public MemData, public eElement
+class McuEeprom : public McuModule, public Memory, public eElement
 {
         friend class McuCreator;
         friend class Mcu;

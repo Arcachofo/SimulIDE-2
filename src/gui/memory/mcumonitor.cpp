@@ -58,10 +58,10 @@ MCUMonitor::MCUMonitor( QWidget* parent, eMcu* mcu )
             this->resize( 480,this->height() );
         }
 
-        m_ramMonitor = new MemTable( tabWidget, m_processor->ramSize() );
+        /*m_ramMonitor = new MemTable( tabWidget, m_processor->ramSize() );
         connect( m_ramMonitor, SIGNAL( dataChanged(int, int)), this, SLOT(ramDataChanged(int, int)) );
         tabWidget->addTab( m_ramMonitor, "RAM" );
-        jumpButton->setVisible( true );
+        jumpButton->setVisible( true );*/
     }
 
     /*if( mcu->flashSize() )

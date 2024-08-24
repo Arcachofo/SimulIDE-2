@@ -11,20 +11,23 @@
 #include "mainwindow.h"
 #include "simulator.h"
 #include "utils.h"
-#include "memdata.h"
+#include "memory.h"
 
-MemTable::MemTable( QWidget* parent, int dataSize, int wordBytes )
+MemTable::MemTable( QWidget* parent, std::vector<uint64_t>* data, int wordBytes )
         : QWidget( parent )
 {
     setupUi(this);
+
+    m_data = data;
+    int dataSize = m_data->size();
 
     m_addrBytes = ceil( ceil(log2(dataSize))/8 );
     m_wordBytes = wordBytes;
     m_cellBytes = wordBytes;
     m_byteRatio = 1;
     m_updtCount = 0;
-    m_data = NULL;
-    m_hoverItem = NULL;
+
+    m_hoverItem = nullptr;
 
     m_canSaveLoad = true;
 
@@ -39,12 +42,12 @@ MemTable::MemTable( QWidget* parent, int dataSize, int wordBytes )
     //connect( actionLoad_Memory_Table, &QAction::triggered, this, &MemTable::loadTable );
 }
 
-void MemTable::updateTable( QVector<int>* data )
+/*void MemTable::updateTable( QVector<int>* data )
 {
     if( ++m_updtCount >= 10 ) m_updtCount = 0;
     else                      return;
-    setData( data, m_wordBytes );
-}
+    /// setData( data, m_wordBytes );
+}*/
 
 void MemTable::setValue( int address, int val )
 {
@@ -89,7 +92,7 @@ void MemTable::setCellValue( int address, int val )
     table->item( row, colAscii )->setData( 0, valS );
 }
 
-void MemTable::setData( QVector<int>* data, int wordBytes )
+/*void MemTable::setData( QVector<int>* data, int wordBytes )
 {
     m_data = data;
 
@@ -102,7 +105,7 @@ void MemTable::setData( QVector<int>* data, int wordBytes )
         resizeTable( data->size() );
     }
     for( int i=0; i<data->size(); ++i ) setValue( i, data->at(i) );
-}
+}*/
 
 void MemTable::setCellBytes( int bytes )
 {
@@ -240,7 +243,7 @@ void MemTable::on_table_itemChanged( QTableWidgetItem* item )
 
     if( ok )
     {
-        if( m_data) m_data->replace( dataAddr, val );
+        if( m_data) m_data->at( dataAddr ) = val;
         emit dataChanged( dataAddr, val );
     }
     else if( m_data) setValue( dataAddr, m_data->at( dataAddr ) );

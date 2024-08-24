@@ -30,7 +30,7 @@ listItem_t I2CRam::libraryItem(){
 I2CRam::I2CRam( QString type, QString id )
       : IoComponent( type, id )
       , TwiModule( id )
-      , MemData()
+      , Memory()
 {
     m_width  = 4;
     m_height = 4;
@@ -193,7 +193,7 @@ void I2CRam::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
 
 void I2CRam::slotShowTable()
 {
-    MemData::showTable( m_size, 1 );
+    Memory::showTable();
     if( m_persistent ) m_memTable->setWindowTitle( "I2C ROM: "+m_idLabel->toPlainText());
     else               m_memTable->setWindowTitle( "I2C RAM: "+m_idLabel->toPlainText() );
     /// m_memTable->setData( &m_data );

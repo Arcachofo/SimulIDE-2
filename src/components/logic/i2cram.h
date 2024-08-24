@@ -8,9 +8,9 @@
 
 #include "twimodule.h"
 #include "iocomponent.h"
-#include "memdata.h"
+#include "memory.h"
 
-class I2CRam : public IoComponent, public TwiModule, public MemData
+class I2CRam : public IoComponent, public TwiModule, public Memory
 {
     public:
         I2CRam( QString type, QString id );
@@ -37,8 +37,8 @@ class I2CRam : public IoComponent, public TwiModule, public MemData
         void setPersistent( bool p ) { m_persistent = p; }
 
     public slots:
-        //void loadData() { MemData::loadData( &m_ram ); }
-        //void saveData() { MemData::saveData( &m_ram ); }
+        //void loadData() { Memory::loadData( &m_ram ); }
+        //void saveData() { Memory::saveData( &m_ram ); }
         void slotShowTable();
 
 

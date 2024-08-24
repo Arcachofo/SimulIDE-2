@@ -6,7 +6,7 @@
 #include <math.h>
 #include <QDebug>
 
-#include "dynamic_memory.h"
+#include "dram.h"
 #include "circuitwidget.h"
 #include "simulator.h"
 #include "circuit.h"
@@ -18,20 +18,20 @@
 #include "doubleprop.h"
 #include "intprop.h"
 
-#define tr(str) simulideTr("DynamicMemory",str)
+#define tr(str) simulideTr("DRAM",str)
 
-listItem_t DynamicMemory::libraryItem(){
+listItem_t DRAM::libraryItem(){
     return {
         tr("Dynamic Ram"),
         "Memory",
         "2to3g.png",
-        "DynamicMemory",
-        [](QString id){ return (Component*)new DynamicMemory("DynamicMemory", id ); } };
+        "DRAM",
+        [](QString id){ return (Component*)new DRAM("DRAM", id ); } };
 }
 
-DynamicMemory::DynamicMemory( QString type, QString id )
-             : LogicComponent( type, id )
-             , MemData()
+DRAM::DRAM( QString type, QString id )
+    : LogicComponent( type, id )
+    , Memory()
 {
     m_width  = 4;
     m_height = 11;
@@ -75,17 +75,17 @@ DynamicMemory::DynamicMemory( QString type, QString id )
     Simulator::self()->addToUpdateList( this );
 
     addPropGroup( { tr("Main"), {
-        new IntProp <DynamicMemory>("Row_Bits", tr("Row Address Size"),"_bits", this
-                , &DynamicMemory::rowAddrBits, &DynamicMemory::setRowAddrBits, propNoCopy,"uint" ),
+        new IntProp <DRAM>("Row_Bits", tr("Row Address Size"),"_bits", this
+                , &DRAM::rowAddrBits, &DRAM::setRowAddrBits, propNoCopy,"uint" ),
 
-        new IntProp <DynamicMemory>("Column_Bits", tr("Column Address Size"),"_bits", this
-                , &DynamicMemory::colAddrBits, &DynamicMemory::setColAddrBits, propNoCopy,"uint" ),
+        new IntProp <DRAM>("Column_Bits", tr("Column Address Size"),"_bits", this
+                , &DRAM::colAddrBits, &DRAM::setColAddrBits, propNoCopy,"uint" ),
 
-        new IntProp <DynamicMemory>("Data_Bits", tr("Data Size"),"_bits", this
-                , &DynamicMemory::dataBits, &DynamicMemory::setDataBits, propNoCopy,"uint" ),
+        new IntProp <DRAM>("Data_Bits", tr("Data Size"),"_bits", this
+                , &DRAM::dataBits, &DRAM::setDataBits, propNoCopy,"uint" ),
 
-        new DoubProp<DynamicMemory>("Refresh", tr("Refresh period"),"ps", this
-                , &DynamicMemory::refreshPeriod, &DynamicMemory::setRefreshPeriod )
+        new DoubProp<DRAM>("Refresh", tr("Refresh period"),"ps", this
+                , &DRAM::refreshPeriod, &DRAM::setRefreshPeriod )
     }, groupNoCopy } );
 
     addPropGroup( { tr("Electric")
@@ -98,9 +98,9 @@ DynamicMemory::DynamicMemory( QString type, QString id )
         ,IoComponent::edgeProps()
     ,0 } );
 }
-DynamicMemory::~DynamicMemory(){}
+DRAM::~DRAM(){}
 
-void DynamicMemory::stamp()                   // Called at Simulation Start
+void DRAM::stamp()                   // Called at Simulation Start
 {
     m_rowAddress = 0;
     m_intRefresh = 0;
@@ -123,14 +123,14 @@ void DynamicMemory::stamp()                   // Called at Simulation Start
     LogicComponent::stamp();
 }
 
-void DynamicMemory::updateStep()
+void DRAM::updateStep()
 {
     //if( m_memTable ) m_memTable->updateTable( &m_data );
     //if ( m_refreshError )
     //    m_error = true;
 }
 
-void DynamicMemory::voltChanged()        // Some Pin Changed State, Manage it
+void DRAM::voltChanged()        // Some Pin Changed State, Manage it
 {
     bool RAS = m_RasPin->getInpState();
     bool CAS = m_CasPin->getInpState();
@@ -195,12 +195,12 @@ void DynamicMemory::voltChanged()        // Some Pin Changed State, Manage it
     }
 }
 
-void DynamicMemory::runEvent()
+void DRAM::runEvent()
 {
     IoComponent::runOutputs();
 }
 
-void DynamicMemory::updatePins()
+void DRAM::updatePins()
 {
     int h = m_addrBits+1;
     if( m_dataBits > m_addrBits ) h = m_dataBits + 1;
@@ -233,7 +233,7 @@ void DynamicMemory::updatePins()
     m_area   = QRect( -(m_width/2)*8, origY, m_width*8, m_height*8 );
 }
 
-void DynamicMemory::setRowAddrBits( int rowAddrBits )
+void DRAM::setRowAddrBits( int rowAddrBits )
 {
     int bits;
     
@@ -249,7 +249,7 @@ void DynamicMemory::setRowAddrBits( int rowAddrBits )
     m_rowLastRefresh.resize( pow( 2, m_rowAddrBits ) );
 }
 
-void DynamicMemory::setColAddrBits( int colAddrBits )
+void DRAM::setColAddrBits( int colAddrBits )
 {
     int bits;
     
@@ -264,7 +264,7 @@ void DynamicMemory::setColAddrBits( int colAddrBits )
     m_data.resize( pow( 2, m_rowAddrBits + m_colAddrBits ) );
 }
 
-void DynamicMemory::setAddrBits( int bits )
+void DRAM::setAddrBits( int bits )
 {
     if( bits == m_addrBits ) return;
     if( bits == 0 ) bits = 8;
@@ -284,7 +284,7 @@ void DynamicMemory::setAddrBits( int bits )
     Circuit::self()->update();
 }
 
-void DynamicMemory::createAddrBits( int bits )
+void DRAM::createAddrBits( int bits )
 {
     int chans = m_addrBits + bits;
     int origY = -(m_height/2)*8;
@@ -301,10 +301,10 @@ void DynamicMemory::createAddrBits( int bits )
         initPin( m_inPin[i] );
 }   }
 
-void DynamicMemory::deleteAddrBits( int bits )
+void DRAM::deleteAddrBits( int bits )
 { LogicComponent::deletePins( &m_inPin, bits ); }
 
-void DynamicMemory::setDataBits( int bits )
+void DRAM::setDataBits( int bits )
 {
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
 
@@ -323,7 +323,7 @@ void DynamicMemory::setDataBits( int bits )
     Circuit::self()->update();
 }
 
-void DynamicMemory::createDataBits( int bits )
+void DRAM::createDataBits( int bits )
 {
     int chans = m_dataBits + bits;
     int origY = -(m_height/2)*8;
@@ -340,10 +340,10 @@ void DynamicMemory::createDataBits( int bits )
         initPin( m_outPin[i] );
 }   }
 
-void DynamicMemory::deleteDataBits( int bits )
+void DRAM::deleteDataBits( int bits )
 { LogicComponent::deletePins( &m_outPin, bits ); }
 
-void DynamicMemory::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
+void DRAM::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
 {
     QAction* loadAction = menu->addAction( QIcon(":/load.svg"),tr("Load data") );
     QObject::connect( loadAction, &QAction::triggered, [=](){ loadData(); } );
@@ -358,17 +358,17 @@ void DynamicMemory::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* m
     Component::contextMenu( event, menu );
 }
 
-/*void DynamicMemory::loadData()
+/*void DRAM::loadData()
 {
-    MemData::loadData( false, m_dataBits );
+    Memory::loadData( false, m_dataBits );
     /// if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
 }*/
 
-//void DynamicMemory::saveData() { MemData::saveData( &m_data, m_dataBits ); }
+//void DRAM::saveData() { Memory::saveData( &m_data, m_dataBits ); }
 
-void DynamicMemory::slotShowTable()
+void DRAM::slotShowTable()
 {
-    MemData::showTable( m_data.size(), m_dataBytes );
+    showTable();
     m_memTable->setWindowTitle( "DRAM: "+idLabel() );
     /// m_memTable->setData( &m_data, m_dataBytes );
 }

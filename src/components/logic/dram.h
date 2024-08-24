@@ -3,30 +3,29 @@
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef DRAM_H
+#define DRAM_H
 
-#include "iocomponent.h"
-#include "e-element.h"
-#include "memdata.h"
+#include "logiccomponent.h"
+#include "memory.h"
 
-class Memory : public IoComponent, public eElement, public MemData
+class DRAM : public LogicComponent, public Memory
 {
     public:
-        Memory( QString type, QString id );
-        ~Memory();
+        DRAM( QString type, QString id );
+        ~DRAM();
 
  static listItem_t libraryItem();
 
         virtual void stamp() override;
         virtual void updateStep() override;
         virtual void voltChanged() override;
-        virtual void runEvent() override { IoComponent::runOutputs(); }
+        virtual void runEvent() override;
 
-        //void setMem( QString m );
-        //QString getMem();
-
-        int addrBits() { return m_addrBits; }
+        int rowAddrBits() { return m_rowAddrBits; }
+        int colAddrBits() { return m_colAddrBits; }
+        void setRowAddrBits( int bits );
+        void setColAddrBits( int bits );
         void setAddrBits( int bits );
         void deleteAddrBits( int bits );
         void createAddrBits( int bits );
@@ -36,11 +35,8 @@ class Memory : public IoComponent, public eElement, public MemData
         void deleteDataBits( int bits );
         void createDataBits( int bits );
 
-        bool persistent() { return m_persistent; }
-        void setPersistent( bool p ) { m_persistent = p; }
-
-        bool asynchro() { return m_asynchro; }
-        void setAsynchro( bool a );
+        double refreshPeriod() { return m_refreshPeriod*1e-12; }
+        void setRefreshPeriod( double rp ) { m_refreshPeriod = rp*1e12; }
 
         void updatePins();
 
@@ -51,22 +47,28 @@ class Memory : public IoComponent, public eElement, public MemData
 
     protected:
         virtual void contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu ) override;
-        
+
     private:
+        int m_refreshPeriod;
+        int m_rowAddrBits;
+        int m_colAddrBits;
         int m_addrBits;
         int m_dataBits;
         int m_dataBytes;
+        int m_intRefresh;
+        int m_rowAddress;
         int m_address;
+        bool m_refreshError;
 
         //QVector<int> m_ram;
+        QVector<uint64_t> m_rowLastRefresh;
 
         bool m_oe;
-        bool m_we;
-        bool m_cs;
-        bool m_persistent;
-        bool m_asynchro;
+        bool m_ras;
+        bool m_cas;
 
-        IoPin* m_CsPin;
+        IoPin* m_RasPin;
+        IoPin* m_CasPin;
         IoPin* m_WePin;
         IoPin* m_OePin;
 };
