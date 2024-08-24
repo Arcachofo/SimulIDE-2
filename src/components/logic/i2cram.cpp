@@ -98,7 +98,7 @@ void I2CRam::stamp()           // Called at Simulation Start
 void I2CRam::updateStep()
 {
     IoComponent::updateStep();
-    /// Fixme if( m_memTable ) m_memTable->updateTable( &m_data );
+    if( m_memTable ) m_memTable->updateTable();
 }
 
 void I2CRam::voltChanged()             // Some Pin Changed State, Manage it
@@ -171,9 +171,7 @@ void I2CRam::setRSize( int size )
     if( size > 65536 ) size = 65536;
     if( size < 1 ) size = 1;
     m_size = size;
-    m_data.resize( size );
-
-    /// Fixme if( m_memTable ) m_memTable->setData( &m_data );
+    resize( size );
 }
 
 void I2CRam::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
@@ -196,5 +194,4 @@ void I2CRam::slotShowTable()
     Memory::showTable();
     if( m_persistent ) m_memTable->setWindowTitle( "I2C ROM: "+m_idLabel->toPlainText());
     else               m_memTable->setWindowTitle( "I2C RAM: "+m_idLabel->toPlainText() );
-    /// m_memTable->setData( &m_data );
 }

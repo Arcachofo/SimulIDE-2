@@ -14,6 +14,8 @@ class eMcu;
 
 class Memory
 {
+    friend class MemTable;
+
     public:
         Memory();
         ~Memory();
@@ -30,9 +32,15 @@ class Memory
         QString getMem();
         void setMem( QString m );
 
-        void setBits( int b );
+        int wordBits() { return m_wordBits; }
+        void setWordBits( int b );
+
+        void resize( int size );
+
+        void fillMemory( uint64_t v );
 
         virtual void showTable();
+
 
     protected:
         void saveDat( int bits );

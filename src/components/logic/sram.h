@@ -23,18 +23,14 @@ class SRAM : public IoComponent, public eElement, public Memory
         virtual void voltChanged() override;
         virtual void runEvent() override { IoComponent::runOutputs(); }
 
-        //void setMem( QString m );
-        //QString getMem();
-
         int addrBits() { return m_addrBits; }
         void setAddrBits( int bits );
-        void deleteAddrBits( int bits );
-        void createAddrBits( int bits );
+        void deleteAddrPins( int bits );
+        void createAddrPins( int bits );
 
-        int dataBits() { return m_dataBits; }
         void setDataBits( int bits );
-        void deleteDataBits( int bits );
-        void createDataBits( int bits );
+        void deleteDataPins( int bits );
+        void createDataPins( int bits );
 
         bool persistent() { return m_persistent; }
         void setPersistent( bool p ) { m_persistent = p; }
@@ -45,8 +41,6 @@ class SRAM : public IoComponent, public eElement, public Memory
         void updatePins();
 
     public slots:
-        //void loadData();
-        //void saveData();
         void slotShowTable();
 
     protected:
@@ -54,11 +48,7 @@ class SRAM : public IoComponent, public eElement, public Memory
         
     private:
         int m_addrBits;
-        int m_dataBits;
-        int m_dataBytes;
         int m_address;
-
-        //QVector<int> m_ram;
 
         bool m_oe;
         bool m_we;

@@ -21,6 +21,9 @@ Memory::Memory()
 {
     m_memTable = nullptr;
     m_eMcu = nullptr;
+
+    m_wordBits = 8;
+    m_wordBytes = 1;
 }
 Memory::~Memory()
 {
@@ -30,18 +33,31 @@ Memory::~Memory()
     m_memTable->deleteLater();
 }
 
-void Memory::setBits( int b )
+void Memory::setWordBits( int b )
 {
     m_wordBits = b;
     m_wordBytes = (m_wordBits+7)/8;
+
+    ///if( m_memTable ) m_memTable->setData( &m_data, m_wordBytes );
 }
 
+void Memory::resize( int size )
+{
+    m_data.resize( size );
+    ///if( m_memTable ) m_memTable->setData( &m_data, m_wordBytes );
+}
+
+void Memory::fillMemory( uint64_t v )
+{
+    /// Mask value
+    for( uint i=0; i<m_data.size(); ++i ) m_data[i] = v;
+}
 
 void Memory::showTable()
 {
     if( !m_memTable )
     {
-        m_memTable = new MemTable( CircuitWidget::self(), &m_data, m_wordBytes );
+        m_memTable = new MemTable( CircuitWidget::self(), this, m_wordBytes );
         m_memTable->setWindowFlags( Qt::Window | Qt::WindowTitleHint | Qt::Tool
                                   | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint );
     }

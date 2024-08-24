@@ -10,18 +10,19 @@
 
 #include "ui_memtable.h"
 
-class Component;
-class QAction;
+//class Component;
+//class QAction;
+class Memory;
 
 class MemTable : public QWidget, private Ui::MemTable
 {
     Q_OBJECT
     
     public:
-        MemTable( QWidget* parent, std::vector<uint64_t>* data, int wordBytes=1 );
+        MemTable( QWidget* parent, Memory* memory, int wordBytes=1 );
 
-        //void updateTable( QVector<int>* data );
-        //void setData( QVector<int>* data, int wordBytes=1 );
+        void updateTable();
+        void updateData();
         void setValue( int address, int val );
         void setCellBytes( int bytes );
         void setAddrSelected( int addr ,bool jump );
@@ -42,7 +43,6 @@ class MemTable : public QWidget, private Ui::MemTable
         void setCellValue( int address, int val );
         void cellClicked( int row, int col );
         QString valToHex( int val, int bytes );
-        QVector<int> toIntVector();
 
         int m_updtCount;
         int m_dataSize;
@@ -56,6 +56,8 @@ class MemTable : public QWidget, private Ui::MemTable
         bool m_canSaveLoad;
 
         QTableWidgetItem* m_hoverItem;
+
+        Memory* m_memory;
         std::vector<uint64_t>* m_data;
 };
 

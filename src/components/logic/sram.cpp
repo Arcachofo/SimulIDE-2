@@ -21,8 +21,8 @@
 
 listItem_t SRAM::libraryItem(){
     return {
-        tr("Ram/Rom"),
-        "SRAM",
+        tr("Static Ram/Rom"),
+        "Memory",
         "2to3g.png",
         "SRAM",
         [](QString id){ return (Component*)new SRAM("SRAM", id ); } };
@@ -56,9 +56,8 @@ SRAM::SRAM( QString type, QString id )
     m_otherPin[2] = m_OePin;
 
     m_asynchro = true;
-    m_dataBytes = 1;
     m_addrBits = 0;
-    m_dataBits = 0;
+    m_wordBits = 0;
     setAddrBits( 8 );
     setDataBits( 8 );
 
@@ -66,16 +65,16 @@ SRAM::SRAM( QString type, QString id )
 
     addPropGroup( { tr("Main"), {
         new IntProp <SRAM>("Address_Bits", tr("Address Size"),"_bits"
-                            , this, &SRAM::addrBits, &SRAM::setAddrBits, propNoCopy,"uint" ),
+                          , this, &SRAM::addrBits, &SRAM::setAddrBits, propNoCopy,"uint" ),
 
         new IntProp <SRAM>("Data_Bits", tr("Data Size"),"_bits"
-                            , this, &SRAM::dataBits, &SRAM::setDataBits, propNoCopy,"uint" ),
+                          , this, &SRAM::wordBits, &SRAM::setDataBits, propNoCopy,"uint" ),
 
         new BoolProp<SRAM>("Persistent", tr("Persistent"),""
-                            , this, &SRAM::persistent, &SRAM::setPersistent ),
+                          , this, &SRAM::persistent, &SRAM::setPersistent ),
 
         new BoolProp<SRAM>("Asynch", tr("Asynchronous"),""
-                            , this, &SRAM::asynchro, &SRAM::setAsynchro )
+                          , this, &SRAM::asynchro, &SRAM::setAsynchro )
     }, groupNoCopy} );
 
     addPropGroup( { tr("Electric")
@@ -89,8 +88,8 @@ SRAM::SRAM( QString type, QString id )
     ,0 } );
 
     addPropGroup( { "Hidden", {
-new StrProp<SRAM>("Mem","",""
-                   , this, &SRAM::getMem, &SRAM::setMem)
+        new StrProp<SRAM>("Mem","",""
+                         , this, &SRAM::getMem, &SRAM::setMem)
     }, groupHidden} );
 }
 SRAM::~SRAM(){}
@@ -104,7 +103,7 @@ void SRAM::stamp()                   // Called at Simulation Start
     for( IoPin* pin : m_outPin ) pin->setPinMode( input );
     IoComponent::initState();
 
-    /// if( !m_persistent ) m_data.fill( 0 );
+    if( !m_persistent ) fillMemory( 0 );
 
     for( uint i=0; i<m_inPin.size(); ++i )
         m_inPin[i]->changeCallBack( this, m_asynchro );
@@ -122,7 +121,7 @@ void SRAM::updateStep()
         for( IoPin* pin : m_outPin ) pin->changeCallBack( this, m_asynchro && m_cs && m_we );
         m_changed = false;
     }
-    ///if( m_memTable ) m_memTable->updateTable( &m_data );
+    if( m_memTable ) m_memTable->updateTable();
 }
 
 void SRAM::voltChanged()        // Some Pin Changed State, Manage it
@@ -172,23 +171,10 @@ void SRAM::setAsynchro( bool a )
     m_changed = true;
 }
 
-/*void SRAM::setMem( QString m )
-{
-    if( m.isEmpty() ) return;
-    Memory::setMem( &m_data, m );
-}
-
-QString SRAM::getMem()
-{
-    QString m;
-    if( !m_persistent ) return m;
-    return Memory::getMem( &m_data );
-}*/
-
 void SRAM::updatePins()
 {
     int h = m_addrBits+1;
-    if( m_dataBits > h ) h = m_dataBits;
+    if( m_wordBits > h ) h = m_wordBits;
     
     m_height = h+2;
     int origY = -(m_height/2)*8;
@@ -198,7 +184,7 @@ void SRAM::updatePins()
         m_inPin[i]->setPos( QPoint(-24,origY+8+i*8 ) );
         m_inPin[i]->isMoved();
     }
-    for( int i=0; i<m_dataBits; i++ )
+    for( int i=0; i<m_wordBits; i++ )
     {
         m_outPin[i]->setPos( QPoint(24,origY+8+i*8 ) ); 
         m_outPin[i]->isMoved();
@@ -221,21 +207,19 @@ void SRAM::setAddrBits( int bits )
     if( bits == 0 ) bits = 8;
     if( bits > 24 ) bits = 24;
 
-    m_data.resize( pow( 2, bits ) );
+    resize( pow( 2, bits ) );
     
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
     
-    if     ( bits < m_addrBits ) deleteAddrBits( m_addrBits-bits );
-    else if( bits > m_addrBits ) createAddrBits( bits-m_addrBits );
+    if     ( bits < m_addrBits ) deleteAddrPins( m_addrBits-bits );
+    else if( bits > m_addrBits ) createAddrPins( bits-m_addrBits );
     m_addrBits = bits;
-
-    ///if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
 
     updatePins();
     Circuit::self()->update();
 }
 
-void SRAM::createAddrBits( int bits )
+void SRAM::createAddrPins( int bits )
 {
     int chans = m_addrBits + bits;
     int origY = -(m_height/2)*8;
@@ -252,36 +236,34 @@ void SRAM::createAddrBits( int bits )
         initPin( m_inPin[i] );
 }   }
 
-void SRAM::deleteAddrBits( int bits )
+void SRAM::deleteAddrPins( int bits )
 { IoComponent::deletePins( &m_inPin, bits ); }
 
 void SRAM::setDataBits( int bits )
 {
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
 
-    if( bits == m_dataBits ) return;
+    if( bits == m_wordBits ) return;
     if( bits == 0 ) bits = 8;
     if( bits > 32 ) bits = 32;
 
-    if     ( bits < m_dataBits ) deleteDataBits( m_dataBits-bits );
-    else if( bits > m_dataBits ) createDataBits( bits-m_dataBits );
+    if     ( bits < m_wordBits ) deleteDataPins( m_wordBits-bits );
+    else if( bits > m_wordBits ) createDataPins( bits-m_wordBits );
     
-    m_dataBits = bits;
-    m_dataBytes = m_dataBits/8;
-    if( m_dataBits%8) m_dataBytes++;
-    ///if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
+    setWordBits( bits );
+
     updatePins();
     Circuit::self()->update();
 }
 
-void SRAM::createDataBits( int bits )
+void SRAM::createDataPins( int bits )
 {
-    int chans = m_dataBits + bits;
+    int chans = m_wordBits + bits;
     int origY = -(m_height/2)*8;
     
     m_outPin.resize( chans );
     
-    for( int i=m_dataBits; i<chans; i++ )
+    for( int i=m_wordBits; i<chans; i++ )
     {
         QString number = QString::number(i);
         
@@ -291,7 +273,7 @@ void SRAM::createDataBits( int bits )
         initPin( m_outPin[i] );
 }   }
 
-void SRAM::deleteDataBits( int bits )
+void SRAM::deleteDataPins( int bits )
 { IoComponent::deletePins( &m_outPin, bits ); }
 
 void SRAM::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
@@ -309,18 +291,9 @@ void SRAM::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
     Component::contextMenu( event, menu );
 }
 
-/*void SRAM::loadData()
-{
-    Memory::loadData( &m_data, false, m_dataBits );
-    if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
-}
-
-void SRAM::saveData() { Memory::saveData( &m_data, m_dataBits ); }*/
-
 void SRAM::slotShowTable()
 {
     Memory::showTable();
     if( m_persistent ) m_memTable->setWindowTitle( "ROM: "+idLabel() );
     else               m_memTable->setWindowTitle( "RAM: "+idLabel() );
-    ///m_memTable->setData( &m_data, m_dataBytes );
 }

@@ -27,13 +27,12 @@ class DRAM : public LogicComponent, public Memory
         void setRowAddrBits( int bits );
         void setColAddrBits( int bits );
         void setAddrBits( int bits );
-        void deleteAddrBits( int bits );
-        void createAddrBits( int bits );
+        void deleteAddrPins( int bits );
+        void createAddrPins( int bits );
 
-        int dataBits() { return m_dataBits; }
         void setDataBits( int bits );
-        void deleteDataBits( int bits );
-        void createDataBits( int bits );
+        void deleteDataPins( int bits );
+        void createDataPins( int bits );
 
         double refreshPeriod() { return m_refreshPeriod*1e-12; }
         void setRefreshPeriod( double rp ) { m_refreshPeriod = rp*1e12; }
@@ -41,8 +40,6 @@ class DRAM : public LogicComponent, public Memory
         void updatePins();
 
     public slots:
-        //void loadData();
-        //void saveData();
         void slotShowTable();
 
     protected:
@@ -53,14 +50,11 @@ class DRAM : public LogicComponent, public Memory
         int m_rowAddrBits;
         int m_colAddrBits;
         int m_addrBits;
-        int m_dataBits;
-        int m_dataBytes;
         int m_intRefresh;
         int m_rowAddress;
         int m_address;
         bool m_refreshError;
 
-        //QVector<int> m_ram;
         QVector<uint64_t> m_rowLastRefresh;
 
         bool m_oe;

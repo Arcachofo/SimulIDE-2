@@ -13,12 +13,13 @@
 #include "utils.h"
 #include "memory.h"
 
-MemTable::MemTable( QWidget* parent, std::vector<uint64_t>* data, int wordBytes )
+MemTable::MemTable( QWidget* parent, Memory* memory, int wordBytes )
         : QWidget( parent )
 {
     setupUi(this);
 
-    m_data = data;
+    m_memory = memory;
+    m_data = &(m_memory->m_data);
     int dataSize = m_data->size();
 
     m_addrBytes = ceil( ceil(log2(dataSize))/8 );
@@ -38,16 +39,16 @@ MemTable::MemTable( QWidget* parent, std::vector<uint64_t>* data, int wordBytes 
     setContextMenuPolicy( Qt::CustomContextMenu );
 
     connect( this, &MemTable::customContextMenuRequested, this, &MemTable::on_context_menu_requested );
-    //connect( actionSave_Memory_Table, &QAction::triggered, this, &MemTable::saveTable );
-    //connect( actionLoad_Memory_Table, &QAction::triggered, this, &MemTable::loadTable );
+    connect( actionSave_Memory_Table, &QAction::triggered, this, &MemTable::saveTable );
+    connect( actionLoad_Memory_Table, &QAction::triggered, this, &MemTable::loadTable );
 }
 
-/*void MemTable::updateTable( QVector<int>* data )
+void MemTable::updateTable()
 {
     if( ++m_updtCount >= 10 ) m_updtCount = 0;
     else                      return;
-    /// setData( data, m_wordBytes );
-}*/
+    updateData();
+}
 
 void MemTable::setValue( int address, int val )
 {
@@ -92,29 +93,18 @@ void MemTable::setCellValue( int address, int val )
     table->item( row, colAscii )->setData( 0, valS );
 }
 
-/*void MemTable::setData( QVector<int>* data, int wordBytes )
+void MemTable::updateData()
 {
-    m_data = data;
-
-    if( data->size() != m_dataSize
-      || wordBytes   != m_wordBytes )
-    {
-        m_wordBytes = wordBytes;
-        m_cellBytes = wordBytes;
-        m_byteRatio = 1;
-        resizeTable( data->size() );
-    }
-    for( int i=0; i<data->size(); ++i ) setValue( i, data->at(i) );
-}*/
+    for( uint i=0; i<m_data->size(); ++i ) setValue( i, m_data->at(i) );
+}
 
 void MemTable::setCellBytes( int bytes )
 {
-    if( m_cellBytes != bytes )
-    {
-        m_cellBytes = bytes;
-        m_byteRatio = m_wordBytes/m_cellBytes;
-        resizeTable( m_dataSize );
-    }
+    if( m_cellBytes == bytes ) return;
+
+    m_cellBytes = bytes;
+    m_byteRatio = m_wordBytes/m_cellBytes;
+    resizeTable( m_dataSize );
 }
 
 void MemTable::resizeTable( int dataSize )
@@ -186,6 +176,7 @@ void MemTable::resizeTable( int dataSize )
     table->setColumnWidth( 16, 5 );
 
     m_blocked = false;
+    updateData();
 }
 
 void MemTable::setAddrSelected( int addr, bool jump )
@@ -260,8 +251,8 @@ void MemTable::on_table_itemEntered( QTableWidgetItem* item )
 
 void MemTable::on_context_menu_requested( const QPoint &pos )
 {
-    if (!m_canSaveLoad)
-        return;
+    if( !m_canSaveLoad ) return;
+
     QMenu menu( this );
 
     menu.addAction( actionSave_Memory_Table );
@@ -271,29 +262,12 @@ void MemTable::on_context_menu_requested( const QPoint &pos )
 
 void MemTable::saveTable()
 {
-    /*if (m_data)
-        MemData::saveData( m_data );
-    else {
-        QVector<int> data { toIntVector() };
-        MemData::saveData( &data );
-    }*/
-
+    m_memory->saveData();
 }
 
 void MemTable::loadTable()
 {
-    /*QVector<int> oldData { toIntVector() };
-    QVector<int> data(m_dataSize);
-    if ( MemData::loadData( &data,false ) ) {
-        for( int i=0; i<m_dataSize; ++i ) {
-            if ( oldData[i] != data[i] ) {
-                setValue(i, data[i]);
-                if ( m_data )
-                    m_data->replace(i, data[i]);
-                emit dataChanged(i, data[i]);
-            }
-        }
-    }*/
+    m_memory->loadData( true );
 }
 
 void MemTable::cellClicked( int row, int col )
@@ -311,26 +285,6 @@ QString MemTable::valToHex( int val, int bytes )
     QString sval = QString::number( val, 16 ).toUpper();
     sval = sval.right( bytes*2 );
     while( sval.length() < bytes*2) sval.prepend( "0" );
-    //sval.prepend(" "); /// (2+m_cellBytes)*15*scale+2 );
-    //sval.append(" ");
 
     return sval;
-}
-
-QVector<int> MemTable::toIntVector()
-{
-    QVector<int> data( m_dataSize );
-    int rows = m_dataSize/16;
-    if ( m_dataSize%16 ) rows++;
-    int i = 0;
-    bool ok;
-    for ( int row = 0; row < rows; row++ ) {
-        for ( int col = 0; col < 16; col++ ) {
-            data[i] = table->item( row, col )->data(0).toString().toInt( &ok, 16 );
-            i++;
-            if ( i >= m_dataSize )
-                break;
-        }
-    }
-    return data;
 }

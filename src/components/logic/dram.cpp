@@ -61,11 +61,10 @@ DRAM::DRAM( QString type, QString id )
     m_OePin->setInverted( true );
     m_otherPin[3] = m_OePin;
 
-    m_dataBytes = 1;
     m_rowAddrBits = 0;
     m_colAddrBits = 0;
     m_addrBits = 0;
-    m_dataBits = 0;
+    m_wordBits = 0;
     m_refreshPeriod = 0;
 
     setRowAddrBits( 8 );
@@ -82,7 +81,7 @@ DRAM::DRAM( QString type, QString id )
                 , &DRAM::colAddrBits, &DRAM::setColAddrBits, propNoCopy,"uint" ),
 
         new IntProp <DRAM>("Data_Bits", tr("Data Size"),"_bits", this
-                , &DRAM::dataBits, &DRAM::setDataBits, propNoCopy,"uint" ),
+                , &DRAM::wordBits, &DRAM::setDataBits, propNoCopy,"uint" ),
 
         new DoubProp<DRAM>("Refresh", tr("Refresh period"),"ps", this
                 , &DRAM::refreshPeriod, &DRAM::setRefreshPeriod )
@@ -111,7 +110,7 @@ void DRAM::stamp()                   // Called at Simulation Start
     m_cas = false;
 
     for( uint i=0; i<m_data.size(); ++i )
-        m_data[i] = rand() % (int)( pow( 2, m_dataBits ) );
+        m_data[i] = rand() % (int)( pow( 2, m_wordBits ) );
 
     m_WePin->changeCallBack( this );
     m_RasPin->changeCallBack( this );
@@ -125,7 +124,7 @@ void DRAM::stamp()                   // Called at Simulation Start
 
 void DRAM::updateStep()
 {
-    //if( m_memTable ) m_memTable->updateTable( &m_data );
+    if( m_memTable ) m_memTable->updateTable();
     //if ( m_refreshError )
     //    m_error = true;
 }
@@ -203,7 +202,7 @@ void DRAM::runEvent()
 void DRAM::updatePins()
 {
     int h = m_addrBits+1;
-    if( m_dataBits > m_addrBits ) h = m_dataBits + 1;
+    if( m_wordBits > m_addrBits ) h = m_wordBits + 1;
     
     m_height = h+2;
     int origY = -(m_height/2)*8;
@@ -213,7 +212,7 @@ void DRAM::updatePins()
         m_inPin[i]->setPos( QPoint(-24,origY+8+i*8 ) );
         m_inPin[i]->isMoved();
     }
-    for( int i=0; i<m_dataBits; i++ )
+    for( int i=0; i<m_wordBits; i++ )
     {
         m_outPin[i]->setPos( QPoint(24,origY+8+i*8 ) ); 
         m_outPin[i]->isMoved();
@@ -235,33 +234,27 @@ void DRAM::updatePins()
 
 void DRAM::setRowAddrBits( int rowAddrBits )
 {
-    int bits;
-    
     if( rowAddrBits == m_rowAddrBits ) return;    
     if( rowAddrBits == 0 ) rowAddrBits = 8;
     if( ( rowAddrBits + m_colAddrBits ) > 24 ) rowAddrBits = 24 - m_colAddrBits;
     
-    bits = (rowAddrBits > m_colAddrBits) ? rowAddrBits : m_colAddrBits;
+    int bits = (rowAddrBits > m_colAddrBits) ? rowAddrBits : m_colAddrBits;
     setAddrBits( bits );
-    m_rowAddrBits = rowAddrBits;
 
-    m_data.resize( pow( 2, m_rowAddrBits + m_colAddrBits ) );  // this is the second resize, because there is the first resize in function setAddrBits
+    m_rowAddrBits = rowAddrBits;
     m_rowLastRefresh.resize( pow( 2, m_rowAddrBits ) );
 }
 
 void DRAM::setColAddrBits( int colAddrBits )
 {
-    int bits;
-    
     if( colAddrBits == m_colAddrBits ) return;
     if( colAddrBits == 0 ) colAddrBits = 8;
     if( ( m_rowAddrBits + colAddrBits ) > 24 ) colAddrBits = 24 - m_rowAddrBits;
 
-    bits = (m_rowAddrBits > colAddrBits) ? m_rowAddrBits : colAddrBits;
+    int bits = (m_rowAddrBits > colAddrBits) ? m_rowAddrBits : colAddrBits;
     setAddrBits( bits );
+
     m_colAddrBits = colAddrBits;
-    
-    m_data.resize( pow( 2, m_rowAddrBits + m_colAddrBits ) );
 }
 
 void DRAM::setAddrBits( int bits )
@@ -270,21 +263,19 @@ void DRAM::setAddrBits( int bits )
     if( bits == 0 ) bits = 8;
     if( bits > 24 ) bits = 24;
 
-    m_data.resize( pow( 2, bits ) );
+    resize( pow( 2, bits ) );
     
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
     
-    if     ( bits < m_addrBits ) deleteAddrBits( m_addrBits-bits );
-    else if( bits > m_addrBits ) createAddrBits( bits-m_addrBits );
+    if     ( bits < m_addrBits ) deleteAddrPins( m_addrBits-bits );
+    else if( bits > m_addrBits ) createAddrPins( bits-m_addrBits );
     m_addrBits = bits;
-
-    //if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
 
     updatePins();
     Circuit::self()->update();
 }
 
-void DRAM::createAddrBits( int bits )
+void DRAM::createAddrPins( int bits )
 {
     int chans = m_addrBits + bits;
     int origY = -(m_height/2)*8;
@@ -301,36 +292,33 @@ void DRAM::createAddrBits( int bits )
         initPin( m_inPin[i] );
 }   }
 
-void DRAM::deleteAddrBits( int bits )
+void DRAM::deleteAddrPins( int bits )
 { LogicComponent::deletePins( &m_inPin, bits ); }
 
 void DRAM::setDataBits( int bits )
 {
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
 
-    if( bits == m_dataBits ) return;
+    if( bits == m_wordBits ) return;
     if( bits == 0 ) bits = 8;
     if( bits > 32 ) bits = 32;
 
-    if     ( bits < m_dataBits ) deleteDataBits( m_dataBits-bits );
-    else if( bits > m_dataBits ) createDataBits( bits-m_dataBits );
+    if     ( bits < m_wordBits ) deleteDataPins( m_wordBits-bits );
+    else if( bits > m_wordBits ) createDataPins( bits-m_wordBits );
     
-    m_dataBits = bits;
-    m_dataBytes = m_dataBits/8;
-    if( m_dataBits%8) m_dataBytes++;
-    //if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
+    setWordBits( bits );
     updatePins();
     Circuit::self()->update();
 }
 
-void DRAM::createDataBits( int bits )
+void DRAM::createDataPins( int bits )
 {
-    int chans = m_dataBits + bits;
+    int chans = m_wordBits + bits;
     int origY = -(m_height/2)*8;
     
     m_outPin.resize( chans );
     
-    for( int i=m_dataBits; i<chans; i++ )
+    for( int i=m_wordBits; i<chans; i++ )
     {
         QString number = QString::number(i);
         
@@ -340,7 +328,7 @@ void DRAM::createDataBits( int bits )
         initPin( m_outPin[i] );
 }   }
 
-void DRAM::deleteDataBits( int bits )
+void DRAM::deleteDataPins( int bits )
 { LogicComponent::deletePins( &m_outPin, bits ); }
 
 void DRAM::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
@@ -358,17 +346,8 @@ void DRAM::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
     Component::contextMenu( event, menu );
 }
 
-/*void DRAM::loadData()
-{
-    Memory::loadData( false, m_dataBits );
-    /// if( m_memTable ) m_memTable->setData( &m_data, m_dataBytes );
-}*/
-
-//void DRAM::saveData() { Memory::saveData( &m_data, m_dataBits ); }
-
 void DRAM::slotShowTable()
 {
     showTable();
     m_memTable->setWindowTitle( "DRAM: "+idLabel() );
-    /// m_memTable->setData( &m_data, m_dataBytes );
 }
