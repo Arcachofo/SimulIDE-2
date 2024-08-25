@@ -115,7 +115,7 @@ void McuRam::setRamValue( uint32_t address, uint32_t value ) // Setting RAM from
 { writeReg( getMapperAddr(address), value ); }
 
 
-void McuRam::createWatcher()
+void McuRam::createWatcher( CoreBase* cpu )
 {
-    if( !m_watcher ) m_watcher = new Watcher( nullptr, (CoreBase*) m_mcu->cpu() );
+    if( !m_watcher ) m_watcher = new Watcher( nullptr, cpu );
 }

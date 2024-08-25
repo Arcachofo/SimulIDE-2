@@ -267,7 +267,7 @@ int ScriptCpu::compileScript()
 
     if( m_getCpuReg || m_getStrReg )
     {
-        m_mcuRam->createWatcher();
+        m_mcuRam->createWatcher( this );
     }
 
     for( ScriptPerif* perif : m_periferals ) perif->startScript();

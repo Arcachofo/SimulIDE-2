@@ -12,9 +12,9 @@
 #include "mcumodule.h"
 #include "memory.h"
 #include "mcutypes.h"
-//#include "ramtable.h"
 
 class Watcher;
+class CoreBase;
 
 class McuRam : public McuModule, public Memory
 {
@@ -38,9 +38,9 @@ class McuRam : public McuModule, public Memory
         void     writeReg( uint32_t addr, uint32_t v, bool masked=true );   // Write Register (call watchers)
 
         Watcher* getWatcher() { return m_watcher; }
-        void createWatcher();
+        void createWatcher( CoreBase* cpu );
 
-        QStringList registerList() { return m_regInfo.keys(); }
+        //QStringList registerList() { return m_regInfo.keys(); }
         QMap<QString, uint32_t>*  bitMasks()  { return &m_bitMasks; }
         QMap<QString, uint32_t>*  bitRegs()   { return &m_bitRegs; }
         QMap<QString, regInfo_t>* regInfo()   { return &m_regInfo; }

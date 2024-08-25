@@ -287,8 +287,6 @@ void Mcu::setupMcu()
     if( hi.propList.size() > 0 ) addPropGroup( hi );
 
     setPackage( m_packageList.keys().at( 0 ) );
-
-    ///if( m_ram ) m_ram->getRamTable()->setRegisters( m_ram->regInfo()->keys() );
 }
 
 bool Mcu::setPropStr( QString prop, QString val )
@@ -589,7 +587,7 @@ void Mcu::slotOpenMcuMonitor()
     if( !m_mcuMonitor )
     {
         m_mcuMonitor = new MCUMonitor( CircuitWidget::self(), &m_eMcu );
-        if( m_ram ) m_mcuMonitor->addTable( m_rom->getTable(), "RAM" );
+        if( m_ram ) m_mcuMonitor->addTable( m_ram->getTable(), "RAM" );
         if( m_rom ) m_mcuMonitor->addTable( m_rom->getTable(), "ROM" );
         if( m_pgm ) m_mcuMonitor->addTable( m_pgm->getTable(), "PGM" );
     }

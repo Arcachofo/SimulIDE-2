@@ -21,7 +21,7 @@ Memory::Memory()
     m_memTable = nullptr;
     m_eMcu = nullptr;
 
-    m_wordBits = 8;
+    m_wordBits  = 8;
     m_wordBytes = 1;
 }
 Memory::~Memory()
@@ -38,19 +38,20 @@ void Memory::setWordBits( int b )
     m_wordBits = b;
     m_wordBytes = (m_wordBits+7)/8;
 
-    ///if( m_memTable ) m_memTable->setData( &m_data, m_wordBytes );
+    ///if( m_memTable ) m_memTable->resizeTable();
 }
 
 void Memory::resize( int size )
 {
     m_data.resize( size );
-    ///if( m_memTable ) m_memTable->setData( &m_data, m_wordBytes );
+    if( m_memTable ) m_memTable->resizeTable();
 }
 
 void Memory::fillMemory( uint32_t v )
 {
     /// Mask value
     for( uint i=0; i<m_data.size(); ++i ) m_data[i] = v;
+    if( m_memTable ) m_memTable->updateData();
 }
 
 void Memory::showTable()

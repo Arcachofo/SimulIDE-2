@@ -20,19 +20,17 @@ MemTable::MemTable( QWidget* parent, Memory* memory, int wordBytes )
 
     m_memory = memory;
     m_data = &(m_memory->m_data);
-    int dataSize = m_data->size();
 
-    m_addrBytes = ceil( ceil(log2(dataSize))/8 );
+    m_addrBytes = ceil( ceil(log2(m_data->size()))/8 );
     m_wordBytes = wordBytes;
     m_cellBytes = wordBytes;
     m_byteRatio = 1;
     m_updtCount = 0;
 
     m_hoverItem = nullptr;
+    //m_canSaveLoad = true;
 
-    m_canSaveLoad = true;
-
-    resizeTable( dataSize );
+    resizeTable();
 
     table->setMouseTracking( true );
 
@@ -104,13 +102,14 @@ void MemTable::setCellBytes( int bytes )
 
     m_cellBytes = bytes;
     m_byteRatio = m_wordBytes/m_cellBytes;
-    resizeTable( m_dataSize );
+    resizeTable();
 }
 
-void MemTable::resizeTable( int dataSize )
+void MemTable::resizeTable()
 {
     m_blocked = true;
 
+    int dataSize = m_data->size();
     m_dataSize = dataSize;
     dataSize *= m_byteRatio;
 
@@ -251,7 +250,7 @@ void MemTable::on_table_itemEntered( QTableWidgetItem* item )
 
 void MemTable::on_context_menu_requested( const QPoint &pos )
 {
-    if( !m_canSaveLoad ) return;
+    //if( !m_canSaveLoad ) return;
 
     QMenu menu( this );
 

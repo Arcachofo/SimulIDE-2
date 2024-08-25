@@ -30,14 +30,21 @@ McuCpu::McuCpu( eMcu* mcu )
     }
     m_progAddrSize = m_mcuRam->wordBytes();
 
-    QStringList regList = m_mcuRam->registerList();
-    if( !regList.isEmpty() )
+    QMap<QString, regInfo_t>* regInfo = m_mcuRam->regInfo();
+    if( !regInfo->isEmpty() )
     {
-        m_mcuRam->createWatcher();
+        m_mcuRam->createWatcher( this );
         Watcher* watcher = m_mcuRam->getWatcher();
+
+        QStringList regList;
+        for( QString name : regInfo->keys() )
+        {
+            regList.append( name );
+            uint32_t addr = regInfo->value( name ).address;
+            m_cpuRegs.insert( name , (uint8_t*) &m_dataMem[addr] );
+        }
         watcher->setRegisters( regList );
     }
-
 }
 McuCpu::~McuCpu() {}
 

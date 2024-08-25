@@ -19,6 +19,7 @@ class MemTable : public QWidget, private Ui::MemTable
     public:
         MemTable( QWidget* parent, Memory* memory, int wordBytes=1 );
 
+        void resizeTable();
         void updateTable();
         void updateData();
         void setValue( int address, int val );
@@ -39,7 +40,6 @@ class MemTable : public QWidget, private Ui::MemTable
         void loadTable();
 
     private:
-        void resizeTable( int dataSize );
         void setCellValue( int address, int val );
         void cellClicked( int row, int col );
         QString valToHex( int val, int bytes );
@@ -53,7 +53,7 @@ class MemTable : public QWidget, private Ui::MemTable
 
         bool m_blocked;
 
-        bool m_canSaveLoad;
+        //bool m_canSaveLoad;
 
         QTableWidgetItem* m_hoverItem;
 
