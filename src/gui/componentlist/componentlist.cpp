@@ -21,6 +21,8 @@
 #include "circuitwidget.h"
 #include "chip.h"
 #include "utils.h"
+#include "subcircuit.h"
+#include "mcu.h"
 
 ComponentList* ComponentList::m_pSelf = NULL;
 
@@ -366,6 +368,23 @@ void ComponentList::addItem( QString caption, TreeItem* catItem, QIcon &icon, QS
 
     QString name = ( type == "Subcircuit" || type == "MCU" ) ? nameTr : type;
 
+    if( type == "MCU" )
+    {
+        listItem_t libItem = Mcu::libraryItem();
+
+        type = name;
+        libItem.type = name;
+        m_componentFactory[name] = libItem;
+    }
+    else if( type == "Subcircuit" )
+    {
+        listItem_t libItem = SubCircuit::libraryItem();
+
+        type = name;
+        libItem.type = name;
+        m_componentFactory[name] = libItem;
+    }
+
     TreeItem* item = new TreeItem( catItem, name, nameTr, type, component, icon, m_customComp );
 
     item->setText( 0, nameTr+info );
@@ -677,7 +696,6 @@ void ComponentList::writeSettings()
 #include "logicanalizer.h"
 #include "magnitudecomp.h"
 #include "max72xx_matrix.h"
-#include "mcu.h"
 #include "mosfet.h"
 #include "mux.h"
 #include "mux_analog.h"
@@ -823,7 +841,7 @@ void ComponentList::LoadLibraryItems()
     //addItem( new LibraryItem( "I51" , "Micro", "ic2.png","I51", NULL ) );
     //addItem( new LibraryItem("MCS65", "Micro", "ic2.png","MCS65", NULL ) );
     //addItem( new LibraryItem("Z80"  , "Micro", "ic2.png","Z80", NULL ) );
-    addItem( Mcu::libraryItem() );
+    /// addItem( Mcu::libraryItem() );
     //addItem( new LibraryItem( QObject::tr("Arduino"), "Micro", "board.png","Arduino", NULL ) );
     //addItem( new LibraryItem( QObject::tr("Shields"), "Micro", "shield.png","Shields", NULL ) );
 
@@ -880,7 +898,7 @@ void ComponentList::LoadLibraryItems()
     addItem( SevenSegmentBCD::libraryItem() );
     addItem( Lm555::libraryItem() );
 
-    addItem( SubCircuit::libraryItem() );
+    /// addItem( SubCircuit::libraryItem() );
     // Connectors
     addCategory( tr("Connectors"),"Connectors", "", "" );
     addItem( Bus::libraryItem() );
