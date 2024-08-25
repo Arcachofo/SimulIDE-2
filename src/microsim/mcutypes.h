@@ -10,15 +10,15 @@
 #include "mcusignal.h"
 
 struct regInfo_t{
-    uint16_t address;
-    uint8_t  resetVal;
+    uint32_t address;
+    uint32_t  resetVal;
 };
 
 struct regBits_t{
-    uint8_t bit0=0;
-    uint8_t mask=0;
-    uint8_t* reg=0;
-    uint16_t regAddr=0;
+    uint32_t bit0=0;
+    uint32_t mask=0;
+    uint32_t* reg=0;
+    uint32_t regAddr=0;
 };
 
 #endif

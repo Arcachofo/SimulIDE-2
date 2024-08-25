@@ -8,6 +8,7 @@
 #include "mcu.h"
 #include "e_mcu.h"
 #include "datautils.h"
+#include "mcuram.h"
 
 PicPort::PicPort( eMcu* mcu, QString name )
        : McuPort( mcu, name )
@@ -30,7 +31,7 @@ void PicPort::outChanged( uint8_t val )
 
 void PicPort::readPort( uint8_t )
 {
-    m_mcu->m_regOverride = m_pinState;
+    m_mcuRam->m_regOverride = m_pinState;
     if( m_interrupt ) m_interrupt->clearFlag(); // Clear interrupt fag
 }
 

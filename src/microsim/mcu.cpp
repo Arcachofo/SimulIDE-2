@@ -30,6 +30,7 @@
 #include "mcuintosc.h"
 #include "mcupgm.h"
 #include "mcurom.h"
+#include "mcuram.h"
 #include "utils.h"
 #include "watcher.h"
 
@@ -235,6 +236,7 @@ void Mcu::setupMcu()
     // Main Property Group --------------------------------------
 
     m_intOsc = (McuIntOsc*)m_eMcu.getModule("intosc");
+    m_ram = (McuRam*)m_eMcu.getModule("ram");
     m_rom = (McuRom*)m_eMcu.getModule("rom");
     m_pgm = (McuPgm*)m_eMcu.getModule("pgm");
 
@@ -308,7 +310,7 @@ void Mcu::setupMcu()
     int index = m_isTQFP ? 1 : 0;
     setPackage( m_packageList.keys().at( index ) );
 
-    m_eMcu.getRamTable()->setRegisters( m_eMcu.m_regInfo.keys() );
+    if( m_ram ) m_ram->getRamTable()->setRegisters( m_ram->regInfo()->keys() );
 }
 
 bool Mcu::setPropStr( QString prop, QString val )
@@ -377,14 +379,14 @@ void Mcu::setProgram( QString file )
 
 QString Mcu::varList()
 {
-    RamTable* ramTable = m_eMcu.getRamTable();
+    RamTable* ramTable = m_ram->getRamTable();
     if( ramTable ) return ramTable->getVarSet().join(",");
     return "";
 }
 
 void Mcu::setVarList( QString vl )
 {
-    RamTable* ramTable = m_eMcu.getRamTable();
+    RamTable* ramTable = m_ram->getRamTable();
     if( !ramTable ) return;
 
     if( vl.isEmpty() ) return;
@@ -400,12 +402,11 @@ void Mcu::setVarList( QString vl )
         bool ok = false;
         if( words.size() > 1 ) addr = words.at(1).toInt( &ok, 0 );
         if( words.size() > 2 ) type = words.at(2);
-        if( ok ) m_eMcu.getRamTable()->addVariable( name, addr, type );
+        if( ok ) m_ram->getRamTable()->addVariable( name, addr, type );
         varSet.append( name );
     }
     ramTable->loadVarSet( varSet );
 }
-//{ m_eMcu.getRamTable()->loadVarSet( vl.split(",") ); }
 
 QString Mcu::cpuRegs()
 {

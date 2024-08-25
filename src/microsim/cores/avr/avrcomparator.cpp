@@ -17,18 +17,18 @@ AvrComp::~AvrComp(){}
 
 void AvrComp::setup()
 {
-    m_ACD  = getRegBits("ACD" , m_mcu );
-    m_ACBG = getRegBits("ACBG", m_mcu );
-    m_ACO  = getRegBits("ACO" , m_mcu );
-    m_ACI  = getRegBits("ACI" , m_mcu );
-    m_ACIE = getRegBits("ACIE", m_mcu );
-    m_ACIC = getRegBits("ACIC", m_mcu );
-    m_ACIS = getRegBits("ACIS0,ACIS1", m_mcu );
+    m_ACD  = getRegBits("ACD" , m_mcuRam );
+    m_ACBG = getRegBits("ACBG", m_mcuRam );
+    m_ACO  = getRegBits("ACO" , m_mcuRam );
+    m_ACI  = getRegBits("ACI" , m_mcuRam );
+    m_ACIE = getRegBits("ACIE", m_mcuRam );
+    m_ACIC = getRegBits("ACIC", m_mcuRam );
+    m_ACIS = getRegBits("ACIS0,ACIS1", m_mcuRam );
 
-    m_AIN0D = getRegBits("AIN0D", m_mcu );
-    m_AIN1D = getRegBits("AIN1D", m_mcu );
+    m_AIN0D = getRegBits("AIN0D", m_mcuRam );
+    m_AIN1D = getRegBits("AIN1D", m_mcuRam );
 
-    watchRegNames("ACSR", R_READ, this, &AvrComp::readACO, m_mcu ); // Trigger a compare when ACO or ACI is read (ACSR)
+    watchRegNames("ACSR", R_READ, this, &AvrComp::readACO, m_mcuRam ); // Trigger a compare when ACO or ACI is read (ACSR)
 }
 
 void AvrComp::initialize()
@@ -59,7 +59,7 @@ void AvrComp::configureA( uint8_t newACSR ) // ACSR is being written
 
     m_mode = getRegBitsVal( newACSR, m_ACIS );
 
-    if( !m_enabled ) m_mcu->m_regOverride = newACSR & ~m_ACO.mask; // Clear ACO
+    if( !m_enabled ) m_mcuRam->m_regOverride = newACSR & ~m_ACO.mask; // Clear ACO
 }
 
 void AvrComp::configureB( uint8_t newAIND ) // AIN0D,AIN1D being written
@@ -84,7 +84,7 @@ void AvrComp::readACO( uint8_t )
 {
     if( !m_enabled ) return;
     compare();
-    m_mcu->m_regOverride = *m_ACO.reg; // Clear ACO
+    m_mcuRam->m_regOverride = *m_ACO.reg; // Clear ACO
 }
 
 void AvrComp::compare( uint8_t ) //

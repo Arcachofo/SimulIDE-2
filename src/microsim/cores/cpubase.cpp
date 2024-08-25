@@ -10,11 +10,14 @@ CpuBase::CpuBase( eMcu* mcu )
 {
     m_mcu = mcu;
 
+    m_mcuRam = (McuRam*)m_mcu->getModule("ram");
+    m_mcuPgm = (McuPgm*)m_mcu->getModule("pgm");
+
     m_retCycles = 2;
 
-    m_spl = NULL;
-    m_sph = NULL;
-    m_STATUS = NULL;
+    m_spl = nullptr;
+    m_sph = nullptr;
+    m_STATUS = nullptr;
 }
 CpuBase::~CpuBase() {}
 

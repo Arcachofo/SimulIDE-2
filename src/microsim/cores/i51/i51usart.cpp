@@ -9,6 +9,7 @@
 #include "mcutimer.h"
 #include "e_mcu.h"
 #include "datautils.h"
+#include "mcuram.h"
 
 #define SCON *m_scon
 
@@ -27,14 +28,14 @@ void I51Usart::setup()
 
     m_timer1 = m_mcu->getTimer( "TIMER1" );
 
-    m_scon = m_mcu->getReg( "SCON" );
+    m_scon = (uint8_t*) m_mcuRam->getReg( "SCON" );
 
-    m_SM     = getRegBits( "SM1,SM0", m_mcu );
-    m_bit9Tx = getRegBits( "TB8", m_mcu );
-    m_bit9Rx = getRegBits( "RB8", m_mcu );
-    m_SM2    = getRegBits( "SM2", m_mcu );
+    m_SM     = getRegBits( "SM1,SM0", m_mcuRam );
+    m_bit9Tx = getRegBits( "TB8", m_mcuRam );
+    m_bit9Rx = getRegBits( "RB8", m_mcuRam );
+    m_SM2    = getRegBits( "SM2", m_mcuRam );
 
-    m_SMOD = getRegBits( "SMOD", m_mcu );
+    m_SMOD = getRegBits( "SMOD", m_mcuRam );
 }
 
 void I51Usart::reset()
@@ -117,13 +118,13 @@ void I51Usart::callBack()
 
 void I51Usart::readByte( uint8_t ) // Reading SBUF
 {
-    if( m_mcu->isCpuRead() )
+    if( m_mcuRam->isCpuRead() )
     {
         m_stopBitError = false;
         uint8_t data = m_receiver->getData(); // This calls I51Usart::setRxFlags()
 
         if( m_mode == 1 && m_stopBitError ) return; // Ignore frame
-        m_mcu->m_regOverride = data;
+        m_mcuRam->m_regOverride = data;
     }
 }
 

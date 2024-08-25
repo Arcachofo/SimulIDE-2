@@ -15,7 +15,9 @@ McuModule::McuModule( eMcu* mcu, QString name )
     m_sleepMode = 0;
     m_sleeping  = false;
 
-    m_interrupt = NULL;
+    m_interrupt = nullptr;
+
+    m_mcuRam = (McuRam*)m_mcu->getModule("ram");
 }
 McuModule::~McuModule( ){}
 

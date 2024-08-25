@@ -11,6 +11,7 @@
 #include "mcutypes.h"
 
 class eMcu;
+class McuRam;
 class Interrupt;
 
 class McuModule
@@ -44,6 +45,7 @@ class McuModule
     protected:
         QString m_name;
         eMcu*   m_mcu;
+        McuRam* m_mcuRam;
 
         uint8_t m_sleepMode;
         bool m_sleeping;

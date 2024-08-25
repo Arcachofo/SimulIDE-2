@@ -91,8 +91,8 @@ void PicComp::connect( McuPin* pinN, McuPin* pinP, McuPin* pinOut )
 PicComp0::PicComp0( eMcu* mcu, QString name )
         : PicComp( mcu, name )
 {
-    m_CM  = getRegBits( "CM0,CM1,CM2", mcu );
-    m_CIS = getRegBits( "CIS", mcu );
+    m_CM  = getRegBits("CM0,CM1,CM2", m_mcuRam );
+    m_CIS = getRegBits("CIS", m_mcuRam );
 }
 PicComp0::~PicComp0(){}
 
@@ -118,8 +118,8 @@ void PicComp0::configureA( uint8_t newCMCON )
 PicComp01::PicComp01( eMcu* mcu, QString name )
          : PicComp0( mcu, name )
 {
-    m_CINV = getRegBits( "C1INV", mcu );
-    m_COUT = getRegBits( "C1OUT", mcu );
+    m_CINV = getRegBits("C1INV", m_mcuRam );
+    m_COUT = getRegBits("C1OUT", m_mcuRam );
 }
 PicComp01::~PicComp01(){}
 
@@ -145,8 +145,8 @@ void PicComp01::setMode( uint8_t mode )
 PicComp02::PicComp02( eMcu* mcu, QString name )
          : PicComp0( mcu, name )
 {
-    m_CINV = getRegBits( "C2INV", mcu );
-    m_COUT = getRegBits( "C2OUT", mcu );
+    m_CINV = getRegBits("C2INV", m_mcuRam );
+    m_COUT = getRegBits("C2OUT", m_mcuRam );
 }
 PicComp02::~PicComp02(){}
 
@@ -172,8 +172,8 @@ void PicComp02::setMode( uint8_t mode )
 PicComp03::PicComp03( eMcu* mcu, QString name )
          : PicComp0( mcu, name )
 {
-    m_CINV = getRegBits( "CINV", mcu );
-    m_COUT = getRegBits( "COUT", mcu );
+    m_CINV = getRegBits("CINV", m_mcuRam );
+    m_COUT = getRegBits("COUT", m_mcuRam );
 }
 PicComp03::~PicComp03(){}
 
@@ -202,12 +202,12 @@ PicComp1::PicComp1( eMcu* mcu, QString name )
 {
     QString n = name.right(1); // name="Comp01" => n="1"
 
-    m_CxON = getRegBits( "C"+n+"ON", mcu );
-    m_COUT = getRegBits( "C"+n+"OUT", mcu );
-    m_CxOE = getRegBits( "C"+n+"OE", mcu );
-    m_CINV = getRegBits( "C"+n+"POL", mcu );
-    m_CxR  = getRegBits( "C"+n+"R", mcu );
-    m_CxCH = getRegBits( "C"+n+"CH0,C"+n+"CH1", mcu );
+    m_CxON = getRegBits("C"+n+"ON", m_mcuRam );
+    m_COUT = getRegBits("C"+n+"OUT", m_mcuRam );
+    m_CxOE = getRegBits("C"+n+"OE", m_mcuRam );
+    m_CINV = getRegBits("C"+n+"POL", m_mcuRam );
+    m_CxR  = getRegBits("C"+n+"R", m_mcuRam );
+    m_CxCH = getRegBits("C"+n+"CH0,C"+n+"CH1", m_mcuRam );
 }
 PicComp1::~PicComp1(){}
 

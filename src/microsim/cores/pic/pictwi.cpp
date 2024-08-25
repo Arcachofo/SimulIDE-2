@@ -21,23 +21,23 @@ void PicTwi::setup()
     m_sleepMode = 0xFF;
 
     // SSPCON
-    m_WCOL    = getRegBits("WCOL"   , m_mcu );
+    m_WCOL    = getRegBits("WCOL"   , m_mcuRam );
 
     // SSPCON2
-    m_CGEN    = getRegBits("CGEN"   , m_mcu );
-    m_ACKSTAT = getRegBits("ACKSTAT", m_mcu );
-    m_ACKDT   = getRegBits("ACKDT"  , m_mcu );
-    m_ACKEN   = getRegBits("ACKEN"  , m_mcu );
-    m_RCEN    = getRegBits("RCEN"   , m_mcu );
-    m_PEN     = getRegBits("PEN"    , m_mcu );
-    m_RSEN    = getRegBits("RSEN"   , m_mcu );
-    m_SEN     = getRegBits("SEN"    , m_mcu );
+    m_CGEN    = getRegBits("CGEN"   , m_mcuRam );
+    m_ACKSTAT = getRegBits("ACKSTAT", m_mcuRam );
+    m_ACKDT   = getRegBits("ACKDT"  , m_mcuRam );
+    m_ACKEN   = getRegBits("ACKEN"  , m_mcuRam );
+    m_RCEN    = getRegBits("RCEN"   , m_mcuRam );
+    m_PEN     = getRegBits("PEN"    , m_mcuRam );
+    m_RSEN    = getRegBits("RSEN"   , m_mcuRam );
+    m_SEN     = getRegBits("SEN"    , m_mcuRam );
 
     //SSPSTAT
-    m_P  = getRegBits("P" , m_mcu );
-    m_S  = getRegBits("S" , m_mcu );
-    m_RW = getRegBits("RW", m_mcu );
-    m_BF = getRegBits("BF", m_mcu );
+    m_P  = getRegBits("P" , m_mcuRam );
+    m_S  = getRegBits("S" , m_mcuRam );
+    m_RW = getRegBits("RW", m_mcuRam );
+    m_BF = getRegBits("BF", m_mcuRam );
 }
 
 void PicTwi::initialize()

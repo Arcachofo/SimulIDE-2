@@ -10,7 +10,7 @@
 #include "mcutimer.h"
 #include "mcuuart.h"
 #include "mcuinterrupts.h"
-#include "mcudataspace.h"
+//#include "mcudataspace.h"
 #include "mcusleep.h"
 
 enum{
@@ -32,8 +32,9 @@ class CpuBase;
 class McuTimer;
 class McuWdt;
 class McuSleep;
+class BaseDebugger;
 
-class eMcu : public DataSpace, public eIou
+class eMcu : public eIou // public DataSpace,
 {
         friend class McuCreator;
         friend class McuCpu;

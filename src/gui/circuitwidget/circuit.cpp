@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QClipboard>
+#include <QSplitter>
 #include <QMimeData>
 #include <QSettings>
 

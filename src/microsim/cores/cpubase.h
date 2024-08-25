@@ -8,6 +8,8 @@
 
 #include "e_mcu.h"
 #include "corebase.h"
+#include "mcuram.h"
+#include "mcupgm.h"
 
 #define REG_SPL      m_spl[0]
 #define REG_SPH      m_sph[0]
@@ -23,23 +25,26 @@ class CpuBase : public CoreBase
 
         virtual void reset() override;
 
-        uint8_t* getStatus() { return m_STATUS; }  // Used my Monitor: All CPUs must use m_STATUS
+        virtual uint32_t* getStatus() { return m_STATUS; }  // Used my Monitor: All CPUs must use m_STATUS
 
         virtual void INTERRUPT( uint32_t vector ) { CALL_ADDR( vector ); }
         virtual void CALL_ADDR( uint32_t addr ){;} // Used by MCU Interrupts:: All MCUs should use or override this
-        virtual uint RET_ADDR() { return m_RET_ADDR; } // Used by Debugger: All CPUs should use or override this
+        virtual uint32_t RET_ADDR() { return m_RET_ADDR; } // Used by Debugger: All CPUs should use or override this
 
-        virtual uint getPC() { return m_PC; }
+        virtual uint32_t getPC() { return m_PC; }
 
         virtual void exitSleep() {;}
 
     protected:
         eMcu* m_mcu;
 
+        McuRam* m_mcuRam;
+        McuPgm* m_mcuPgm;
+
         uint8_t m_retCycles;
 
         uint32_t m_PC;      // Program Counter  /// All CPUs must use this
-        uint8_t* m_STATUS;  // STATUS register  /// All CPUs must use this
+        uint32_t* m_STATUS;  // STATUS register  /// All CPUs must use this
         uint32_t m_RET_ADDR;// Last Address in Stack /// All CPUs must use this
 
         /// Should be in McuCpu:

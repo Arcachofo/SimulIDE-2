@@ -7,11 +7,7 @@
 #include "datautils.h"
 #include "e_mcu.h"
 #include "simulator.h"
-
-#include "avreeprom.h"
-#include "datautils.h"
-#include "e_mcu.h"
-#include "simulator.h"
+#include "mcuram.h"
 
 AvrEeprom::AvrEeprom( eMcu* mcu, QString name )
          : McuRom( mcu, name )
@@ -21,11 +17,11 @@ AvrEeprom::~AvrEeprom(){}
 
 void AvrEeprom::setup()
 {
-    m_EECR  = m_mcu->getReg("EECR");
-    m_EEPM  = getRegBits( "EEPM0, EEPM1", m_mcu );
-    m_EEMPE = getRegBits( "EEMPE", m_mcu );
-    m_EEPE  = getRegBits( "EEPE", m_mcu );
-    m_EERE  = getRegBits( "EERE", m_mcu );
+    m_EECR  = (uint8_t*) m_mcuRam->getReg("EECR");
+    m_EEPM  = getRegBits("EEPM0, EEPM1", m_mcuRam );
+    m_EEMPE = getRegBits("EEMPE", m_mcuRam );
+    m_EEPE  = getRegBits("EEPE", m_mcuRam );
+    m_EERE  = getRegBits("EERE", m_mcuRam );
 }
 
 void AvrEeprom::initialize()
@@ -52,7 +48,7 @@ void AvrEeprom::configureA( uint8_t newEECR ) // EECR is being written
 
         if( getRegBitsBool( newEECR, m_EERE ) ) // Read triggered
         {
-            m_mcu->m_regOverride = newEECR & ~(m_EERE.mask); // Clear EERE: it happens after 4 cycles, but cpu is halted for these cycles
+            m_mcuRam->m_regOverride = newEECR & ~(m_EERE.mask); // Clear EERE: it happens after 4 cycles, but cpu is halted for these cycles
             m_mcu->cyclesDone += 4;
             readEeprom(); // Should we return here?
         }
@@ -63,7 +59,7 @@ void AvrEeprom::configureA( uint8_t newEECR ) // EECR is being written
 
         if( !oldEepe && eepe ) // Write triggered
         {
-            m_mcu->m_regOverride = newEECR & ~(m_EEMPE.mask); // Clear EEMPE: it happens after 4 cycles but we need to cancel it now
+            m_mcuRam->m_regOverride = newEECR & ~(m_EEMPE.mask); // Clear EEMPE: it happens after 4 cycles but we need to cancel it now
             Simulator::self()->cancelEvents( this );          // Cancel EEMPE clear event
             m_mcu->cyclesDone += 2;
             writeEeprom();

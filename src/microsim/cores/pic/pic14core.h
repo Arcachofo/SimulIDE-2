@@ -20,16 +20,16 @@ protected:
         uint8_t* m_FSR;
         uint8_t m_WregHidden;
 
-        virtual uint8_t GET_RAM( uint16_t addr ) override //
+        uint8_t getRam( uint16_t addr ) override //
         {
-            addr = m_mcu->getMapperAddr( addr+m_bank );
+            addr = m_mcuRam->getMapperAddr( addr+m_bank );
 
             if( addr == 0 ) addr = getINDF();// INDF
             return McuCpu::GET_RAM( addr );
         }
-        virtual void SET_RAM( uint16_t addr, uint8_t v ) override //
+        void setRam( uint16_t addr, uint8_t v ) override//
         {
-            addr = m_mcu->getMapperAddr( addr+m_bank );
+            addr = m_mcuRam->getMapperAddr( addr+m_bank );
 
             if( addr == m_PCLaddr ) setPC( v + (m_dataMem[m_PCHaddr]<<8) ); // Writting to PCL
             else if( addr == 0 ) addr = getINDF();      // INDF

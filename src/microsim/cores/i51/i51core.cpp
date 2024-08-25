@@ -26,7 +26,7 @@ I51Core::I51Core( eMcu* mcu  )
     m_dataPort = mcu->getMcuPort("PORT0");
     m_addrPort = mcu->getMcuPort("PORT2");
 
-    m_acc = m_mcu->getReg( "ACC" );
+    m_acc = (uint8_t*) m_mcuRam->getReg( "ACC" );
 
     m_upperData = (m_dataMemEnd > m_regEnd);
 }

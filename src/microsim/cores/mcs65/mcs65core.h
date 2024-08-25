@@ -37,7 +37,7 @@ class Mcs65Cpu : public Mcs65Interface
         virtual void runStep() override;
         virtual void extClock( bool clkState ) override;
 
-        virtual uint getPC() override { return m_debugPC; }
+        virtual uint32_t getPC() override { return m_debugPC; }
 
         enum { C=0,Z,I,D,B,O,V,N }; // STATUS bits
 
@@ -106,7 +106,7 @@ class Mcs65Cpu : public Mcs65Interface
         IoPin* m_soPin;
         IoPin* m_dbePin;
 
-        uint8_t m_P;   // status
+        uint32_t m_P;   // status
         uint8_t m_SP;
         uint8_t m_Ac;
         uint8_t m_IR;

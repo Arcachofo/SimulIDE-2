@@ -21,9 +21,9 @@ I51Timer::~I51Timer(){}
 void I51Timer::setup()
 {
     QString n = m_name.right(1);
-    m_TxM  = getRegBits( "T"+n+"M0,T"+n+"M1", m_mcu );
-    m_CTx  = getRegBits( "C/T"+n, m_mcu );
-    m_GATE = getRegBits( "GATE"+n, m_mcu );
+    m_TxM  = getRegBits( "T"+n+"M0,T"+n+"M1", m_mcuRam );
+    m_CTx  = getRegBits( "C/T"+n, m_mcuRam );
+    m_GATE = getRegBits( "GATE"+n, m_mcuRam );
 
     m_trEnabled = false;
     if( n == "0" ) m_gatePin = m_mcu->getMcuPin("P32");

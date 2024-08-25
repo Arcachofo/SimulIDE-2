@@ -20,6 +20,9 @@ class Memory
         Memory();
         ~Memory();
 
+        uint32_t getValue( int address ) { return m_data[address]; }
+        void     setValue( int address, uint32_t value ) { m_data[address] = value; }
+
         bool loadData( bool resize=false );
         void saveData();
 
@@ -35,9 +38,12 @@ class Memory
         int wordBits() { return m_wordBits; }
         void setWordBits( int b );
 
+        uint32_t size() { return m_data.size(); }
         void resize( int size );
 
-        void fillMemory( uint64_t v );
+        uint32_t* rawData() { return m_data.data(); }  // Get pointer to data
+
+        void fillMemory( uint32_t v );
 
         virtual void showTable();
 
@@ -54,7 +60,7 @@ class Memory
         MemTable* m_memTable;
         eMcu* m_eMcu;
 
-        std::vector<uint64_t> m_data;
+        std::vector<uint32_t> m_data;
 };
 
 #endif

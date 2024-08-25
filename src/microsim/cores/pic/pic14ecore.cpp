@@ -12,17 +12,17 @@ Pic14eCore::Pic14eCore( eMcu* mcu )
 {
     m_stackSize = 16;
 
-    m_OPTION = NULL;
+    m_OPTION = nullptr;
 
-    m_Wreg  = mcu->getReg( "WREG" );
-    m_FSR0L = mcu->getReg( "FSR0L" );
-    m_FSR0H = mcu->getReg( "FSR0H" );
-    m_FSR1L = mcu->getReg( "FSR1L" );
-    m_FSR1H = mcu->getReg( "FSR1H" );
+    m_Wreg  = (uint8_t*) m_mcuRam->getReg("WREG");
+    m_FSR0L = (uint8_t*) m_mcuRam->getReg("FSR0L");
+    m_FSR0H = (uint8_t*) m_mcuRam->getReg("FSR0H");
+    m_FSR1L = (uint8_t*) m_mcuRam->getReg("FSR1L");
+    m_FSR1H = (uint8_t*) m_mcuRam->getReg("FSR1H");
 
-    m_BSR = mcu->getReg( "BSR" );
-    m_bankBits = getRegBits( "BSR0,BSR1,BSR2,BSR3,BSR4", mcu );
-    watchBitNames( "BSR0,BSR1,BSR2,BSR3,BSR4", R_WRITE, this, &Pic14eCore::setBank, mcu );
+    m_BSR = (uint8_t*) m_mcuRam->getReg("BSR");
+    m_bankBits = getRegBits("BSR0,BSR1,BSR2,BSR3,BSR4", m_mcuRam );
+    watchBitNames("BSR0,BSR1,BSR2,BSR3,BSR4", R_WRITE, this, &Pic14eCore::setBank, m_mcuRam );
 }
 Pic14eCore::~Pic14eCore() {}
 
@@ -48,10 +48,10 @@ inline void Pic14eCore::MOVIW_iF( uint8_t n )
 {
     if( n == 0 ){
         setFSR0( getFSR0()+1 );
-        *m_Wreg = GET_RAM( 0 );
+        *m_Wreg = getRam( 0 );
     }else{
         setFSR1( getFSR1()+1 );
-        *m_Wreg = GET_RAM( 1 );
+        *m_Wreg = getRam( 1 );
     }
     write_S_Bit( Z, *m_Wreg==0 );
 }
@@ -60,10 +60,10 @@ inline void Pic14eCore::MOVIW_dF( uint8_t n )
 {
     if( n == 0 ){
         setFSR0( getFSR0()-1 );
-        *m_Wreg = GET_RAM( 0 );
+        *m_Wreg = getRam( 0 );
     }else{
         setFSR1( getFSR1()-1 );
-        *m_Wreg = GET_RAM( 1 );
+        *m_Wreg = getRam( 1 );
     }
     write_S_Bit( Z, *m_Wreg==0 );
 }
@@ -71,10 +71,10 @@ inline void Pic14eCore::MOVIW_dF( uint8_t n )
 inline void Pic14eCore::MOVIW_Fi( uint8_t n )
 {
     if( n == 0 ){
-        *m_Wreg = GET_RAM( 0 );
+        *m_Wreg = getRam( 0 );
         setFSR0( getFSR0()+1 );
     }else{
-        *m_Wreg = GET_RAM( 1 );
+        *m_Wreg = getRam( 1 );
         setFSR1( getFSR1()+1 );
     }
     write_S_Bit( Z, *m_Wreg==0 );
@@ -83,10 +83,10 @@ inline void Pic14eCore::MOVIW_Fi( uint8_t n )
 inline void Pic14eCore::MOVIW_Fd( uint8_t n )
 {
     if( n == 0 ){
-        *m_Wreg = GET_RAM( 0 );
+        *m_Wreg = getRam( 0 );
         setFSR0( getFSR0()-1 );
     }else{
-        *m_Wreg = GET_RAM(1);
+        *m_Wreg = getRam(1);
         setFSR1( getFSR1()-1 );
     }
     write_S_Bit( Z, *m_Wreg==0 );
@@ -96,10 +96,10 @@ inline void Pic14eCore::MOVWI_iF( uint8_t n )
 {
     if( n == 0 ){
         setFSR0( getFSR0()+1 );
-        SET_RAM( 0, *m_Wreg );
+        setRam( 0, *m_Wreg );
     }else{
         setFSR1( getFSR1()+1 );
-        SET_RAM( 1, *m_Wreg );
+        setRam( 1, *m_Wreg );
     }
 }
 
@@ -107,20 +107,20 @@ inline void Pic14eCore::MOVWI_dF( uint8_t n )
 {
     if( n == 0 ){
         setFSR0( getFSR0()-1 );
-        SET_RAM( 0, *m_Wreg );
+        setRam( 0, *m_Wreg );
     }else{
         setFSR1( getFSR1()-1 );
-        SET_RAM( 1, *m_Wreg );
+        setRam( 1, *m_Wreg );
     }
 }
 
 inline void Pic14eCore::MOVWI_Fi( uint8_t n )
 {
     if( n == 0 ){
-        SET_RAM( 0, *m_Wreg );
+        setRam( 0, *m_Wreg );
         setFSR0( getFSR0()+1 );
     }else{
-        SET_RAM( 1, *m_Wreg );
+        setRam( 1, *m_Wreg );
         setFSR1( getFSR1()+1 );
     }
 }
@@ -128,10 +128,10 @@ inline void Pic14eCore::MOVWI_Fi( uint8_t n )
 inline void Pic14eCore::MOVWI_Fd( uint8_t n )
 {
     if( n == 0 ){
-        SET_RAM( 0, *m_Wreg );
+        setRam( 0, *m_Wreg );
         setFSR0( getFSR0()-1 );
     }else{
-        SET_RAM( 1, *m_Wreg );
+        setRam( 1, *m_Wreg );
         setFSR1( getFSR1()-1 );
     }
 }
@@ -146,19 +146,19 @@ inline void Pic14eCore::MOVLB( uint8_t k )
 
 inline void Pic14eCore::LSLF( uint8_t f, uint8_t d )
 {
-    uint8_t newV = GET_RAM( f ) << 1;
+    uint8_t newV = getRam( f ) << 1;
     setValue( newV, f, d );
 }
 
 inline void Pic14eCore::LSRF( uint8_t f, uint8_t d )
 {
-    uint8_t newV = GET_RAM( f ) >> 1;
+    uint8_t newV = getRam( f ) >> 1;
     setValue( newV, f, d );
 }
 
 inline void Pic14eCore::ASRF( uint8_t f, uint8_t d )
 {
-    int8_t oldV = GET_RAM( f ) ;
+    int8_t oldV = getRam( f ) ;
     int8_t newV = oldV >> 1;
     setValue( newV, f, d );
 }
@@ -166,14 +166,14 @@ inline void Pic14eCore::ASRF( uint8_t f, uint8_t d )
 inline void Pic14eCore::SUBWFB( uint8_t f, uint8_t d )
 {
     uint8_t carry = ( *m_STATUS & 1<<C ) ? 1 : 0;
-    uint8_t newV = add( GET_RAM( f )+carry, *m_Wreg );
+    uint8_t newV = add( getRam( f )+carry, *m_Wreg );
     setValue( newV, f, d );
 }
 
 inline void Pic14eCore::ADDWFC( uint8_t f, uint8_t d )
 {
     uint8_t carry = ( *m_STATUS & 1<<C ) ? 1 : 0;
-    uint8_t newV = sub( GET_RAM( f )+carry, *m_Wreg );
+    uint8_t newV = sub( getRam( f )+carry, *m_Wreg );
     setValue( newV, f, d );
 }
 
@@ -200,10 +200,10 @@ inline void Pic14eCore::MOVIW( uint8_t n, uint8_t k )
 {
     if( n == 0 ){
         setFSR0( getFSR0()+k );
-        *m_Wreg = GET_RAM( 0 );
+        *m_Wreg = getRam( 0 );
     }else{
         setFSR1( getFSR1()+k );
-        *m_Wreg = GET_RAM( 1 );
+        *m_Wreg = getRam( 1 );
     }
     write_S_Bit( Z, *m_Wreg==0 );
 }
@@ -211,10 +211,10 @@ inline void Pic14eCore::MOVIW( uint8_t n, uint8_t k )
 inline void Pic14eCore::MOVWI( uint8_t n, uint8_t k )
 {
     if( n == 0 ){
-        *m_Wreg = GET_RAM( 0 );
+        *m_Wreg = getRam( 0 );
         setFSR0( getFSR0()+k );
     }else{
-        *m_Wreg = GET_RAM( 1 );
+        *m_Wreg = getRam( 1 );
         setFSR1( getFSR1()+k );
     }
 }

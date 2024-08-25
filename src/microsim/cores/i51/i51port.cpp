@@ -7,6 +7,7 @@
 #include "i51pin.h"
 #include "mcu.h"
 #include "e_mcu.h"
+#include "mcuram.h"
 
 I51Port::I51Port( eMcu* mcu, QString name )
        : McuPort( mcu, name )
@@ -21,7 +22,7 @@ void I51Port::reset()
 
 void I51Port::readPort( uint8_t )
 {
-    m_mcu->m_regOverride = m_pinState;
+    m_mcuRam->m_regOverride = m_pinState;
 }
 
 McuPin* I51Port::createPin( int i, QString id , Component* mcu )

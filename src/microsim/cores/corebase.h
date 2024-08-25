@@ -7,7 +7,7 @@
 #define COREBASE_H
 
 #include <QStringList>
-#include <QHash>
+#include <QMap>
 
 class Display;
 
@@ -31,7 +31,7 @@ class CoreBase
         virtual QStringList getEnumNames( QString ) { return m_enumNames; } // For enum properties
 
     protected:
-        QHash<QString, uint8_t*> m_cpuRegs;
+        QMap<QString, uint8_t*> m_cpuRegs;
 
         QStringList m_enumUids;  // For enum properties
         QStringList m_enumNames; // For enum properties

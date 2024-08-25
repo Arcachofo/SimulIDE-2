@@ -4,23 +4,27 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "mcucpu.h"
+#include "mcuram.h"
 
 McuCpu::McuCpu( eMcu* mcu )
       : CpuBase( mcu )
 {
-    m_dataMem    = mcu->getRam();
-    m_dataMemEnd = mcu->ramSize();
+    m_dataMem    = m_mcuRam->rawData();
+    m_dataMemEnd = m_mcuRam->size();
     if( m_dataMemEnd ) m_dataMemEnd--;
-    /// Fixme m_progMem    = mcu->m_progMem.data();
-    /// Fixme m_progSize   = mcu->flashSize();
 
-    if( mcu->m_regStart > 0 ) m_lowDataMemEnd = mcu->m_regStart-1;
-    else                      m_lowDataMemEnd = 0;
+    m_progMem    = m_mcuPgm->rawData();
+    m_progSize   = m_mcuPgm->size();
 
-    m_regEnd = mcu->m_regEnd;
+    m_regStart = m_mcuRam->regStart();
+
+    if( m_regStart > 0 ) m_lowDataMemEnd = m_regStart-1;
+    else                 m_lowDataMemEnd = 0;
+
+    m_regEnd = m_mcuRam->regEnd();
     if( m_dataMemEnd > 0 )
     {
-        uint16_t sregAddr = mcu->m_sregAddr;
+        uint16_t sregAddr = m_mcuRam->sregAddr();
         if( sregAddr ) m_STATUS = &m_dataMem[sregAddr];
     }
     if     ( m_progSize <= 0xFF )     m_progAddrSize = 1;

@@ -16,18 +16,18 @@ Mcs65Cpu::Mcs65Cpu( eMcu* mcu )
 {
     // CPU registers to show in Monitor
 
-    m_cpuRegs.insert("P" , &m_P  );
+    m_cpuRegs.insert("P" , (uint8_t*) &m_P  );
     m_cpuRegs.insert("S" , &m_SP );
     m_cpuRegs.insert("A" , &m_Ac );
     m_cpuRegs.insert("IR", &m_IR );
     m_cpuRegs.insert("X" , &m_rX );
     m_cpuRegs.insert("Y" , &m_rY );
-    //m_rI = NULL;
+    //m_rI = nullptr;
     mcu->getWatcher()->setRegisters( m_cpuRegs.keys() );
 
     // <register name="P"  addr="0x05" bits="C,Z,I,D,B,1,V,N" reset="00110100" mask="11011111" />
     m_STATUS = &m_P;
-    mcu->setStatusBits({"C","Z","I","D","B","1","V","N"});
+    m_mcuRam->setStatusBits({"C","Z","I","D","B","1","V","N"});
 
     // Buses
     m_dataBus = mcu->getIoPort("PORTD");
@@ -73,7 +73,7 @@ void Mcs65Cpu::reset()
     *m_STATUS = 0b00110100; // Status
 
     m_state = cRESET;
-    m_EXEC = NULL;
+    m_EXEC = nullptr;
     m_debugPC = 0;
     m_cycle = 0;
     m_SP = 0;
@@ -239,7 +239,7 @@ void Mcs65Cpu::decode()
     m_state = cREAD;    // Read next operand in any case
     m_aMode = aNONE;
     m_aFlags = 0;
-    m_EXEC = NULL;
+    m_EXEC = nullptr;
 
     switch( m_IR )                     // Irregular Instructions
     {

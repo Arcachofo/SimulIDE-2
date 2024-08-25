@@ -54,8 +54,8 @@ void PicIntOsc::setPin( int n, McuPin* p )
 PicIntOsc00::PicIntOsc00( eMcu* mcu, QString name )
            : PicIntOsc( mcu, name )
 {
-    m_SCS  = getRegBits( "SCS", mcu );
-    m_IRCF = getRegBits( "IRCF0,IRCF1,IRCF2", mcu );
+    m_SCS  = getRegBits( "SCS", m_mcuRam );
+    m_IRCF = getRegBits( "IRCF0,IRCF1,IRCF2", m_mcuRam );
 }
 PicIntOsc00::~PicIntOsc00(){}
 
@@ -87,7 +87,7 @@ void PicIntOsc00::configureA( uint8_t newOSCCON )
 PicIntOsc01::PicIntOsc01( eMcu* mcu, QString name )
            : PicIntOsc( mcu, name )
 {
-    m_OSCF = getRegBits( "OSCF", mcu );
+    m_OSCF = getRegBits( "OSCF", m_mcuRam );
 }
 PicIntOsc01::~PicIntOsc01(){}
 
@@ -106,9 +106,9 @@ void PicIntOsc01::configureA( uint8_t newOSCCON )
 PicIntOsc02::PicIntOsc02( eMcu* mcu, QString name )
            : PicIntOsc( mcu, name )
 {
-    m_SCS    = getRegBits( "SCS0,SCS1", mcu );
-    m_IRCF   = getRegBits( "IRCF0,IRCF1,IRCF2,IRCF3", mcu );
-    m_SPLLEN = getRegBits( "SPLLEN", mcu );
+    m_SCS    = getRegBits( "SCS0,SCS1", m_mcuRam );
+    m_IRCF   = getRegBits( "IRCF0,IRCF1,IRCF2,IRCF3", m_mcuRam );
+    m_SPLLEN = getRegBits( "SPLLEN", m_mcuRam );
 }
 PicIntOsc02::~PicIntOsc02(){}
 

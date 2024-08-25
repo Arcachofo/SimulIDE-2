@@ -5,6 +5,7 @@
 
 #include "piceeprom.h"
 #include "datautils.h"
+#include "mcuram.h"
 #include "e_mcu.h"
 #include "simulator.h"
 
@@ -17,10 +18,10 @@ PicEeprom::~PicEeprom(){}
 void PicEeprom::setup()
 {
     //m_EECR  = m_mcu->getReg( "EECR" );
-    m_WRERR = getRegBits("WRERR", m_mcu );
-    m_WREN  = getRegBits("WREN", m_mcu );
-    m_WR    = getRegBits("WR", m_mcu );
-    m_RD    = getRegBits("RD", m_mcu );
+    m_WRERR = getRegBits("WRERR", m_mcuRam );
+    m_WREN  = getRegBits("WREN", m_mcuRam );
+    m_WR    = getRegBits("WR", m_mcuRam );
+    m_RD    = getRegBits("RD", m_mcuRam );
 }
 
 void PicEeprom::initialize()
@@ -61,7 +62,7 @@ void PicEeprom::configureA( uint8_t newEECON1 ) // EECR is being written
         readEeprom();
     }
     newEECON1 &= ~(m_WR.mask);                                    // Clear WR if not in write cycle
-    m_mcu->m_regOverride = (newEECON1 | m_wrMask) & ~(m_RD.mask); // Clear RD, set WR if in write cycle
+    m_mcuRam->m_regOverride = (newEECON1 | m_wrMask) & ~(m_RD.mask); // Clear RD, set WR if in write cycle
 }
 
 void PicEeprom::configureB( uint8_t newEECON2 )
@@ -75,7 +76,7 @@ void PicEeprom::configureB( uint8_t newEECON2 )
             m_writeEnable = true;
         }
     }
-    m_mcu->m_regOverride = 0; // Don't write value (this is not a physical register).
+    m_mcuRam->m_regOverride = 0; // Don't write value (this is not a physical register).
 }
 
 /*void PicEeprom::writeEeprom()

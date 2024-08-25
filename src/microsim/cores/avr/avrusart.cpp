@@ -24,40 +24,40 @@ void AvrUsart::setup()
     bool ok = false;
     n.toInt( &ok );
     if( !ok ) n = "";
-    m_UCSRnA = m_mcu->getReg( "UCSR"+n+"A" );
+    m_UCSRnA = (uint8_t*) m_mcuRam->getReg("UCSR"+n+"A" );
     //m_UCSRnB = m_mcu->getReg( "UCSR"+n+"B" );
-    m_u2xn   = getRegBits( "U2X"+n, m_mcu );
+    m_u2xn   = getRegBits("U2X"+n, m_mcuRam );
 
-    m_bit9Tx = getRegBits( "TXB8"+n, m_mcu );
-    m_bit9Rx = getRegBits( "RXB8"+n, m_mcu );
+    m_bit9Tx = getRegBits("TXB8"+n, m_mcuRam );
+    m_bit9Rx = getRegBits("RXB8"+n, m_mcuRam );
 
-    m_txEn = getRegBits( "TXEN"+n, m_mcu );
-    m_rxEn = getRegBits( "RXEN"+n, m_mcu );
+    m_txEn = getRegBits("TXEN"+n, m_mcuRam );
+    m_rxEn = getRegBits("RXEN"+n, m_mcuRam );
 
-    if( n == "" ) m_modeRB = getRegBits( "UMSEL", m_mcu ); // atmega8
-    else          m_modeRB = getRegBits( "UMSEL"+n+"0,UMSEL"+n+"1", m_mcu );
-    m_pariRB = getRegBits( "UPM"+n+"0,UPM"+n+"1", m_mcu );
-    m_stopRB = getRegBits( "USBS"+n, m_mcu );
-    m_UCSZ01 = getRegBits( "UCSZ"+n+"0,UCSZ"+n+"1", m_mcu );
-    m_UCSZ2  = getRegBits( "UCSZ"+n+"2", m_mcu );
+    if( n == "" ) m_modeRB = getRegBits( "UMSEL", m_mcuRam ); // atmega8
+    else          m_modeRB = getRegBits( "UMSEL"+n+"0,UMSEL"+n+"1", m_mcuRam );
+    m_pariRB = getRegBits("UPM"+n+"0,UPM"+n+"1", m_mcuRam );
+    m_stopRB = getRegBits("USBS"+n, m_mcuRam );
+    m_UCSZ01 = getRegBits("UCSZ"+n+"0,UCSZ"+n+"1", m_mcuRam );
+    m_UCSZ2  = getRegBits("UCSZ"+n+"2", m_mcuRam );
 
-    m_UBRRnL = m_mcu->getReg( "UBRR"+n+"L" );
-    watchRegNames( "UBRR"+n+"L", R_WRITE, this, &AvrUsart::setUBRRnL, m_mcu );
+    m_UBRRnL = (uint8_t*) m_mcuRam->getReg("UBRR"+n+"L" );
+    watchRegNames("UBRR"+n+"L", R_WRITE, this, &AvrUsart::setUBRRnL, m_mcuRam );
 
-    if( n == "" ) m_UBRRnH = NULL; // atmega8
-    else{         m_UBRRnH = m_mcu->getReg( "UBRR"+n+"H" );
-        watchRegNames( "UBRR"+n+"H", R_WRITE, this, &AvrUsart::setUBRRnH, m_mcu );
+    if( n == "" ) m_UBRRnH = nullptr; // atmega8
+    else{         m_UBRRnH = (uint8_t*) m_mcuRam->getReg( "UBRR"+n+"H" );
+        watchRegNames("UBRR"+n+"H", R_WRITE, this, &AvrUsart::setUBRRnH, m_mcuRam );
     }
-    m_UDRIE = getRegBits( "UDRIE"+n, m_mcu );
-    m_UDRE  = getRegBits( "UDRE"+n, m_mcu );
-    m_TXC   = getRegBits( "TXC"+n, m_mcu );
-    m_RXC   = getRegBits( "RXC"+n, m_mcu );
-    m_FE    = getRegBits( "FE"+n, m_mcu );
-    m_DOR   = getRegBits( "DOR"+n, m_mcu );
-    m_MPCM  = getRegBits( "MPCM"+n, m_mcu );
+    m_UDRIE = getRegBits("UDRIE"+n, m_mcuRam );
+    m_UDRE  = getRegBits("UDRE"+n,  m_mcuRam );
+    m_TXC   = getRegBits("TXC"+n,   m_mcuRam );
+    m_RXC   = getRegBits("RXC"+n,   m_mcuRam );
+    m_FE    = getRegBits("FE"+n,    m_mcuRam );
+    m_DOR   = getRegBits("DOR"+n,   m_mcuRam );
+    m_MPCM  = getRegBits("MPCM"+n,  m_mcuRam );
 
-    if( n == "" ) m_UPE = getRegBits( "PE", m_mcu );
-    else          m_UPE = getRegBits( "UPE"+n, m_mcu );
+    if( n == "" ) m_UPE = getRegBits( "PE", m_mcuRam );
+    else          m_UPE = getRegBits( "UPE"+n, m_mcuRam );
 }
 
 void AvrUsart::configureA( uint8_t newUCSRnA )

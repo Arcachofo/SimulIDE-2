@@ -78,8 +78,8 @@ Z80Core::Z80Core( eMcu* mcu )
     watcher->addVariable( "Bus_Op", "string" );
     watcher->addVariable( "Bus_HighZ", "string" );
 
-    m_STATUS = &regF;
-    mcu->setStatusBits({"C","N","PV","y","H","x","Z","S"});
+    /// Fixme m_STATUS = &regF;
+    m_mcuRam->setStatusBits({"C","N","PV","y","H","x","Z","S"});
 
     // initialization Z80Core settings
     m_producer = pZilog;                 // producer is Zilog - behaviour of instructions SCF and CCF

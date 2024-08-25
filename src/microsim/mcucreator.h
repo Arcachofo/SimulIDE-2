@@ -6,10 +6,11 @@
 #ifndef MCUCREATOR_H
 #define MCUCREATOR_H
 
-#include <QHash>
+#include <QList>
 
 class Mcu;
 class eMcu;
+class McuRam;
 class Component;
 class QString;
 class QDomElement;
@@ -32,7 +33,7 @@ class McuCreator
     private:
         static int  processFile( QString fileName );
         //static void createProgMem( uint32_t size );
-        static void createDataMem( uint32_t size );
+        static void createRam( uint32_t size );
         //static void createRomMem( uint32_t size );
         static void createEeprom( QDomElement* e );
         static void createCfgWord( QDomElement* e );
@@ -75,6 +76,7 @@ class McuCreator
         static Mcu* m_mcuComp;
         static eMcu* mcu;
 
+        static McuRam* m_mcuRam;
         static McuTwi* m_twi;
         static McuSpi* m_spi;
         static QList<Display*> m_displays;

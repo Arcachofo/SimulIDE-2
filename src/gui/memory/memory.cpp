@@ -47,7 +47,7 @@ void Memory::resize( int size )
     ///if( m_memTable ) m_memTable->setData( &m_data, m_wordBytes );
 }
 
-void Memory::fillMemory( uint64_t v )
+void Memory::fillMemory( uint32_t v )
 {
     /// Mask value
     for( uint i=0; i<m_data.size(); ++i ) m_data[i] = v;

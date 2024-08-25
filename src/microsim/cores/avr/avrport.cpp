@@ -6,6 +6,7 @@
 #include "avrport.h"
 #include "avrpin.h"
 #include "mcu.h"
+#include "mcuram.h"
 #include "e_mcu.h"
 
 AvrPort::AvrPort( eMcu* mcu, QString name )
@@ -18,7 +19,7 @@ void AvrPort::pinRegChanged( uint8_t newPIN )
 {
     if( newPIN == 0 ) return;
     McuPort::outChanged( *m_outReg ^ newPIN ); // Toggle bits = 1
-    m_mcu->m_regOverride = *m_inReg;
+    m_mcuRam->m_regOverride = *m_inReg;
 }
 
 McuPin* AvrPort::createPin( int i, QString id , Component* mcu )

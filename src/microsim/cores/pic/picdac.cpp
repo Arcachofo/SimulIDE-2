@@ -22,13 +22,13 @@ void PicDac::setup()
     m_dacReg = nullptr;
     m_outPin = nullptr;
 
-    m_DACEN  = getRegBits("DACEN", m_mcu );
-    m_DACLPS = getRegBits("DACLPS", m_mcu );
-    m_DACOE  = getRegBits("DACOE", m_mcu );
-    m_DACPSS = getRegBits("DACPSS0,DACPSS1", m_mcu );
-    m_DACNSS = getRegBits("DACNSS", m_mcu );
+    m_DACEN  = getRegBits("DACEN", m_mcuRam );
+    m_DACLPS = getRegBits("DACLPS", m_mcuRam );
+    m_DACOE  = getRegBits("DACOE", m_mcuRam );
+    m_DACPSS = getRegBits("DACPSS0,DACPSS1", m_mcuRam );
+    m_DACNSS = getRegBits("DACNSS", m_mcuRam );
 
-    m_DACR = getRegBits("DACR0,DACR1,DACR2,DACR3,DACR4", m_mcu );
+    m_DACR = getRegBits("DACR0,DACR1,DACR2,DACR3,DACR4", m_mcuRam );
 
     m_fvr = (PicVrefE*)m_mcu->getModule("Vref");
 }

@@ -28,7 +28,7 @@ void McuRom::reset()
 {
     m_address = 0;
     if( !m_saveEepr )
-        for( uint i=0; i<m_size; ++i ) m_data[i] = -1;
+        for( uint i=0; i<m_data.size(); ++i ) m_data[i] = -1;
 }
 
 void McuRom::readEeprom()

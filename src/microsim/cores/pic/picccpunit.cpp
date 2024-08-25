@@ -7,6 +7,7 @@
 #include "picicunit.h"
 #include "picocunit.h"
 #include "datautils.h"
+#include "mcuram.h"
 #include "mcupin.h"
 #include "e_mcu.h"
 #include "simulator.h"
@@ -41,7 +42,7 @@ void PicCcpUnit::setup()
     if( timer2 ) timer2->addOcUnit( m_pwmUnit );
 
     QString n = m_name.right(1);
-    m_CCPxM = getRegBits( "CCP"+n+"M0,CCP"+n+"M1,CCP"+n+"M2,CCP"+n+"M3", m_mcu );
+    m_CCPxM = getRegBits( "CCP"+n+"M0,CCP"+n+"M1,CCP"+n+"M2,CCP"+n+"M3", m_mcuRam );
 
     m_mode = 0;
 }
@@ -60,7 +61,7 @@ void PicCcpUnit::ccprWriteL( uint8_t val )
 
 void PicCcpUnit::ccprWriteH( uint8_t val )
 {
-    if( m_ccpMode == ccpPWM ) m_mcu->m_regOverride = *m_ccpRegH; // Read only
+    if( m_ccpMode == ccpPWM ) m_mcuRam->m_regOverride = *m_ccpRegH; // Read only
     else                      m_comUnit->ocrWriteH( val );
 }
 

@@ -51,7 +51,7 @@ class Interrupt
 
     protected:
         eMcu* m_mcu;
-        uint8_t* m_ram;
+        uint32_t* m_ram;
 
         IoPin* m_intPin;
 

@@ -8,9 +8,9 @@
 #include "e_mcu.h"
 
 McuPgm::McuPgm( eMcu* mcu, QString name )
-         : McuModule( mcu, name )
-         , Memory()
-         , eElement( mcu->getId()+"-"+name )
+      : McuModule( mcu, name )
+      , Memory()
+      , eElement( mcu->getId()+"-"+name )
 {
     m_addressL = nullptr;
     m_addressH = nullptr;

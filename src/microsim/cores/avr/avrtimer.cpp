@@ -203,8 +203,8 @@ AvrTimer800::~AvrTimer800(){}
 void AvrTimer800::setup()
 {
     QString n = m_name.right(1);
-    m_WGM10 = getRegBits( "WGM"+n+"0,WGM"+n+"1", m_mcu );
-    m_WGM32 = getRegBits( "WGM"+n+"2", m_mcu );
+    m_WGM10 = getRegBits( "WGM"+n+"0,WGM"+n+"1", m_mcuRam );
+    m_WGM32 = getRegBits( "WGM"+n+"2", m_mcuRam );
 }
 
 //--------------------------------------------------
@@ -265,10 +265,10 @@ void AvrTimer810::setup()
 {
     m_maxCount = 0xFF;
 
-    m_CTC1  = getRegBits("CTC1", m_mcu );
-    m_PWM1A = getRegBits("PWM1A", m_mcu );
-    m_PWM1B = getRegBits("PWM1B", m_mcu );
-    m_PSR1  = getRegBits("PSR1", m_mcu );
+    m_CTC1  = getRegBits("CTC1", m_mcuRam );
+    m_PWM1A = getRegBits("PWM1A", m_mcuRam );
+    m_PWM1B = getRegBits("PWM1B", m_mcuRam );
+    m_PSR1  = getRegBits("PSR1", m_mcuRam );
 
     m_oc1AiPin = m_mcu->getMcuPin("PORTB0");
     m_oc1BiPin = m_mcu->getMcuPin("PORTB3");
@@ -303,7 +303,7 @@ void AvrTimer810::configureB( uint8_t newGTCCR ) // GTCCR
     }
     if( mode != m_mode ){ m_mode = mode; updateMode(); }
 
-    m_mcu->m_regOverride = newGTCCR & ~m_PSR1.mask; // PSR1 always read as 0
+    m_mcuRam->m_regOverride = newGTCCR & ~m_PSR1.mask; // PSR1 always read as 0
 }
 
 void AvrTimer810::updateOcUnit( McuOcUnit* ocUnit, bool pwm )
@@ -359,8 +359,8 @@ AvrTimer820::~AvrTimer820(){}
 void AvrTimer820::setup()
 {
     QString n = m_name.right(1);
-    m_WGM10 = getRegBits( "WGM"+n+"0,WGM"+n+"1", m_mcu );
-    m_WGM32 = getRegBits( "WGM"+n+"2", m_mcu );
+    m_WGM10 = getRegBits( "WGM"+n+"0,WGM"+n+"1", m_mcuRam );
+    m_WGM32 = getRegBits( "WGM"+n+"2", m_mcuRam );
 }
 
 //--------------------------------------------------
@@ -403,8 +403,8 @@ void AvrTimer16bit::setup()
     m_maxCount = 0xFFFF;
 
     QString n = m_name.right(1);
-    m_WGM10 = getRegBits("WGM"+n+"0,WGM"+n+"1", m_mcu );
-    m_WGM32 = getRegBits("WGM"+n+"2,WGM"+n+"3", m_mcu );
+    m_WGM10 = getRegBits("WGM"+n+"0,WGM"+n+"1", m_mcuRam );
+    m_WGM32 = getRegBits("WGM"+n+"2,WGM"+n+"3", m_mcuRam );
 
     setICRX("ICR"+n+"L,ICR"+n+"H" );
 }
@@ -480,11 +480,11 @@ void AvrTimer16bit::setICRX( QString reg )
     QStringList list = reg.split(",");
 
     reg = list.takeFirst();
-    m_topReg1L = m_mcu->getReg( reg );
-    watchRegNames( reg, R_WRITE, this, &AvrTimer16bit::ICRXLchanged, m_mcu );
+    m_topReg1L = (uint8_t*) m_mcuRam->getReg( reg );
+    watchRegNames( reg, R_WRITE, this, &AvrTimer16bit::ICRXLchanged, m_mcuRam );
 
     reg = list.takeFirst();
-    m_topReg1H = m_mcu->getReg( reg );
+    m_topReg1H = (uint8_t*) m_mcuRam->getReg( reg );
     /// Low byte triggers red/write operations
     /// watchRegNames( reg, R_WRITE, this, &AvrTimer16bit::ICRXLchanged, m_mcu );
 }

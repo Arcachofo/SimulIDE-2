@@ -140,11 +140,11 @@ void MCUMonitor::updateStep()
     {
         m_watcher->updateValues();
     }
-    if( m_ramTable && m_ramTable->isVisible() )
+    /*if( m_ramTable && m_ramTable->isVisible() )
     {
         //if( m_ramTable->getSplitter()->sizes().at(1) > 150 ) // RAM Watcher visible
             m_ramTable->updateValues();
-    }
+    }*/
     /*if( m_ramMonitor && m_ramMonitor->isVisible() ) // RAM MemTable visible
     {
         for( uint32_t i=0; i<m_processor->ramSize(); ++i )
@@ -170,12 +170,12 @@ void MCUMonitor::updateStep()
 
 void MCUMonitor::updateRamTable()
 {
-    if( m_ramTable ) m_ramTable->updateItems();
+    /// if( m_ramTable ) m_ramTable->updateItems();
 }
 
 void MCUMonitor::createStatusPC()
 {
-    m_statusReg = m_processor->cpu()->getStatus();
+    /// m_statusReg = m_processor->cpu()->getStatus();
     if( !m_statusReg )
     {
         byteButton->setVisible( false );
@@ -216,7 +216,7 @@ void MCUMonitor::createStatusPC()
     int wi = row_heigh*8 + round(60*scale);
     m_status.setMinimumWidth( wi );
     m_status.setMaximumWidth( wi );
-    QStringList statusBits = m_processor->getStatusBits();
+    QStringList statusBits;/// = m_processor->getStatusBits();
     if( statusBits.size() )
         for( int i=7; i>=0; --i ) m_status.item( 0, i )->setText( statusBits.takeFirst() );
 

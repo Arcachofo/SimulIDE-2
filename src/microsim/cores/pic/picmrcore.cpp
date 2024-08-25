@@ -13,8 +13,8 @@ PicMrCore::PicMrCore( eMcu* mcu )
     m_sp = 0;
     m_bank = 0;
 
-    m_PCLaddr = mcu->getRegAddress("PCL");
-    m_PCHaddr = mcu->getRegAddress("PCLATH");
+    m_PCLaddr = m_mcuRam->getRegAddress("PCL");
+    m_PCHaddr = m_mcuRam->getRegAddress("PCLATH");
 }
 PicMrCore::~PicMrCore() {}
 
@@ -76,82 +76,82 @@ inline void PicMrCore::CLRWDT()
 
 inline void PicMrCore::MOVWF( uint8_t f )
 {
-    SET_RAM( f, *m_Wreg);
+    setRam( f, *m_Wreg);
 }
 
 inline void PicMrCore::CLRF( uint8_t f )
 {
-    SET_RAM( f, 0 );
+    setRam( f, 0 );
     write_S_Bit( Z, true );
 }
 
 inline void PicMrCore::SUBWF( uint8_t f, uint8_t d )
 {
-    uint8_t newV = sub( GET_RAM( f ), *m_Wreg );
+    uint8_t newV = sub( getRam( f ), *m_Wreg );
     setValue( newV, f, d );
 }
 
 inline void PicMrCore::DECF( uint8_t f, uint8_t d )
 {
-    uint8_t newV = GET_RAM( f );
+    uint8_t newV = getRam( f );
     setValueZ( --newV, f, d );
 }
 
 inline void PicMrCore::IORWF( uint8_t f, uint8_t d )
 {
-    uint8_t oldV = GET_RAM( f ) ;
+    uint8_t oldV = getRam( f ) ;
     uint8_t newV = oldV | *m_Wreg;
     setValueZ( newV, f, d );
 }
 
 inline void PicMrCore::ANDWF( uint8_t f, uint8_t d )
 {
-    uint8_t oldV = GET_RAM( f ) ;
+    uint8_t oldV = getRam( f ) ;
     uint8_t newV = oldV & *m_Wreg;
     setValueZ( newV, f, d );
 }
 
 inline void PicMrCore::XORWF( uint8_t f, uint8_t d )
 {
-    uint8_t oldV = GET_RAM( f ) ;
+    uint8_t oldV = getRam( f ) ;
     uint8_t newV = oldV ^ *m_Wreg;
     setValueZ( newV, f, d );
 }
 
 inline void PicMrCore::ADDWF( uint8_t f, uint8_t d )
 {
-    uint8_t newV = add( GET_RAM( f ), *m_Wreg );
+    uint8_t newV = add( getRam( f ), *m_Wreg );
     setValue( newV, f, d );
 }
 
 inline void PicMrCore::MOVF( uint8_t f, uint8_t d )
 {
-    uint8_t newV = GET_RAM( f );
+    uint8_t newV = getRam( f );
     setValueZ( newV, f, d );
 }
 
 inline void PicMrCore::COMF( uint8_t f, uint8_t d )
 {
-    uint8_t newV = GET_RAM( f ) ^ 0xFF;
+    uint8_t newV = getRam( f ) ^ 0xFF;
     setValueZ( newV, f, d );
 }
 
 inline void PicMrCore::INCF( uint8_t f, uint8_t d )
 {
-    uint8_t newV = GET_RAM( f );
+    uint8_t newV = getRam( f );
     setValueZ( ++newV, f, d );
 }
 
 inline void PicMrCore::DECFSZ( uint8_t f, uint8_t d )
 {
-    uint8_t newV = GET_RAM( f ) - 1;
+    uint8_t newV = getRam( f ) - 1;
     setValue( newV, f, d );
     if( newV == 0 ) incDefault();
 }
 
 inline void PicMrCore::RRF( uint8_t f, uint8_t d )
 {
-    uint8_t oldV = GET_RAM( f ) ;
+    uint8_t oldV = getRam( f ) ;
     uint8_t newV = oldV >> 1;
     if( *m_STATUS & 1<<C ) newV |= 1<<7; // Carry In
     write_S_Bit( C, oldV & 1 );          // Carry Out
@@ -160,7 +160,7 @@ inline void PicMrCore::RRF( uint8_t f, uint8_t d )
 
 inline void PicMrCore::RLF( uint8_t f, uint8_t d )
 {
-    uint8_t oldV = GET_RAM( f ) ;
+    uint8_t oldV = getRam( f ) ;
     uint8_t newV = oldV << 1;
     if( *m_STATUS & 1<<C ) newV |= 1; // Carry In
     write_S_Bit( C, oldV & 1<<7 );    // Carry Out
@@ -169,14 +169,14 @@ inline void PicMrCore::RLF( uint8_t f, uint8_t d )
 
 inline void PicMrCore::SWAPF( uint8_t f, uint8_t d )
 {
-    uint8_t oldV = GET_RAM( f );
+    uint8_t oldV = getRam( f );
     uint8_t newV = ((oldV >> 4) & 0x0F) | ((oldV << 4) & 0xF0);
     setValue( newV, f, d );
 }
 
 inline void PicMrCore::INCFSZ( uint8_t f, uint8_t d )
 {
-    uint8_t newV = GET_RAM( f ) + 1;
+    uint8_t newV = getRam( f ) + 1;
     setValue( newV, f, d );
     if( newV == 0 ) incDefault();
 }
@@ -185,28 +185,28 @@ inline void PicMrCore::INCFSZ( uint8_t f, uint8_t d )
 
 inline void PicMrCore::BCF( uint8_t f, uint8_t b )
 {
-    uint8_t newV = GET_RAM( f );
+    uint8_t newV = getRam( f );
     newV &= ~(1<<b);
-    SET_RAM( f, newV );
+    setRam( f, newV );
 }
 
 inline void PicMrCore::BSF( uint8_t f, uint8_t b )
 {
-    uint8_t newV = GET_RAM( f );
+    uint8_t newV = getRam( f );
     newV |= 1<<b;
-    SET_RAM( f, newV );
+    setRam( f, newV );
 }
 
 inline void PicMrCore::BTFSC( uint8_t f, uint8_t b )
 {
-    uint8_t oldV = GET_RAM( f );
+    uint8_t oldV = getRam( f );
     uint8_t bitMask = 1<<b;
     if( (oldV & bitMask) == 0 ) incDefault();
 }
 
 inline void PicMrCore::BTFSS( uint8_t f, uint8_t b )
 {
-    uint8_t oldV = GET_RAM( f );
+    uint8_t oldV = getRam( f );
     if( oldV & 1<<b  ) incDefault();
 }
 

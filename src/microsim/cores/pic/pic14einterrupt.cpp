@@ -6,14 +6,17 @@
 #include "pic14einterrupt.h"
 #include "e_mcu.h"
 #include "datautils.h"
+#include "mcuram.h"
 
 Pic14eInterrupt::Pic14eInterrupt( QString name, uint16_t vector, eMcu* mcu )
                : PicInterrupt( name, vector, mcu )
 {
-    m_wReg   = mcu->getReg("WREG");
-    m_status = mcu->getReg("STATUS");
-    m_bsr    = mcu->getReg("BSR");
-    m_pclath = mcu->getReg("PCLATH");
+    McuRam* mcuRam = (McuRam*)m_mcu->getModule("ram");
+
+    m_wReg   = (uint8_t*) mcuRam->getReg("WREG");
+    m_status = (uint8_t*) mcuRam->getReg("STATUS");
+    m_bsr    = (uint8_t*) mcuRam->getReg("BSR");
+    m_pclath = (uint8_t*) mcuRam->getReg("PCLATH");
 }
 Pic14eInterrupt::~Pic14eInterrupt(){}
 

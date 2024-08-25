@@ -22,8 +22,8 @@
 eMcu* eMcu::m_pSelf = nullptr;
 
 eMcu::eMcu( Mcu* comp, QString id )
-    : DataSpace()
-    , eIou( comp, id )
+    //: DataSpace()
+    : eIou( comp, id )
     , m_interrupts( this )
 {
     m_wdt         = nullptr;
@@ -37,7 +37,7 @@ eMcu::eMcu( Mcu* comp, QString id )
     m_debugger = nullptr;
     m_debugging = false;
 
-    m_ramTable = new RamTable( nullptr, this, false );
+    ////m_ramTable = new RamTable( nullptr, this, false );
 }
 
 eMcu::~eMcu()
@@ -116,7 +116,7 @@ void eMcu::stepCpu()
 void eMcu::setDebugger( BaseDebugger* deb )
 {
     m_debugger = deb;
-    m_ramTable->setDebugger( deb );
+    ///m_ramTable->setDebugger( deb );
 }
 
 void eMcu::setDebugging( bool d )
@@ -137,7 +137,7 @@ void eMcu::reset()
     for( McuPort*  mcuPort : m_mcuPorts ) mcuPort->reset();
 
     m_interrupts.resetInts();
-    DataSpace::initialize();
+    ///DataSpace::initialize();
 
     if( m_cpu ) m_cpu->reset(); // Must be after all modules reset
     else qDebug() << "ERROR: eMcu::reset nullptr Cpu";

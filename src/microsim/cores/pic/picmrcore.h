@@ -18,7 +18,7 @@ class PicMrCore : public McuCpu
         PicMrCore( eMcu* mcu );
         ~PicMrCore();
 
-        virtual void reset();
+        virtual void reset() override;
         virtual void runStep() override;
 
         virtual uint RET_ADDR() override { return m_stack[m_sp]; }
@@ -37,6 +37,9 @@ class PicMrCore : public McuCpu
         uint32_t m_stack[8];
         uint8_t  m_sp;
         uint8_t  m_stackSize;
+
+        virtual uint8_t getRam( uint16_t addr )=0;
+        virtual void    setRam( uint16_t addr, uint8_t v )=0;
 
         virtual void setBank( uint8_t bank );
 

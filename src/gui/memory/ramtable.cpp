@@ -337,7 +337,7 @@ void RamTable::addToWatch( QTableWidgetItem* it )
     }else{
         int addr = -1;
         if( m_varsTable.contains( name ) ) addr = m_varsTable.value( name );
-        else                               addr = m_processor->getRegAddress( name );
+        else                               ;/// addr = m_processor->getRegAddress( name );
 
         if( addr == 65535 )
         {
@@ -399,7 +399,7 @@ void RamTable::updateValues()
             int addr = name.toInt(&ok, 10);
             if( !ok && name.startsWith("0x") ) addr = name.toInt(&ok, 16);
 
-            if( ok ) value = m_processor->getRamValue( addr ); // Address
+            if( ok ) ;/// value = m_processor->getRamValue( addr ); // Address
             else                                               // Var or Reg name
             {
                 QByteArray ba;
@@ -407,7 +407,7 @@ void RamTable::updateValues()
 
                 int address = -1;
                 if( m_varsTable.contains( name ) ) address = m_varsTable.value( name );
-                else                               address = m_processor->getRegAddress( name );
+                else                               ;/// address = m_processor->getRegAddress( name );
                 if( address < 0 ) return;
 
                 if( type ==  "string" )
@@ -416,14 +416,14 @@ void RamTable::updateValues()
                     for( int i=address; i<=address+value; i++ )
                     {
                         QString str = "";
-                        const QChar cha = m_processor->getRamValue( i );
-                        str.setRawData( &cha, 1 );
+                        /// const QChar cha = m_processor->getRamValue( i );
+                        /// str.setRawData( &cha, 1 );
                         strVal += str; //QByteArray::fromHex( getRamValue( i ) );
                     }
                 }else{
                     int bits;
 
-                    if( type.contains( "32" ) )    // 4 bytes
+                    /*if( type.contains( "32" ) )    // 4 bytes
                     {
                         bits = 32;
                         ba[0] = m_processor->getRamValue( address );
@@ -444,7 +444,7 @@ void RamTable::updateValues()
                         ba[1] = 0;
                         ba[2] = 0;
                         ba[3] = 0;
-                    }
+                    }*/
                     if( type.contains( "f" ) )        // float, double
                     {
                         float val = 0;

@@ -25,7 +25,7 @@ BaseDebugger::BaseDebugger( CodeEditor* parent, OutPanelText* outPane )
 }
 BaseDebugger::~BaseDebugger( )
 {
-    if( eMcu::self() ) eMcu::self()->getRamTable()->remDebugger( this );
+    /// Fixme if( eMcu::self() ) eMcu::self()->getRamTable()->remDebugger( this );
 }
 
 bool BaseDebugger::upload()

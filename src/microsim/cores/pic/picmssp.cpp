@@ -18,8 +18,8 @@ PicMssp::~PicMssp(){}
 
 void PicMssp::setup()
 {
-    m_SSPMx = getRegBits( "SSPM0,SSPM1,SSPM2,SSPM3", m_mcu );
-    m_SSPEN = getRegBits( "SSPEN", m_mcu );
+    m_SSPMx = getRegBits( "SSPM0,SSPM1,SSPM2,SSPM3", m_mcuRam );
+    m_SSPEN = getRegBits( "SSPEN", m_mcuRam );
 }
 
 void PicMssp::initialize()

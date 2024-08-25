@@ -19,8 +19,8 @@ void PicWdt::setup()
 {
     m_clkPeriod = 18*1e9; // 18 ms
 
-    m_PS  = getRegBits( "PS0, PS1, PS2", m_mcu );
-    m_PSA = getRegBits( "PSA", m_mcu );
+    m_PS  = getRegBits( "PS0, PS1, PS2", m_mcuRam );
+    m_PSA = getRegBits( "PSA", m_mcuRam );
 }
 
 void PicWdt::initialize()

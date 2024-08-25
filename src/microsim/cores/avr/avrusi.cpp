@@ -27,21 +27,21 @@ void AvrUsi::setup()
     m_DIpin = nullptr;
     m_CKpin = nullptr;
 
-    m_dataReg   = m_mcu->getReg("USIDR");
-    m_bufferReg = m_mcu->getReg("USIBR");
+    m_dataReg   = (uint8_t*) m_mcuRam->getReg("USIDR");
+    m_bufferReg = (uint8_t*) m_mcuRam->getReg("USIBR");
 
-    m_USITC  = getRegBits("USITC", m_mcu );
-    m_USICLK = getRegBits("USICLK", m_mcu );
-    m_USICS  = getRegBits("USICS0,USICS1", m_mcu );
-    m_USIWM  = getRegBits("USIWM0,USIWM1", m_mcu );
+    m_USITC  = getRegBits("USITC", m_mcuRam );
+    m_USICLK = getRegBits("USICLK", m_mcuRam );
+    m_USICS  = getRegBits("USICS0,USICS1", m_mcuRam );
+    m_USIWM  = getRegBits("USIWM0,USIWM1", m_mcuRam );
 
-    m_USICNT = getRegBits("USICNT0,USICNT1,USICNT2,USICNT3", m_mcu );
-    m_USIPF  = getRegBits("USIPF", m_mcu );
+    m_USICNT = getRegBits("USICNT0,USICNT1,USICNT2,USICNT3", m_mcuRam );
+    m_USIPF  = getRegBits("USIPF", m_mcuRam );
 
     AvrTimer800* timer0 = (AvrTimer800*)m_mcu->getTimer("TIMER0");
     m_t0OCA  = timer0->getOcUnit("OCA");
 
-    watchRegNames("USIDR", R_WRITE, this, &AvrUsi::dataRegWritten, m_mcu );
+    watchRegNames("USIDR", R_WRITE, this, &AvrUsi::dataRegWritten, m_mcuRam );
 }
 
 void AvrUsi::reset()
@@ -174,7 +174,7 @@ void AvrUsi::configureA( uint8_t newUSICR )
             }
         }
     }
-    m_mcu->m_regOverride = newUSICR & 0b11111100; // USICLK & USITC always read as 0
+    m_mcuRam->m_regOverride = newUSICR & 0b11111100; // USICLK & USITC always read as 0
 }
 
 void AvrUsi::configureB( uint8_t newUSISR )
@@ -183,7 +183,7 @@ void AvrUsi::configureB( uint8_t newUSISR )
 
     bool oldUsiSR = getRegBitsBool( m_USIPF );
     bool newUsiSR = getRegBitsBool( newUSISR, m_USIPF );
-    if( oldUsiSR && newUsiSR ) m_mcu->m_regOverride = newUSISR & ~m_USIPF.mask; // clear USIPF by writing a 1 to it
+    if( oldUsiSR && newUsiSR ) m_mcuRam->m_regOverride = newUSISR & ~m_USIPF.mask; // clear USIPF by writing a 1 to it
 }
 
 void AvrUsi::dataRegWritten( uint8_t newUSIDR ) // USIDR is being written
@@ -216,12 +216,12 @@ void AvrUsi::shiftData()
 void AvrUsi::setOutput() // Set output *m_dataReg & 1<<7
 {
     if( m_mode == 1 ){ if( m_DOpin ) m_DOpin->setOutState( m_DoState ); } // SPI
-    else if( m_mode > 1 ) writeBitsToReg( m_DIbit, m_DoState, m_mcu );    // TWI
+    else if( m_mode > 1 ) writeBitsToReg( m_DIbit, m_DoState, m_mcuRam );    // TWI
 }
 
 void AvrUsi::toggleClock()
 {
-    writeBitsToReg( m_CKbit, !getRegBitsBool( m_CKbit ), m_mcu );
+    writeBitsToReg( m_CKbit, !getRegBitsBool( m_CKbit ), m_mcuRam );
 }
 
 void AvrUsi::setPins( QString pinStr ) // "DO,DI,USCK"
@@ -236,6 +236,6 @@ void AvrUsi::setPins( QString pinStr ) // "DO,DI,USCK"
     m_DIpin = m_mcu->getMcuPin( DIpin );
     m_CKpin = m_mcu->getMcuPin( CKpin );
 
-    m_DIbit = getRegBits( DIpin, m_mcu );
-    m_CKbit = getRegBits( CKpin, m_mcu );
+    m_DIbit = getRegBits( DIpin, m_mcuRam );
+    m_CKbit = getRegBits( CKpin, m_mcuRam );
 }

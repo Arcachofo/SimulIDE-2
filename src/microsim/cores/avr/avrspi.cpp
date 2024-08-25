@@ -5,6 +5,7 @@
 
 #include "avrspi.h"
 #include "datautils.h"
+#include "mcuram.h"
 #include "iopin.h"
 #include "e_mcu.h"
 #include "mcuinterrupts.h"
@@ -22,13 +23,13 @@ void AvrSpi::setup()
     n.toInt( &ok );
     if( !ok ) n = "";
 
-    m_SPR   = getRegBits( "SPR"+n+"0,SPR"+n+"1", m_mcu );
-    m_SPE   = getRegBits( "SPE"+n, m_mcu );
-    m_DODR  = getRegBits( "DODR"+n, m_mcu );
-    m_MSTR  = getRegBits( "MSTR"+n, m_mcu );
-    m_CPOL  = getRegBits( "CPOL"+n, m_mcu );
-    m_CPHA  = getRegBits( "CPHA"+n, m_mcu );
-    m_SPI2X = getRegBits( "SPI2X"+n, m_mcu );
+    m_SPR   = getRegBits( "SPR"+n+"0,SPR"+n+"1", m_mcuRam );
+    m_SPE   = getRegBits( "SPE"+n, m_mcuRam );
+    m_DODR  = getRegBits( "DODR"+n, m_mcuRam );
+    m_MSTR  = getRegBits( "MSTR"+n, m_mcuRam );
+    m_CPOL  = getRegBits( "CPOL"+n, m_mcuRam );
+    m_CPHA  = getRegBits( "CPHA"+n, m_mcuRam );
+    m_SPI2X = getRegBits( "SPI2X"+n, m_mcuRam );
 }
 
 void AvrSpi::setMode( spiMode_t mode )
@@ -93,7 +94,7 @@ void AvrSpi::writeStatus( uint8_t newSPSR ) // SPSR is being written
     uint8_t spi2x = getRegBitsVal( newSPSR, m_SPI2X );
     m_speed2x = spi2x > 0;
     updateSpeed();
-    m_mcu->m_regOverride = (*m_statReg & ~m_SPI2X.mask) | spi2x; // Preserve Status bits
+    m_mcuRam->m_regOverride = (*m_statReg & ~m_SPI2X.mask) | spi2x; // Preserve Status bits
 }
 
 void AvrSpi::writeSpiReg( uint8_t newSPDR ) // SPDR is being written

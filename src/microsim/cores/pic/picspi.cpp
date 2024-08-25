@@ -20,9 +20,9 @@ void PicSpi::setup()
 {
     m_sleepMode = 0xFF;
 
-    m_SSPEN = getRegBits( "SSPEN", m_mcu );
-    m_CKP   = getRegBits( "CKP", m_mcu );
-    m_CKE   = getRegBits( "CKE", m_mcu );
+    m_SSPEN = getRegBits( "SSPEN", m_mcuRam );
+    m_CKP   = getRegBits( "CKP", m_mcuRam );
+    m_CKE   = getRegBits( "CKE", m_mcuRam );
 }
 
 void PicSpi::setMode( spiMode_t mode )

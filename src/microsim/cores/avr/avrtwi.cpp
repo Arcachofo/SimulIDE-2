@@ -8,6 +8,7 @@
 #include "e_mcu.h"
 #include "mcuinterrupts.h"
 #include "datautils.h"
+#include "mcuram.h"
 
 AvrTwi::AvrTwi( eMcu* mcu, QString name )
       : McuTwi( mcu, name )
@@ -23,15 +24,15 @@ void AvrTwi::setup()
     n.toInt( &ok );
     if( !ok ) n = "";
 
-    m_TWCR = m_mcu->getReg( "TWCR"+n );
+    m_TWCR = (uint8_t*) m_mcuRam->getReg("TWCR"+n );
     //m_TWSR = m_mcu->getReg( "TWSR" );
 
-    m_TWEN  = getRegBits( "TWEN"+n , m_mcu );
-    m_TWWC  = getRegBits( "TWWC"+n , m_mcu );
-    m_TWSTO = getRegBits( "TWSTO"+n, m_mcu );
-    m_TWSTA = getRegBits( "TWSTA"+n, m_mcu );
-    m_TWEA  = getRegBits( "TWEA"+n , m_mcu );
-    m_TWINT = getRegBits( "TWINT"+n, m_mcu );
+    m_TWEN  = getRegBits("TWEN"+n , m_mcuRam );
+    m_TWWC  = getRegBits("TWWC"+n , m_mcuRam );
+    m_TWSTO = getRegBits("TWSTO"+n, m_mcuRam );
+    m_TWSTA = getRegBits("TWSTA"+n, m_mcuRam );
+    m_TWEA  = getRegBits("TWEA"+n , m_mcuRam );
+    m_TWINT = getRegBits("TWINT"+n, m_mcuRam );
 }
 
 void AvrTwi::initialize()

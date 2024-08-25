@@ -5,6 +5,7 @@
 
 #include "picocunit.h"
 #include "datautils.h"
+#include "mcuram.h"
 #include "mcupin.h"
 #include "e_mcu.h"
 #include "simulator.h"
@@ -13,7 +14,7 @@ PicPwmUnit* PicOcUnit::createPwmUnit( eMcu* mcu, QString name, int type ) // Sta
 {
     if( type == 00 ) return new PicPwmUnit00( mcu, name );
     if( type == 01 ) return new PicPwmUnit01( mcu, name );
-    return NULL;
+    return nullptr;
 }
 
 PicOcUnit::PicOcUnit( eMcu* mcu, QString name )
@@ -26,7 +27,7 @@ PicOcUnit::~PicOcUnit( ){}
 
 void PicOcUnit::setup()
 {
-    m_GODO = getRegBits( "GO/DONE", m_mcu );
+    m_GODO = getRegBits( "GO/DONE", m_mcuRam );
 }
 
 void PicOcUnit::runEvent()  // Compare match
@@ -45,7 +46,7 @@ void PicOcUnit::runEvent()  // Compare match
          uint64_t cycles = m_timer->scale()*m_mcu->psInst();
          Simulator::self()->addEvent( cycles, this ); // Reset Timer next Timer cycle
 
-         m_mcu->writeReg( m_GODO.regAddr, *m_GODO.reg | m_GODO.mask );  // Set ADC GO/DONE bit
+         m_mcuRam->writeReg( m_GODO.regAddr, *m_GODO.reg | m_GODO.mask );  // Set ADC GO/DONE bit
     }
     m_interrupt->raise();   // Trigger interrupt
     drivePin( m_comAct );
@@ -157,8 +158,8 @@ void PicPwmUnit00::setup()
 {
     QString n = m_name.right(1); // name="PWM+2" => n="2"
 
-    m_DCxB  = getRegBits( "DC"+n+"B0,DC"+n+"B1", m_mcu );
-    if( m_enhanced ) m_PxM = getRegBits( "P"+n+"M0,P"+n+"M1", m_mcu );
+    m_DCxB  = getRegBits( "DC"+n+"B0,DC"+n+"B1", m_mcuRam );
+    if( m_enhanced ) m_PxM = getRegBits( "P"+n+"M0,P"+n+"M1", m_mcuRam );
 }
 
 //------------------------------------------------------
@@ -174,6 +175,6 @@ void PicPwmUnit01::setup()
 {
     QString n = m_name.right(1); // name="PWM+2" => n="2"
 
-    m_DCxB  = getRegBits( "CCP"+n+"Y,CCP"+n+"X", m_mcu );
+    m_DCxB  = getRegBits( "CCP"+n+"Y,CCP"+n+"X", m_mcuRam );
     //if( m_enhanced ) m_PxM = getRegBits( "P"+n+"M0,P"+n+"M1", mcu );
 }

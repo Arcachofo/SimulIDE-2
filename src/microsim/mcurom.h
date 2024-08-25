@@ -30,11 +30,6 @@ class McuRom : public McuModule, public Memory, public eElement
         virtual void addrWriteL( uint8_t val );
         virtual void addrWriteH( uint8_t val );
 
-        uint32_t size()  { return m_size; }
-
-        uint8_t  getValue( int address ) { return m_data[address]; }
-        void     setValue( int address, uint8_t value ) { m_data[address] = value; }
-
     protected:
 
         uint8_t* m_addressL; // Actual ram for counter Low address byte
@@ -43,7 +38,6 @@ class McuRom : public McuModule, public Memory, public eElement
         uint32_t m_address;
         uint8_t* m_dataReg;
 
-        uint32_t m_size;
         bool m_saveEepr;
 };
 

@@ -81,10 +81,10 @@ PicTimer8bit::~PicTimer8bit(){}
 PicTimer0::PicTimer0( eMcu* mcu, QString name)
          : PicTimer8bit( mcu, name )
 {
-    m_T0CS = getRegBits( "T0CS", mcu );
-    m_T0SE = getRegBits( "T0SE", mcu );
-    m_PSA  = getRegBits( "PSA", mcu );
-    m_PS   = getRegBits( "PS0,PS1,PS2", mcu );
+    m_T0CS = getRegBits( "T0CS", m_mcuRam );
+    m_T0SE = getRegBits( "T0SE", m_mcuRam );
+    m_PSA  = getRegBits( "PSA", m_mcuRam );
+    m_PS   = getRegBits( "PS0,PS1,PS2", m_mcuRam );
 }
 PicTimer0::~PicTimer0(){}
 
@@ -124,9 +124,9 @@ void PicTimer0::configureA( uint8_t NewOPTION )
 PicTimer2::PicTimer2( eMcu* mcu, QString name)
          : PicTimer8bit( mcu, name )
 {
-    m_TMR2ON = getRegBits( "TMR2ON", mcu );
-    m_T2CKPS = getRegBits( "T2CKPS0,T2CKPS1", mcu );
-    m_TOUTPS = getRegBits( "TOUTPS0,TOUTPS1,TOUTPS2,TOUTPS3", mcu );
+    m_TMR2ON = getRegBits( "TMR2ON", m_mcuRam );
+    m_T2CKPS = getRegBits( "T2CKPS0,T2CKPS1", m_mcuRam );
+    m_TOUTPS = getRegBits( "TOUTPS0,TOUTPS1,TOUTPS2,TOUTPS3", m_mcuRam );
 }
 PicTimer2::~PicTimer2(){}
 
@@ -156,11 +156,11 @@ PicTimer16bit::PicTimer16bit( eMcu* mcu, QString name )
 {
     m_maxCount = 0xFFFF;
 
-    m_T1CKPS = getRegBits( "T1CKPS0,T1CKPS1", mcu );
-    m_T1OSCEN = getRegBits( "T1OSCEN", mcu );
-    m_T1SYNC  = getRegBits( "T1SYNC", mcu );
+    m_T1CKPS = getRegBits( "T1CKPS0,T1CKPS1", m_mcuRam );
+    m_T1OSCEN = getRegBits( "T1OSCEN", m_mcuRam );
+    m_T1SYNC  = getRegBits( "T1SYNC", m_mcuRam );
 
-    m_TMR1ON = getRegBits( "TMR1ON", mcu );
+    m_TMR1ON = getRegBits( "TMR1ON", m_mcuRam );
 }
 PicTimer16bit::~PicTimer16bit(){}
 
@@ -212,7 +212,7 @@ void PicTimer16bit::sleep( int mode )
 PicTimer160::PicTimer160( eMcu* mcu, QString name)
            : PicTimer16bit( mcu, name )
 {
-    m_TMR1CS = getRegBits( "TMR1CS", mcu );
+    m_TMR1CS = getRegBits( "TMR1CS", m_mcuRam );
 }
 PicTimer160::~PicTimer160(){}
 
@@ -228,7 +228,7 @@ void PicTimer160::configureClock()
 PicTimer161::PicTimer161( eMcu* mcu, QString name)
            : PicTimer16bit( mcu, name )
 {
-    m_TMR1CS = getRegBits( "TMR1CS0,TMR1CS1", mcu );
+    m_TMR1CS = getRegBits( "TMR1CS0,TMR1CS1", m_mcuRam );
 }
 PicTimer161::~PicTimer161(){}
 
