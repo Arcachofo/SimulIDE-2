@@ -33,8 +33,8 @@ Z80Core::Z80Core( eMcu* mcu )
        , eElement( mcu->getId()+"-Z80Core" )
 {
     // Values to show in Monitor High Area (any type)
-    mcu->createWatcher( this );
-    Watcher* watcher = mcu->getWatcher();
+    m_mcuRam->createWatcher();
+    Watcher* watcher = m_mcuRam->getWatcher();
 
     watcher->addRegister( "A", "uint8" );
     watcher->addRegister( "B", "uint8" );

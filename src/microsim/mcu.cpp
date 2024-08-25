@@ -388,16 +388,16 @@ void Mcu::setVarList( QString vl )
 
 QString Mcu::cpuRegs()
 {
-    Watcher* watcher = m_eMcu.getWatcher();
+    Watcher* watcher = m_ram->getWatcher();
     if( !watcher ) return "";
     return watcher->getVarSet().join(",");
 }
 
 void Mcu::setCpuRegs( QString vl )
 {
-    Watcher* watcher = m_eMcu.getWatcher();
+    Watcher* watcher = m_ram->getWatcher();
     if( !watcher ) return;
-    m_eMcu.getWatcher()->loadVarSet( vl.split(",") );
+    watcher->loadVarSet( vl.split(",") );
 }
 
 QString Mcu::getPGM()
@@ -589,6 +589,7 @@ void Mcu::slotOpenMcuMonitor()
     if( !m_mcuMonitor )
     {
         m_mcuMonitor = new MCUMonitor( CircuitWidget::self(), &m_eMcu );
+        if( m_ram ) m_mcuMonitor->addTable( m_rom->getTable(), "RAM" );
         if( m_rom ) m_mcuMonitor->addTable( m_rom->getTable(), "ROM" );
         if( m_pgm ) m_mcuMonitor->addTable( m_pgm->getTable(), "PGM" );
     }

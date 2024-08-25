@@ -33,7 +33,7 @@ class MCUMonitor : public QDialog, private Ui::McuMonitor
     private:
         //void createStatusPC();
 
-        eMcu* m_processor;
+        eMcu* m_eMcu;
 
         uint32_t* m_statusReg;  // STATUS register
 

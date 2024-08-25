@@ -14,7 +14,7 @@
 #include "mcutypes.h"
 //#include "ramtable.h"
 
-class RamTable;
+class Watcher;
 
 class McuRam : public McuModule, public Memory
 {
@@ -37,11 +37,14 @@ class McuRam : public McuModule, public Memory
         uint32_t  readReg( uint32_t addr );                                 // Read Register (call watchers)
         void     writeReg( uint32_t addr, uint32_t v, bool masked=true );   // Write Register (call watchers)
 
-        //RamTable* getRamTable() { return m_ramTable; }
+        Watcher* getWatcher() { return m_watcher; }
+        void createWatcher();
 
+        QStringList registerList() { return m_regInfo.keys(); }
         QMap<QString, uint32_t>*  bitMasks()  { return &m_bitMasks; }
         QMap<QString, uint32_t>*  bitRegs()   { return &m_bitRegs; }
         QMap<QString, regInfo_t>* regInfo()   { return &m_regInfo; }
+
         QMap<uint32_t, McuSignal*>* readSignals() { return &m_readSignals; }
         QMap<uint32_t, McuSignal*>* writeSignals(){ return &m_writeSignals; }
 
@@ -75,7 +78,7 @@ class McuRam : public McuModule, public Memory
         uint32_t m_sregAddr;                      // STATUS Reg Address
         QStringList m_statusBits;
 
-        //RamTable* m_ramTable;
+        Watcher* m_watcher;
 };
 
 #endif

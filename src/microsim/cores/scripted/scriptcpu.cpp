@@ -267,7 +267,7 @@ int ScriptCpu::compileScript()
 
     if( m_getCpuReg || m_getStrReg )
     {
-        m_mcu->createWatcher( this );
+        m_mcuRam->createWatcher();
     }
 
     for( ScriptPerif* perif : m_periferals ) perif->startScript();
@@ -291,7 +291,7 @@ void ScriptCpu::updateStep()
 
 void ScriptCpu::reset()
 {
-    m_watcher = m_mcu->getWatcher();
+    m_watcher = m_mcuRam->getWatcher();
 
     m_mcuComp->setShowVal( true );
     m_value = "";

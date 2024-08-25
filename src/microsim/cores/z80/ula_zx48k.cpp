@@ -62,8 +62,8 @@ ULA_ZX48k::ULA_ZX48k( eMcu* mcu )
 
     m_enumNames = m_enumUids;
 
-    mcu->createWatcher( this );
-    Watcher* watcher = mcu->getWatcher();
+    m_mcuRam->createWatcher();
+    Watcher* watcher = m_mcuRam->getWatcher();
 
     watcher->addRegister( "Horizontal Counter", "uint16" );
     watcher->addRegister( "Vertical Counter", "uint16" );

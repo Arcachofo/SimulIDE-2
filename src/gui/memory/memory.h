@@ -38,6 +38,8 @@ class Memory
         int wordBits() { return m_wordBits; }
         void setWordBits( int b );
 
+        int wordBytes() { return m_wordBytes; }
+
         uint32_t size() { return m_data.size(); }
         void resize( int size );
 

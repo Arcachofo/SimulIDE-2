@@ -6,7 +6,6 @@
 #include "e_iou.h"
 #include "cpubase.h"
 #include "ioport.h"
-#include "watcher.h"
 
 eIou::eIou( Mcu* comp, QString id )
     : eElement( id )
@@ -15,7 +14,6 @@ eIou::eIou( Mcu* comp, QString id )
 
     m_cpu     = nullptr;
     m_clkPin  = nullptr;
-    m_watcher = nullptr;
 }
 eIou::~eIou()
 {}
@@ -39,7 +37,3 @@ IoPin* eIou::getIoPin( QString pinName )
     return pin;
 }
 
-void eIou::createWatcher( CpuBase* cpu )
-{
-    if( !m_watcher ) m_watcher = new Watcher( nullptr, cpu );
-}

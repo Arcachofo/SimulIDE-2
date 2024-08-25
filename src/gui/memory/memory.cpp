@@ -28,8 +28,9 @@ Memory::~Memory()
 {
     if( !m_memTable ) return;
 
-    m_memTable->setParent( nullptr );
-    m_memTable->deleteLater();
+    /// Fixme: memTable in McuMonitor is deleted there
+    ///m_memTable->setParent( nullptr );
+    ///m_memTable->deleteLater();
 }
 
 void Memory::setWordBits( int b )

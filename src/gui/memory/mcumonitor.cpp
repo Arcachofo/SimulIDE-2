@@ -10,7 +10,7 @@
 #include "memtable.h"
 #include "mainwindow.h"
 #include "utils.h"
-
+#include "mcuram.h"
 #include "watcher.h"
 
 MCUMonitor::MCUMonitor( QWidget* parent, eMcu* mcu )
@@ -20,11 +20,18 @@ MCUMonitor::MCUMonitor( QWidget* parent, eMcu* mcu )
 {
     setupUi(this);
     hide();
-    m_processor = mcu;
+    m_eMcu = mcu;
 
     m_jumpToAddress = false;
 
     m_statusReg  = nullptr;
+
+
+    McuRam* mcuRam = (McuRam*)m_eMcu->getModule("ram");
+    m_watcher = mcuRam->getWatcher();
+    if( m_watcher ) tabWidget->addTab( m_watcher, tr("Watch") );
+
+
     //m_ramTable   = nullptr;
     //m_ramMonitor = nullptr;
     //m_pgmMonitor = nullptr;
@@ -32,11 +39,11 @@ MCUMonitor::MCUMonitor( QWidget* parent, eMcu* mcu )
 
     //createStatusPC();
 
-    QSplitter* spl = nullptr;
+    ///QSplitter* spl = nullptr;
 
-    m_watcher = m_processor->getWatcher();
-    /*if( m_watcher )
-    {
+    ///m_watcher = m_processor->getWatcher();
+    ///if( m_watcher ) tabWidget->addTab( m_watcher, tr("Watch") );
+    /*{
         if( mcu->ramSize() )
         {
             spl = new QSplitter( Qt::Horizontal, this );
@@ -102,9 +109,9 @@ void MCUMonitor::tabChanged( int )
 
 void MCUMonitor::updateStep()
 {
-    int pc = m_processor->cpu()->getPC();
+    //int pc = m_processor->cpu()->getPC();
 
-    if( m_statusReg )
+    /*if( m_statusReg )
     {
         int status = *m_statusReg; //m_processor->cpu->getStatus();
         for( int i=0; i<8; i++ )
@@ -118,7 +125,7 @@ void MCUMonitor::updateStep()
         /// if( byteButton->isChecked() ) pc *= m_processor->wordSize();
         m_pc.item( 0, 0 )->setData( 0, pc );
         m_pc.item( 0, 1 )->setText("0x"+val2hex(pc) );
-    }
+    }*/
 
     if( m_watcher && m_watcher->isVisible() )
     {

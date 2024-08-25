@@ -256,17 +256,17 @@ int McuCreator::processFile( QString fileName )
 
         if( m_displays.size() )
         {
-            mcu->createWatcher( mcu->m_cpu );
+            m_mcuRam->createWatcher();
             for( Display* display : m_displays )
             {
                 mcu->m_cpu->m_display = display;
-                mcu->getWatcher()->addWidget( display );
+                m_mcuRam->getWatcher()->addWidget( display );
             }
         }
         if( m_console )
         {
-            mcu->createWatcher( mcu->m_cpu );
-            mcu->getWatcher()->addConsole();
+            m_mcuRam->createWatcher();
+            m_mcuRam->getWatcher()->addConsole();
         }
         if( m_newStack ) createStack( &m_stackEl );
     }

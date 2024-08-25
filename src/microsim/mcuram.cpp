@@ -6,7 +6,9 @@
 #include <QDebug>
 
 #include "mcuram.h"
+#include "e_mcu.h"
 #include "datautils.h"
+#include "watcher.h"
 #include "utils.h"
 
 McuRam::McuRam( eMcu* mcu, QString name )
@@ -16,6 +18,8 @@ McuRam::McuRam( eMcu* mcu, QString name )
     m_sregAddr = 0;
     m_regStart = 0xFFFF;
     m_regEnd   = 0;
+
+    m_watcher = nullptr;
 }
 
 McuRam::~McuRam()
@@ -110,3 +114,8 @@ uint32_t McuRam::getRamValue( uint32_t address ) // Read RAM from Mcu Monitor
 void McuRam::setRamValue( uint32_t address, uint32_t value ) // Setting RAM from external source (McuMonitor)
 { writeReg( getMapperAddr(address), value ); }
 
+
+void McuRam::createWatcher()
+{
+    if( !m_watcher ) m_watcher = new Watcher( nullptr, (CoreBase*) m_mcu->cpu() );
+}

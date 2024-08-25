@@ -5,6 +5,7 @@
 
 #include "mcucpu.h"
 #include "mcuram.h"
+#include "watcher.h"
 
 McuCpu::McuCpu( eMcu* mcu )
       : CpuBase( mcu )
@@ -27,9 +28,16 @@ McuCpu::McuCpu( eMcu* mcu )
         uint16_t sregAddr = m_mcuRam->sregAddr();
         if( sregAddr ) m_STATUS = &m_dataMem[sregAddr];
     }
-    if     ( m_progSize <= 0xFF )     m_progAddrSize = 1;
-    else if( m_progSize <= 0xFFFF )   m_progAddrSize = 2;
-    else if( m_progSize <= 0xFFFFFF ) m_progAddrSize = 3;
+    m_progAddrSize = m_mcuRam->wordBytes();
+
+    QStringList regList = m_mcuRam->registerList();
+    if( !regList.isEmpty() )
+    {
+        m_mcuRam->createWatcher();
+        Watcher* watcher = m_mcuRam->getWatcher();
+        watcher->setRegisters( regList );
+    }
+
 }
 McuCpu::~McuCpu() {}
 

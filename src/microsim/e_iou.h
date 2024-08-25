@@ -6,7 +6,7 @@
 #ifndef EIOU_H
 #define EIOU_H
 
-#include <QHash>
+#include <QMap>
 
 #include "e-element.h"
 
@@ -14,7 +14,6 @@ class CpuBase;
 class Mcu;
 class IoPort;
 class IoPin;
-class Watcher;
 
 class eIou : public eElement
 {
@@ -25,10 +24,7 @@ class eIou : public eElement
         void reset();
 
         IoPort* getIoPort( QString name );
-        IoPin* getIoPin( QString pinName );
-
-        Watcher* getWatcher() { return m_watcher; }
-        void createWatcher( CpuBase* cpu );
+        IoPin*  getIoPin( QString pinName );
 
         Mcu* component() { return m_component; }
         CpuBase* cpu()   { return m_cpu; }
@@ -40,8 +36,6 @@ class eIou : public eElement
 
         IoPin*  m_clkPin;
 
-        Watcher* m_watcher;
-
-        QHash<QString, IoPort*> m_ioPorts;  // Access ioPORTS by name
+        QMap<QString, IoPort*> m_ioPorts;  // Access ioPORTS by name
 };
 #endif
