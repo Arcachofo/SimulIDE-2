@@ -21,7 +21,7 @@ listItem_t SevenSegmentBCD::libraryItem(){
         "Other Logic",
         "7segbcd.png",
         "SevenSegmentBCD",
-        [](QString id){ return (Component*)new SevenSegmentBCD("SevenSegmentBCD", id ); } };
+        [](QString type, QString id){ return (Component*)new SevenSegmentBCD( type, id ); } };
 }
 
 SevenSegmentBCD::SevenSegmentBCD( QString type, QString id )

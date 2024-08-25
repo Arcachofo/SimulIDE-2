@@ -30,7 +30,7 @@ listItem_t LAnalizer::libraryItem(){
         "Meters",
         "lanalizer.png",
         "LAnalizer",
-        [](QString id){ return (Component*)new LAnalizer("LAnalizer", id ); } };
+        [](QString type, QString id){ return (Component*)new LAnalizer( type, id ); } };
 }
 
 LAnalizer::LAnalizer( QString type, QString id )

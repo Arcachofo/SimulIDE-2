@@ -24,7 +24,7 @@ listItem_t Potentiometer::libraryItem(){
         "Resistors",
         "potentiometer.png",
         "Potentiometer",
-        [](QString id){ return (Component*)new Potentiometer("Potentiometer", id ); } };
+        [](QString type, QString id){ return (Component*)new Potentiometer( type, id ); } };
 }
 
 Potentiometer::Potentiometer( QString type, QString id )

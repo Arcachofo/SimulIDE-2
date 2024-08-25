@@ -26,7 +26,7 @@ listItem_t Dial::libraryItem(){
         "Other",
         "dial.png",
         "Dial",
-        [](QString id){ return (Component*)new Dial("Dial", id ); } };
+        [](QString type, QString id){ return (Component*)new Dial( type, id ); } };
 }
 
 Dial::Dial( QString type, QString id )

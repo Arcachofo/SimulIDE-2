@@ -24,7 +24,7 @@ listItem_t SCR::libraryItem(){
         "Rectifiers",
         "scr.png",
         "SCR",
-        [](QString id){ return (Component*)new SCR("SCR", id ); } };
+        [](QString type, QString id){ return (Component*)new SCR( type, id ); } };
 }
 
 SCR::SCR( QString type, QString id )

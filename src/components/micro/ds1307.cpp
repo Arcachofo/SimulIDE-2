@@ -18,7 +18,7 @@ listItem_t DS1307::libraryItem(){
         "Peripherals",
         "dsxxx_ico.png",
         "DS1307",
-        [](QString id){ return (Component*)new DS1307("DS1307", id ); } };
+        [](QString type, QString id){ return (Component*)new DS1307( type, id ); } };
 }
 
 DS1307::DS1307( QString type, QString id )

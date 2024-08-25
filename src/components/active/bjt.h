@@ -14,7 +14,7 @@ class BJT : public Component, public eBJT
     public:
         BJT( QString type, QString id );
         ~BJT();
-        
+
  static listItem_t libraryItem();
 
         virtual void updateStep() override;

@@ -22,7 +22,7 @@ listItem_t Image::libraryItem(){
         "Graphical",
         "img.png",
         "Image",
-        [](QString id){ return (Component*)new Image("Image", id ); } };
+        [](QString type, QString id){ return (Component*)new Image( type, id ); } };
 }
 
 Image::Image( QString type, QString id )

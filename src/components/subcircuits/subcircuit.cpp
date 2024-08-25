@@ -158,7 +158,7 @@ listItem_t SubCircuit::libraryItem(){
         "",         // Category Not dispalyed
         "",
         "Subcircuit",
-        [](QString id){ return SubCircuit::construct("Subcircuit", id ); } };
+        [](QString type, QString id){ return SubCircuit::construct( type, id ); } };
 }
 
 SubCircuit::SubCircuit( QString type, QString id )

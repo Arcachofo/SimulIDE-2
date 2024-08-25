@@ -24,7 +24,7 @@ listItem_t Ssd1306::libraryItem(){
         "Displays",
         "ssd1306.png",
         "Ssd1306",
-        [](QString id){ return (Component*)new Ssd1306("Ssd1306", id ); } };
+        [](QString type, QString id){ return (Component*)new Ssd1306( type, id ); } };
 }
 
 Ssd1306::Ssd1306( QString type, QString id )

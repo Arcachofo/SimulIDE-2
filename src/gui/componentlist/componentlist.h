@@ -88,7 +88,7 @@ class ComponentList : public QTreeWidget
 
         manCompDialog m_mcDialog;
 
-        QMap<QString, Component* (*)(QString)> m_componentFactory;
+        QMap<QString, listItem_t> m_componentFactory;
 };
 
 #endif

@@ -28,7 +28,7 @@ listItem_t ResistorDip::libraryItem(){
         "Resistors",
         "resistordip.png",
         "ResistorDip",
-        [](QString id){ return (Component*)new ResistorDip("ResistorDip", id ); } };
+        [](QString type, QString id){ return (Component*)new ResistorDip( type, id ); } };
 }
 
 ResistorDip::ResistorDip( QString type, QString id )

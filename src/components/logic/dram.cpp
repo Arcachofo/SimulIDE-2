@@ -26,7 +26,7 @@ listItem_t DRAM::libraryItem(){
         "Memory",
         "2to3g.png",
         "DRAM",
-        [](QString id){ return (Component*)new DRAM("DRAM", id ); } };
+        [](QString type, QString id){ return (Component*)new DRAM( type, id ); } };
 }
 
 DRAM::DRAM( QString type, QString id )

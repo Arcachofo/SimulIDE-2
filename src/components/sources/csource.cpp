@@ -22,7 +22,7 @@ listItem_t Csource::libraryItem(){
         "Sources",
         "csource.png",
         "Csource",
-        [](QString id){ return (Component*)new Csource("Csource", id ); } };
+        [](QString type, QString id){ return (Component*)new Csource( type, id ); } };
 }
 
 Csource::Csource( QString type, QString id )

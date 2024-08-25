@@ -23,7 +23,7 @@ listItem_t Demux::libraryItem(){
         "Converters",
         "demux.png",
         "Demux",
-        [](QString id){ return (Component*)new Demux("Demux", id ); } };
+        [](QString type, QString id){ return (Component*)new Demux( type, id ); } };
 }
 
 Demux::Demux( QString type, QString id )

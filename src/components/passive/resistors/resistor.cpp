@@ -18,7 +18,7 @@ listItem_t Resistor::libraryItem(){
         "Resistors",
         "resistor.png",
         "Resistor",
-        [](QString id){ return (Component*)new Resistor("Resistor", id ); } };
+        [](QString type, QString id){ return (Component*)new Resistor( type, id ); } };
 }
 
 Resistor::Resistor( QString type, QString id )

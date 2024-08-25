@@ -17,7 +17,7 @@ listItem_t elCapacitor::libraryItem(){
         "Reactive",
         "elcapacitor.png",
         "elCapacitor",
-        [](QString id){ return (Component*)new elCapacitor("elCapacitor", id ); } };
+        [](QString type, QString id){ return (Component*)new elCapacitor( type, id ); } };
 }
 
 elCapacitor::elCapacitor( QString type, QString id )

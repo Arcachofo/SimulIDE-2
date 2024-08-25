@@ -19,7 +19,7 @@ listItem_t VarResistor::libraryItem(){
         "Resistors",
         "varresistor.png",
         "VarResistor",
-        [](QString id){ return (Component*)new VarResistor("VarResistor", id ); } };
+        [](QString type, QString id){ return (Component*)new VarResistor( type, id ); } };
 }
 
 VarResistor::VarResistor( QString type, QString id )

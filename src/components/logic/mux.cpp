@@ -23,7 +23,7 @@ listItem_t Mux::libraryItem(){
         "Converters" ,
         "mux.png",
         "Mux",
-        [](QString id){ return (Component*)new Mux("Mux", id ); } };
+        [](QString type, QString id){ return (Component*)new Mux( type, id ); } };
 }
 
 Mux::Mux( QString type, QString id )

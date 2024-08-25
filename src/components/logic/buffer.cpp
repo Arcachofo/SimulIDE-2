@@ -18,7 +18,7 @@ listItem_t Buffer::libraryItem(){
         "Gates",
         "buffer.png",
         "Buffer",
-        [](QString id){ return (Component*)new Buffer("Buffer", id ); } };
+        [](QString type, QString id){ return (Component*)new Buffer( type, id ); } };
 }
 
 Buffer::Buffer( QString type, QString id )

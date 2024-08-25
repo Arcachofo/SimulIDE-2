@@ -16,7 +16,7 @@ listItem_t BcdTo7S::libraryItem(){
         "Converters",
         "2to3g.png",
         "BcdTo7S",
-        [](QString id){ return (Component*)new BcdTo7S("BcdTo7S", id ); } };
+        [](QString type, QString id){ return (Component*)new BcdTo7S( type, id ); } };
 }
 
 BcdTo7S::BcdTo7S( QString type, QString id )

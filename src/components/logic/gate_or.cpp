@@ -18,7 +18,7 @@ listItem_t OrGate::libraryItem(){
         "Gates",
         "orgate.png",
         "OrGate",
-        [](QString id){ return (Component*)new OrGate("OrGate", id ); } };
+        [](QString type, QString id){ return (Component*)new OrGate( type, id ); } };
 }
 
 OrGate::OrGate( QString type, QString id )

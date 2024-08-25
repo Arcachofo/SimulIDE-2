@@ -13,7 +13,7 @@ listItem_t Amperimeter::libraryItem(){
         "Meters",
         "amperimeter.png",
         "Amperimeter",
-        [](QString id){ return (Component*)new Amperimeter( "Amperimeter", id ); } };
+        [](QString type, QString id){ return (Component*)new Amperimeter( type, id ); } };
 }
 
 Amperimeter::Amperimeter( QString type, QString id )

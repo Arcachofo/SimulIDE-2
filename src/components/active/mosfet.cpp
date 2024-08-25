@@ -21,7 +21,7 @@ listItem_t Mosfet::libraryItem(){
         "Transistors",
         "mosfet.png",
         "Mosfet",
-        [](QString id){ return (Component*)new Mosfet("Mosfet", id ); } };
+        [](QString type, QString id){ return (Component*)new Mosfet( type, id ); } };
 }
 
 Mosfet::Mosfet( QString type, QString id )

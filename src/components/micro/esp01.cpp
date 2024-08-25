@@ -26,7 +26,7 @@ listItem_t Esp01::libraryItem(){
         "Peripherals",
         "esp01_ico.png",
         "Esp01",
-        [](QString id){ return (Component*)new Esp01("Esp01", id ); } };
+        [](QString type, QString id){ return (Component*)new Esp01( type, id ); } };
 }
 
 Esp01::Esp01( QString type, QString id )

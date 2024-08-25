@@ -23,7 +23,7 @@ listItem_t SevenSegment::libraryItem(){
         "Leds",
         "seven_segment.png",
         "SevenSegment",
-        [](QString id){ return (Component*)new SevenSegment("SevenSegment", id ); } };
+        [](QString type, QString id){ return (Component*)new SevenSegment( type, id ); } };
 }
 
 SevenSegment::SevenSegment( QString type, QString id )

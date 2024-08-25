@@ -20,7 +20,7 @@ listItem_t Lamp::libraryItem(){
         "Other Outputs",
         "lamp.png",
         "Lamp",
-        [](QString id){ return (Component*)new Lamp("Lamp", id ); } };
+        [](QString type, QString id){ return (Component*)new Lamp( type, id ); } };
 }
 
 Lamp::Lamp( QString type, QString id )

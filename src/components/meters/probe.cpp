@@ -25,7 +25,7 @@ listItem_t Probe::libraryItem(){
         "Meters",
         "probe.png",
         "Probe",
-        [](QString id){ return (Component*)new Probe("Probe", id ); } };
+        [](QString type, QString id){ return (Component*)new Probe( type, id ); } };
 }
 
 Probe::Probe( QString type, QString id )

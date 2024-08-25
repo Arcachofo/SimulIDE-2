@@ -21,7 +21,7 @@ listItem_t Hd44780::libraryItem(){
         "Displays",
         "hd44780.png",
         "Hd44780",
-        [](QString id){ return (Component*)new Hd44780("Hd44780", id ); } };
+        [](QString type, QString id){ return (Component*)new Hd44780( type, id ); } };
 }
 
 Hd44780::Hd44780( QString type, QString id )

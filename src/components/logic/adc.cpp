@@ -21,7 +21,7 @@ listItem_t ADC::libraryItem(){
         "Other Logic",
         "1to3.png",
         "ADC",
-        [](QString id){ return (Component*)new ADC("ADC", id ); } };
+        [](QString type, QString id){ return (Component*)new ADC( type, id ); } };
 }
 
 ADC::ADC( QString type, QString id )

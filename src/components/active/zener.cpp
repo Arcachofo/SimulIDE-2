@@ -13,7 +13,7 @@ listItem_t Zener::libraryItem(){
         "Rectifiers",
         "zener.png",
         "Zener",
-        [](QString id){ return (Component*)new Zener("Zener", id ); } };
+        [](QString type, QString id){ return (Component*)new Zener( type, id ); } };
 }
 
 Zener::Zener( QString type, QString id )

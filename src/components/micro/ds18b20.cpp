@@ -27,7 +27,7 @@ listItem_t Ds18b20::libraryItem(){
         "Sensors",
         "ic2_comp.png",
         "DS18B20",
-        [](QString id){ return (Component*)new Ds18b20("Ds18b20", id ); } };
+        [](QString type, QString id){ return (Component*)new Ds18b20( type, id ); } };
 }
 
 Ds18b20::Ds18b20( QString type, QString id )

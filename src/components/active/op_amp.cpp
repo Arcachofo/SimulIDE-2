@@ -25,7 +25,7 @@ listItem_t OpAmp::libraryItem(){
         "Other Active",
         "opamp.png",
         "OpAmp",
-        [](QString id){ return (Component*)new OpAmp("OpAmp", id ); } };
+        [](QString type, QString id){ return (Component*)new OpAmp( type, id ); } };
 }
 
 OpAmp::OpAmp( QString type, QString id )

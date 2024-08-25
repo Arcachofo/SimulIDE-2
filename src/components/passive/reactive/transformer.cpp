@@ -23,7 +23,7 @@ listItem_t Transformer::libraryItem(){
         "Reactive",
         "transformer.png",
         "Transformer",
-        [](QString id){ return (Component*)new Transformer("Transformer", id ); } };
+        [](QString type, QString id){ return (Component*)new Transformer( type, id ); } };
 }
 
 Transformer::Transformer( QString type, QString id )

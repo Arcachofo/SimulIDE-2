@@ -26,7 +26,7 @@ struct listItem_t{
     QString category;
     QString icon;
     QString type;
-    Component* (*construct)(QString);
+    Component* (*construct)(QString,QString);
 };
 
 class Component : public CompBase, public QGraphicsItem, public Updatable

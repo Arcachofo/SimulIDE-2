@@ -18,8 +18,8 @@ listItem_t CurrSource::libraryItem(){
         tr("Current Source"),
         "Sources",
         "cursource.png",
-        "Current Source",
-        [](QString id){ return (Component*)new CurrSource("Current Source", id ); } };
+        "CurrentSource",
+        [](QString type, QString id){ return (Component*)new CurrSource( type, id ); } };
 }
 
 CurrSource::CurrSource( QString type, QString id )

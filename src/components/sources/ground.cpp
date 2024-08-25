@@ -16,7 +16,7 @@ listItem_t Ground::libraryItem(){
         "Sources",
         "ground.png",
         "Ground",
-        [](QString id){ return (Component*)new Ground("Ground", id ); } };
+        [](QString type, QString id){ return (Component*)new Ground( type, id ); } };
 }
 
 Ground::Ground( QString type, QString id )

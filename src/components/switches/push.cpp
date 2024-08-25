@@ -21,7 +21,7 @@ listItem_t Push::libraryItem(){
         "Switches",
         "push.png",
         "Push",
-        [](QString id){ return (Component*)new Push("Push", id ); } };
+        [](QString type, QString id){ return (Component*)new Push( type, id ); } };
 }
 
 Push::Push( QString type, QString id )

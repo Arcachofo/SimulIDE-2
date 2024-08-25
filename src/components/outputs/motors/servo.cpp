@@ -22,7 +22,7 @@ listItem_t Servo::libraryItem(){
         "Motors",
         "servo.png",
         "Servo",
-        [](QString id){ return (Component*)new Servo("Servo", id ); } };
+        [](QString type, QString id){ return (Component*)new Servo( type, id ); } };
 }
 
 Servo::Servo( QString type, QString id )

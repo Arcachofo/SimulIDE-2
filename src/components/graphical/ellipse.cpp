@@ -15,7 +15,7 @@ listItem_t Ellipse::libraryItem(){
         "Graphical",
         "ellipse.png",
         "Ellipse",
-        [](QString id){ return (Component*)new Ellipse("Ellipse", id ); } };
+        [](QString type, QString id){ return (Component*)new Ellipse( type, id ); } };
 }
 
 Ellipse::Ellipse( QString type, QString id )

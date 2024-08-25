@@ -23,7 +23,7 @@ listItem_t LedRgb::libraryItem(){
         "Leds",
         "ledrgb.png",
         "LedRgb",
-        [](QString id){ return (Component*)new LedRgb("LedRgb", id ); } };
+        [](QString type, QString id){ return (Component*)new LedRgb( type, id ); } };
 }
 
 LedRgb::LedRgb( QString type, QString id )

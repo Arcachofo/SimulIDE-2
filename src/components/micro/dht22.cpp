@@ -24,7 +24,7 @@ listItem_t Dht22::libraryItem(){
         "Sensors",
         "dht22.png",
         "Dht22",
-        [](QString id){ return (Component*)new Dht22("Dht22", id ); } };
+        [](QString type, QString id){ return (Component*)new Dht22( type, id ); } };
 }
 
 Dht22::Dht22( QString type, QString id )

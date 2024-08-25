@@ -19,7 +19,7 @@ listItem_t Inductor::libraryItem(){
         "Reactive",
         "inductor.png",
         "Inductor",
-        [](QString id){ return (Component*)new Inductor("Inductor", id ); } };
+        [](QString type, QString id){ return (Component*)new Inductor( type, id ); } };
 }
 
 Inductor::Inductor( QString type, QString id )

@@ -25,7 +25,7 @@ listItem_t Strain::libraryItem(){
         "Resistive Sensors",
         "strain.png",
         "Strain",
-        [](QString id){ return (Component*)new Strain("Strain", id ); } };
+        [](QString type, QString id){ return (Component*)new Strain( type, id ); } };
 }
 
 Strain::Strain( QString type, QString id )

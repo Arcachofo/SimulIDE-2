@@ -22,7 +22,7 @@ listItem_t FixedVolt::libraryItem(){
         "Sources",
         "voltage.png",
         "FixedVolt",
-        [](QString id){ return (Component*)new FixedVolt("FixedVolt", id ); } };
+        [](QString type, QString id){ return (Component*)new FixedVolt( type, id ); } };
 }
 
 FixedVolt::FixedVolt( QString type, QString id )

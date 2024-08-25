@@ -23,7 +23,7 @@ listItem_t LedMatrix::libraryItem(){
         "Leds",
         "ledmatrix.png",
         "LedMatrix",
-        [](QString id){ return (Component*)new LedMatrix("LedMatrix", id ); } };
+        [](QString type, QString id){ return (Component*)new LedMatrix( type, id ); } };
 }
 
 LedMatrix::LedMatrix( QString type, QString id )

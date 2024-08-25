@@ -21,7 +21,7 @@ listItem_t WS2812::libraryItem(){
         "Leds",
         "ws2812.png",
         "WS2812",
-        [](QString id){ return (Component*)new WS2812("WS2812", id ); } };
+        [](QString type, QString id){ return (Component*)new WS2812( type, id ); } };
 }
 
 WS2812::WS2812( QString type, QString id )

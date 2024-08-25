@@ -18,7 +18,7 @@ listItem_t ShiftReg::libraryItem(){
         "Arithmetic",
         "1to3.png",
         "ShiftReg",
-        [](QString id){ return (Component*)new ShiftReg("ShiftReg", id ); } };
+        [](QString type, QString id){ return (Component*)new ShiftReg( type, id ); } };
 }
 
 ShiftReg::ShiftReg( QString type, QString id )

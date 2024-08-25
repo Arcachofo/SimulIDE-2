@@ -22,7 +22,7 @@ listItem_t Diode::libraryItem(){
         "Rectifiers",
         "diode.png",
         "Diode",
-        [](QString id){ return (Component*)new Diode("Diode", id ); } };
+        [](QString type, QString id){ return (Component*)new Diode( type, id ); } };
 }
 
 Diode::Diode( QString type, QString id, bool zener )

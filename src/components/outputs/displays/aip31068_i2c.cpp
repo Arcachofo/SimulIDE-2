@@ -19,7 +19,7 @@ listItem_t Aip31068_i2c::libraryItem(){
         "Displays",
         "aip31068.png",
         "Aip31068_i2c",
-        [](QString id){ return (Component*)new Aip31068_i2c("Aip31068_i2c", id ); } };
+        [](QString type, QString id){ return (Component*)new Aip31068_i2c( type, id ); } };
 }
 
 Aip31068_i2c::Aip31068_i2c( QString type, QString id )

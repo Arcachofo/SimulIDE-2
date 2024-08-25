@@ -21,7 +21,7 @@ listItem_t DAC::libraryItem(){
         "Other Logic",
         "3to1.png",
         "DAC",
-        [](QString id){ return (Component*)new DAC("DAC", id ); } };
+        [](QString type, QString id){ return (Component*)new DAC( type, id ); } };
 }
 
 DAC::DAC( QString type, QString id )

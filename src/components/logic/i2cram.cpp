@@ -24,7 +24,7 @@ listItem_t I2CRam::libraryItem(){
         "Memory",
         "2to3.png",
         "I2CRam",
-        [](QString id){ return (Component*)new I2CRam("I2CRam", id ); } };
+        [](QString type, QString id){ return (Component*)new I2CRam( type, id ); } };
 }
 
 I2CRam::I2CRam( QString type, QString id )

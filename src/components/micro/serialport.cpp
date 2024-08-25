@@ -30,7 +30,7 @@ listItem_t SerialPort::libraryItem(){
         "Peripherals",
         "serialport.png",
         "SerialPort",
-        [](QString id){ return (Component*)new SerialPort("SerialPort", id ); } };
+        [](QString type, QString id){ return (Component*)new SerialPort( type, id ); } };
 }
 
 SerialPort::SerialPort( QString type, QString id )

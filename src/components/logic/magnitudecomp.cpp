@@ -16,7 +16,7 @@ listItem_t MagnitudeComp::libraryItem(){
         "Arithmetic" ,
         "3to2g.png",
         "MagnitudeComp",
-        [](QString id){ return (Component*)new MagnitudeComp("MagnitudeComp", id ); } };
+        [](QString type, QString id){ return (Component*)new MagnitudeComp( type, id ); } };
 }
 
 MagnitudeComp::MagnitudeComp( QString type, QString id )

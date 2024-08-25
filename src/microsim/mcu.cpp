@@ -25,7 +25,6 @@
 #include "mainwindow.h"
 #include "componentlist.h"
 #include "mcumonitor.h"
-//#include "memdata.h"
 #include "mcuuart.h"
 #include "mcuintosc.h"
 #include "mcupgm.h"
@@ -47,11 +46,11 @@ Mcu* Mcu::m_pSelf = nullptr;
 
 listItem_t Mcu::libraryItem(){
     return {
-        "NEW_MCU",
+        "MCU",
         "",
         "ic2.png",
         "MCU",
-        [](QString id){ return Mcu::construct("BJT", id ); } };
+        [](QString type, QString id){ return Mcu::construct( type, id ); } };
 }
 
 Component* Mcu::construct( QString type, QString id )
@@ -117,7 +116,7 @@ Mcu::Mcu( QString type, QString id )
     }
     setName( m_device );
 
-    if( dataFile == "" ) // Component is not in SimulIDE, search in Circuit folder
+    if( dataFile.isEmpty() ) // Component is not in SimulIDE, search in Circuit folder
     {
         QDir mcuDir;
         QString folder = ComponentList::self()->getFileDir( m_device );
@@ -134,11 +133,6 @@ Mcu::Mcu( QString type, QString id )
         baseFile = mcuDir.absoluteFilePath( folder+"/"+m_device);
         dataFile = baseFile;
     }
-    /*else if( dataFile.endsWith(".comp") )  //
-    {
-        m_dataFile = dataFile;
-        m_packageList = getPackages( dataFile );
-    }*/
     else if( QFile::exists( dataFile ) ) // MCU defined in xml file
     {
         QString xmlFile = dataFile;
@@ -250,11 +244,11 @@ void Mcu::setupMcu()
 
     if( m_pgm )
     {
-    addProperty(tr("Main"),new BoolProp<Mcu>("savePGM", tr("PGM persitent"),""
-                                            , this, &Mcu::savePGM, &Mcu::setSavePGM ));
-
     addProperty(tr("Main"),new StrProp <Mcu>("Program", tr("Firmware"),""
                                             , this, &Mcu::program, &Mcu::setProgram ));
+
+    addProperty(tr("Main"),new BoolProp<Mcu>("savePGM", tr("PGM persitent"),""
+                                            , this, &Mcu::savePGM, &Mcu::setSavePGM ));
 
     addProperty(tr("Main"),new BoolProp<Mcu>("Auto_Load", tr("Reload hex at Simulation Start"),""
                                             , this, &Mcu::autoLoad, &Mcu::setAutoLoad ));

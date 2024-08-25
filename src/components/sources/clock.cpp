@@ -20,7 +20,7 @@ listItem_t Clock::libraryItem(){
         "Sources",
         "clock.png",
         "Clock",
-        [](QString id){ return (Component*)new Clock("Clock", id ); } };
+        [](QString type, QString id){ return (Component*)new Clock( type, id ); } };
 }
 
 Clock::Clock( QString type, QString id )

@@ -30,7 +30,7 @@ listItem_t KY023::libraryItem(){
         "Peripherals",
         "ky-023.png",
         "KY023",
-        [](QString id){ return (Component*)new KY023("KY023", id ); } };
+        [](QString type, QString id){ return (Component*)new KY023( type, id ); } };
 }
 
 KY023::KY023( QString type, QString id )

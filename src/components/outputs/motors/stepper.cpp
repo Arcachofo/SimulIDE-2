@@ -22,7 +22,7 @@ listItem_t Stepper::libraryItem(){
         "Motors",
         "steeper.png",
         "Stepper",
-        [](QString id){ return (Component*)new Stepper("Stepper", id ); } };
+        [](QString type, QString id){ return (Component*)new Stepper( type, id ); } };
 }
 
 Stepper::Stepper( QString type, QString id )

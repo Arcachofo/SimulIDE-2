@@ -22,7 +22,7 @@ listItem_t Bus::libraryItem(){
         "Connectors",
         "bus.png",
         "Bus",
-        [](QString id){ return (Component*)new Bus("Bus", id ); } };
+        [](QString type, QString id){ return (Component*)new Bus( type, id ); } };
 }
 
 Bus::Bus( QString type, QString id )

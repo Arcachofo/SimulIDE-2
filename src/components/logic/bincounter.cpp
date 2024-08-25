@@ -18,7 +18,7 @@ listItem_t BinCounter::libraryItem(){
         "Arithmetic",
         "2to1.png",
         "BinCounter",
-        [](QString id){ return (Component*)new BinCounter("BinCounter", id ); } };
+        [](QString type, QString id){ return (Component*)new BinCounter( type, id ); } };
 }
 
 BinCounter::BinCounter( QString type, QString id)

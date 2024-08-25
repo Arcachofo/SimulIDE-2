@@ -22,7 +22,7 @@ listItem_t VoltReg::libraryItem(){
         "Other Active",
         "voltreg.png",
         "VoltReg",
-        [](QString id){ return (Component*)new VoltReg("VoltReg", id ); } };
+        [](QString type, QString id){ return (Component*)new VoltReg( type, id ); } };
 }
 
 VoltReg::VoltReg( QString type, QString id )

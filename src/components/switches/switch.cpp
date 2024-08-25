@@ -23,7 +23,7 @@ listItem_t Switch::libraryItem(){
         "Switches",
         "switch.png",
         "Switch",
-        [](QString id){ return (Component*)new Switch("Switch", id ); } };
+        [](QString type, QString id){ return (Component*)new Switch( type, id ); } };
 }
 
 Switch::Switch( QString type, QString id )

@@ -21,7 +21,7 @@ listItem_t Ks0108::libraryItem(){
         "Displays",
         "ks0108.png",
         "Ks0108",
-        [](QString id){ return (Component*)new Ks0108("Ks0108", id ); } };
+        [](QString type, QString id){ return (Component*)new Ks0108( type, id ); } };
 }
 
 Ks0108::Ks0108( QString type, QString id )

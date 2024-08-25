@@ -16,7 +16,7 @@ listItem_t SR04::libraryItem(){
         "Sensors",
         "sr04_ico.png",
         "SR04",
-        [](QString id){ return (Component*)new SR04("SR04", id ); } };
+        [](QString type, QString id){ return (Component*)new SR04( type, id ); } };
 }
 
 SR04::SR04( QString type, QString id )

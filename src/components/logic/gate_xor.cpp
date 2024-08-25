@@ -17,7 +17,7 @@ listItem_t XorGate::libraryItem(){
         "Gates",
         "xorgate.png",
         "XorGate",
-        [](QString id){ return (Component*)new XorGate("XorGate", id ); } };
+        [](QString type, QString id){ return (Component*)new XorGate( type, id ); } };
 }
 
 XorGate::XorGate( QString type, QString id )

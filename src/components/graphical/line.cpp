@@ -15,7 +15,7 @@ listItem_t Line::libraryItem(){
         "Graphical",
         "line.png",
         "Line",
-        [](QString id){ return (Component*)new Line("Line", id ); } };
+        [](QString type, QString id){ return (Component*)new Line( type, id ); } };
 }
 
 Line::Line( QString type, QString id )

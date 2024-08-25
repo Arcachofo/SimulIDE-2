@@ -20,7 +20,7 @@ listItem_t Rail::libraryItem(){
         "Sources",
         "rail.png",
         "Rail",
-        [](QString id){ return (Component*)new Rail("Rail", id ); } };
+        [](QString type, QString id){ return (Component*)new Rail( type, id ); } };
 }
 
 Rail::Rail( QString type, QString id )

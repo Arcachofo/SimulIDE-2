@@ -12,9 +12,9 @@ listItem_t Voltimeter::libraryItem(){
     return {
         tr("Voltmeter"),
         "Meters",
-        "voltimeter.png",
-        "Voltimeter",
-        [](QString id){ return (Component*)new Voltimeter("Voltimeter", id ); } };
+        "voltmeter.png",
+        "Voltmeter",
+        [](QString type, QString id){ return (Component*)new Voltimeter( type, id ); } };
 }
 
 Voltimeter::Voltimeter( QString type, QString id )

@@ -23,7 +23,7 @@ listItem_t LedBar::libraryItem(){
         "Leds",
         "ledbar.png",
         "LedBar",
-        [](QString id){ return (Component*)new LedBar("LedBar", id ); } };
+        [](QString type, QString id){ return (Component*)new LedBar( type, id ); } };
 }
 
 LedBar::LedBar( QString type, QString id )

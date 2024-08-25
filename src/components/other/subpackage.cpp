@@ -41,7 +41,7 @@ listItem_t SubPackage::libraryItem(){
         "Other",
         "resistordip.png",
         "Package",
-        [](QString id){ return (Component*)new SubPackage("Package", id ); } };
+        [](QString type, QString id){ return (Component*)new SubPackage( type, id ); } };
 }
 
 SubPackage::SubPackage( QString type, QString id )

@@ -19,7 +19,7 @@ listItem_t Led::libraryItem(){
         "Leds",
         "led.png",
         "Led",
-        [](QString id){ return (Component*)new Led("Led", id ); } };
+        [](QString type, QString id){ return (Component*)new Led( type, id ); } };
 }
 
 Led::Led( QString type, QString id )

@@ -25,7 +25,7 @@ listItem_t Pcd8544::libraryItem(){
         "Displays",
         "pcd8544.png",
         "Pcd8544",
-        [](QString id){ return (Component*)new Pcd8544("Pcd8544", id ); } };
+        [](QString type, QString id){ return (Component*)new Pcd8544( type, id ); } };
 }
 
 Pcd8544::Pcd8544( QString type, QString id )

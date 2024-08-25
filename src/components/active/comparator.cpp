@@ -25,7 +25,7 @@ listItem_t Comparator::libraryItem(){
         "Other Active",
         "opamp.png",
         "Comparator",
-        [](QString id){ return (Component*)new Comparator("Comparator", id ); } };
+        [](QString type, QString id){ return (Component*)new Comparator( type, id ); } };
 }
 
 Comparator::Comparator( QString type, QString id )

@@ -27,7 +27,7 @@ listItem_t TextComponent::libraryItem(){
         "Graphical",
         "text.png",
         "TextComponent",
-        [](QString id){ return (Component*)new TextComponent("TextComponent", id ); } };
+        [](QString type, QString id){ return (Component*)new TextComponent( type, id ); } };
 }
 
 TextComponent::TextComponent( QString type, QString id )

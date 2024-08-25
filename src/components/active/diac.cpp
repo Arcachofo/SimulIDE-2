@@ -24,7 +24,7 @@ listItem_t Diac::libraryItem(){
         "Rectifiers",
         "diac.png",
         "Diac",
-        [](QString id){ return (Component*)new Diac("Diac", id ); } };
+        [](QString type, QString id){ return (Component*)new Diac( type, id ); } };
 }
 
 Diac::Diac( QString type, QString id )

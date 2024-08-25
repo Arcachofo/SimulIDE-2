@@ -30,7 +30,7 @@ listItem_t SerialTerm::libraryItem(){
         "Peripherals",
         "serialterm.png",
         "SerialTerm",
-        [](QString id){ return (Component*)new SerialTerm("SerialTerm", id ); } };
+        [](QString type, QString id){ return (Component*)new SerialTerm( type, id ); } };
 }
 
 SerialTerm::SerialTerm( QString type, QString id )

@@ -14,7 +14,7 @@ listItem_t FlipFlopJK::libraryItem(){
         "Memory",
         "3to2.png",
         "FlipFlopJK",
-        [](QString id){ return (Component*)new FlipFlopJK("FlipFlopJK", id ); } };
+        [](QString type, QString id){ return (Component*)new FlipFlopJK( type, id ); } };
 }
 
 FlipFlopJK::FlipFlopJK( QString type, QString id )

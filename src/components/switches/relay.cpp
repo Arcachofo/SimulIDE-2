@@ -23,7 +23,7 @@ listItem_t Relay::libraryItem(){
         "Switches",
         "relay-spst.png",
         "Relay",
-        [](QString id){ return (Component*)new Relay("Relay", id ); } };
+        [](QString type, QString id){ return (Component*)new Relay( type, id ); } };
 }
 
 Relay::Relay( QString type, QString id )

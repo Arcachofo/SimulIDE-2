@@ -29,7 +29,7 @@ listItem_t Oscope::libraryItem(){
         "Meters",
         "oscope.png",
         "Oscope",
-        [](QString id){ return (Component*)new Oscope( "Oscope", id ); } };
+        [](QString type, QString id){ return (Component*)new Oscope( type, id ); } };
 }
 
 Oscope::Oscope( QString type, QString id )

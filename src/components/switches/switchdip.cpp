@@ -26,7 +26,7 @@ listItem_t SwitchDip::libraryItem(){
         "Switches",
         "switchdip.png",
         "SwitchDip",
-        [](QString id){ return (Component*)new SwitchDip("SwitchDip", id ); } };
+        [](QString type, QString id){ return (Component*)new SwitchDip( type, id ); } };
 }
 
 SwitchDip::SwitchDip( QString type, QString id )

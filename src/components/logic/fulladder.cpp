@@ -17,7 +17,7 @@ listItem_t FullAdder::libraryItem(){
         "Arithmetic",
         "2to2.png",
         "FullAdder",
-        [](QString id){ return (Component*)new FullAdder("FullAdder", id ); } };
+        [](QString type, QString id){ return (Component*)new FullAdder( type, id ); } };
 }
 
 FullAdder::FullAdder( QString type, QString id)

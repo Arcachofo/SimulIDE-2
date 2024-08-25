@@ -15,7 +15,7 @@ listItem_t FlipFlopRS::libraryItem(){
         "Memory",
         "2to2.png",
         "FlipFlopRS",
-        [](QString id){ return (Component*)new FlipFlopRS("FlipFlopRS", id ); } };
+        [](QString type, QString id){ return (Component*)new FlipFlopRS( type, id ); } };
 }
 
 FlipFlopRS::FlipFlopRS( QString type, QString id )

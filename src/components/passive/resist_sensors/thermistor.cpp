@@ -19,7 +19,7 @@ listItem_t Thermistor::libraryItem(){
         "Resistive Sensors",
         "thermistor.png",
         "Thermistor",
-        [](QString id){ return (Component*)new Thermistor("Thermistor", id ); } };
+        [](QString type, QString id){ return (Component*)new Thermistor( type, id ); } };
 }
 
 Thermistor::Thermistor( QString type, QString id )

@@ -22,7 +22,7 @@ listItem_t DcMotor::libraryItem(){
         "Motors",
         "dcmotor.png",
         "DcMotor",
-        [](QString id){ return (Component*)new DcMotor("DcMotor", id ); } };
+        [](QString type, QString id){ return (Component*)new DcMotor( type, id ); } };
 }
 
 DcMotor::DcMotor( QString type, QString id )

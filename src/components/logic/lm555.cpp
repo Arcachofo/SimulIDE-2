@@ -17,7 +17,7 @@ listItem_t Lm555::libraryItem(){
         "Other Logic",
         "ic2.png",
         "Lm555",
-        [](QString id){ return (Component*)new Lm555("Lm555", id ); } };
+        [](QString type, QString id){ return (Component*)new Lm555( type, id ); } };
 }
 
 Lm555::Lm555( QString type, QString id )

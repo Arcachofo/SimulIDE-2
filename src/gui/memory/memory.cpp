@@ -16,7 +16,6 @@
 #include "e_mcu.h"
 #include "utils.h"
 
-
 Memory::Memory()
 {
     m_memTable = nullptr;

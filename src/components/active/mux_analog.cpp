@@ -24,7 +24,7 @@ listItem_t MuxAnalog::libraryItem(){
         "Other Active",
         "1to3-c.png",
         "MuxAnalog",
-        [](QString id){ return (Component*)new MuxAnalog("MuxAnalog", id ); } };
+        [](QString type, QString id){ return (Component*)new MuxAnalog( type, id ); } };
 }
 
 MuxAnalog::MuxAnalog( QString type, QString id )

@@ -24,7 +24,7 @@ listItem_t RTD::libraryItem(){
         "Resistive Sensors",
         "rtd.png",
         "RTD",
-        [](QString id){ return (Component*)new RTD("RTD", id ); } };
+        [](QString type, QString id){ return (Component*)new RTD( type, id ); } };
 }
 
 RTD::RTD( QString type, QString id )

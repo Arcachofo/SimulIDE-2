@@ -21,7 +21,7 @@ listItem_t LatchD::libraryItem(){
         "Memory",
         "subc.png",
         "LatchD",
-        [](QString id){ return (Component*)new LatchD("LatchD", id ); } };
+        [](QString type, QString id){ return (Component*)new LatchD( type, id ); } };
 }
 
 LatchD::LatchD( QString type, QString id )

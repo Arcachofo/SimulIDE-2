@@ -15,7 +15,7 @@ listItem_t Capacitor::libraryItem(){
         "Reactive",
         "capacitor.png",
         "Capacitor",
-        [](QString id){ return (Component*)new Capacitor("Capacitor", id ); } };
+        [](QString type, QString id){ return (Component*)new Capacitor( type, id ); } };
 }
 
 Capacitor::Capacitor( QString type, QString id )

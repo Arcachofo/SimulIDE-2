@@ -18,8 +18,8 @@ listItem_t VoltSource::libraryItem(){
         tr("Voltage Source"),
         "Sources",
         "voltsource.png",
-        "Voltage Source",
-        [](QString id){ return (Component*)new VoltSource("Voltage Source", id ); } };
+        "VoltageSource",
+        [](QString type, QString id){ return (Component*)new VoltSource( type, id ); } };
 }
 
 VoltSource::VoltSource( QString type, QString id )

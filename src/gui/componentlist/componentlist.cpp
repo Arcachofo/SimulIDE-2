@@ -265,7 +265,7 @@ void ComponentList::loadXml( QString xmlFile )
             }
 
             QString catFull = reader.attributes().value("category").toString();
-            catFull.replace( "IC 74", "Logic/IC 74");
+            //catFull.replace( "IC 74", "Logic/IC 74");
             QStringList catPath = catFull.split("/");
 
             TreeItem* catItem = NULL;
@@ -331,13 +331,14 @@ QString ComponentList::getIcon( QString folder, QString name )
 
 Component* ComponentList::createComponent( QString type, QString id )
 {
-    return m_componentFactory.value( type )(id);
+    listItem_t item = m_componentFactory.value( type );
+    return item.construct( item.type, id );
 }
 
 void ComponentList::addItem( listItem_t item )
 {
     QString type = item.type;
-    m_componentFactory[type] = item.construct;
+    m_componentFactory[type] = item;
 
     QString icon = item.icon;
     QString iconFile = MainWindow::self()->getDataFilePath("images/"+icon );

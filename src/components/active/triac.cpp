@@ -24,7 +24,7 @@ listItem_t Triac::libraryItem(){
         "Rectifiers",
         "triac.png",
         "Triac",
-        [](QString id){ return (Component*)new Triac("Triac", id ); } };
+        [](QString type, QString id){ return (Component*)new Triac( type, id ); } };
 }
 
 Triac::Triac( QString type, QString id )

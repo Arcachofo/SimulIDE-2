@@ -15,7 +15,7 @@ listItem_t Rectangle::libraryItem(){
         "Graphical",
         "rectangle.png",
         "Rectangle",
-        [](QString id){ return (Component*)new Rectangle("Rectangle", id ); } };
+        [](QString type, QString id){ return (Component*)new Rectangle( type, id ); } };
 }
 
 Rectangle::Rectangle( QString type, QString id )

@@ -15,7 +15,7 @@ listItem_t Ili9341::libraryItem(){
         "Displays",
         "ili9341.png",
         "Ili9341",
-        [](QString id){ return (Component*)new Ili9341("Ili9341", id ); } };
+        [](QString type, QString id){ return (Component*)new Ili9341( type, id ); } };
 }
 
 Ili9341::Ili9341( QString type, QString id )

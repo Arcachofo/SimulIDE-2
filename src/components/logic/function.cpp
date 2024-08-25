@@ -29,7 +29,7 @@ listItem_t Function::libraryItem(){
         "Arithmetic",
         "subc.png",
         "Function",
-        [](QString id){ return (Component*)new Function("Function", id ); } };
+        [](QString type, QString id){ return (Component*)new Function( type, id ); } };
 }
 
 Function::Function( QString type, QString id )

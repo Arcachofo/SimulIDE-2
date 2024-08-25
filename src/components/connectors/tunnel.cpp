@@ -28,7 +28,7 @@ listItem_t Tunnel::libraryItem(){
         "Connectors",
         "tunnel.png",
         "Tunnel",
-        [](QString id){ return (Component*)new Tunnel("Tunnel", id ); } };
+        [](QString type, QString id){ return (Component*)new Tunnel( type, id ); } };
 }
 
 Tunnel::Tunnel( QString type, QString id )

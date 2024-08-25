@@ -18,7 +18,7 @@ listItem_t Battery::libraryItem(){
         "Sources",
         "battery.png",
         "Battery",
-        [](QString id){ return (Component*)new Battery("Battery", id ); } };
+        [](QString type, QString id){ return (Component*)new Battery( type, id ); } };
 }
 
 Battery::Battery( QString type, QString id )

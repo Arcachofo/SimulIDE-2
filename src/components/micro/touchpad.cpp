@@ -24,7 +24,7 @@ listItem_t TouchPad::libraryItem(){
         "Peripherals",
         "touch.png",
         "TouchPad",
-        [](QString id){ return (Component*)new TouchPad("TouchPad", id ); } };
+        [](QString type, QString id){ return (Component*)new TouchPad( type, id ); } };
 }
 
 TouchPad::TouchPad( QString type, QString id )

@@ -24,7 +24,7 @@ listItem_t DS1621::libraryItem(){
         "Sensors",
         "ic_comp.png",
         "DS1621",
-        [](QString id){ return (Component*)new DS1621("DS1621", id ); } };
+        [](QString type, QString id){ return (Component*)new DS1621( type, id ); } };
 }
 
 DS1621::DS1621( QString type, QString id )

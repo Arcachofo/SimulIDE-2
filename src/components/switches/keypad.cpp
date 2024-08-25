@@ -23,7 +23,7 @@ listItem_t KeyPad::libraryItem(){
         "Switches",
         "keypad.png",
         "KeyPad",
-        [](QString id){ return (Component*)new KeyPad("KeyPad", id ); } };
+        [](QString type, QString id){ return (Component*)new KeyPad( type, id ); } };
 }
 
 KeyPad::KeyPad( QString type, QString id )

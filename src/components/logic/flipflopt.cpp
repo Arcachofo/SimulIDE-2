@@ -14,7 +14,7 @@ listItem_t FlipFlopT::libraryItem(){
         "Memory",
         "2to2.png",
         "FlipFlopT",
-        [](QString id){ return (Component*)new FlipFlopT("FlipFlopT", id ); } };
+        [](QString type, QString id){ return (Component*)new FlipFlopT( type, id ); } };
 }
 
 FlipFlopT::FlipFlopT( QString type, QString id )

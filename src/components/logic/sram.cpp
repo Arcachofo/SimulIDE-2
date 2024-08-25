@@ -25,7 +25,7 @@ listItem_t SRAM::libraryItem(){
         "Memory",
         "2to3g.png",
         "SRAM",
-        [](QString id){ return (Component*)new SRAM("SRAM", id ); } };
+        [](QString type, QString id){ return (Component*)new SRAM( type, id ); } };
 }
 
 SRAM::SRAM( QString type, QString id )

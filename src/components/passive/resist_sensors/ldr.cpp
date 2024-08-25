@@ -20,7 +20,7 @@ listItem_t Ldr::libraryItem(){
         "Resistive Sensors",
         "ldr.png",
         "LDR",
-        [](QString id){ return (Component*)new Ldr("Ldr", id ); } };
+        [](QString type, QString id){ return (Component*)new Ldr( type, id ); } };
 }
 
 Ldr::Ldr( QString type, QString id )

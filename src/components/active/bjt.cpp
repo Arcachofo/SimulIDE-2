@@ -24,7 +24,7 @@ listItem_t BJT::libraryItem()
         "Transistors",
         "bjt.png",
         "BJT",
-        [](QString id){ return (Component*)new BJT("BJT", id ); } };
+        [](QString type, QString id){ return (Component*)new BJT( type, id ); } };
 }
 
 BJT::BJT( QString type, QString id )

@@ -25,7 +25,7 @@ listItem_t AudioOut::libraryItem(){
         "Other Outputs",
         "audio_out.png",
         "AudioOut",
-        [](QString id){ return (Component*)new AudioOut("AudioOut", id ); } };
+        [](QString type, QString id){ return (Component*)new AudioOut( type, id ); } };
 }
 
 AudioOut::AudioOut( QString type, QString id )

@@ -21,7 +21,7 @@ listItem_t TestUnit::libraryItem(){
         "Other",
         "bug.png",
         "TestUnit",
-        [](QString id){ return (Component*)new TestUnit("TestUnit", id ); } };
+        [](QString type, QString id){ return (Component*)new TestUnit( type, id ); } };
 }
 
 TestUnit::TestUnit( QString type, QString id )

@@ -19,7 +19,7 @@ listItem_t I2CToParallel::libraryItem(){
         "Converters" ,
         "2to3g.png",
         "I2CToParallel",
-        [](QString id){ return (Component*)new I2CToParallel("I2CToParallel", id ); } };
+        [](QString type, QString id){ return (Component*)new I2CToParallel( type, id ); } };
 }
 
 I2CToParallel::I2CToParallel( QString type, QString id )

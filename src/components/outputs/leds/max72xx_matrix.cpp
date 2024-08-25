@@ -21,7 +21,7 @@ listItem_t Max72xx_matrix::libraryItem(){
         "Leds",
         "max72xx.png",
         "Max72xx_matrix",
-        [](QString id){ return (Component*)new Max72xx_matrix("Max72xx_matrix", id ); } };
+        [](QString type, QString id){ return (Component*)new Max72xx_matrix( type, id ); } };
 }
 
 Max72xx_matrix::Max72xx_matrix( QString type, QString id )

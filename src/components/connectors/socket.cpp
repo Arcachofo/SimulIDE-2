@@ -17,7 +17,7 @@ listItem_t Socket::libraryItem(){
         "Connectors",
         "socket.png",
         "Socket",
-        [](QString id){ return (Component*)new Socket("Socket", id ); } };
+        [](QString type, QString id){ return (Component*)new Socket( type, id ); } };
 }
 
 Socket::Socket( QString type, QString id )

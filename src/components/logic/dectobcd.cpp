@@ -17,7 +17,7 @@ listItem_t DecToBcd::libraryItem(){
         "Converters",
         "3to2g.png",
         "DecToBcd",
-        [](QString id){ return (Component*)new DecToBcd("DecToBcd", id ); } };
+        [](QString type, QString id){ return (Component*)new DecToBcd( type, id ); } };
 }
 
 DecToBcd::DecToBcd( QString type, QString id )

@@ -18,7 +18,7 @@ listItem_t AndGate::libraryItem(){
         "Gates",
         "andgate.png",
         "AndGate",
-        [](QString id){ return (Component*)new AndGate("AndGate", id ); } };
+        [](QString type, QString id){ return (Component*)new AndGate( type, id ); } };
 }
 
 AndGate::AndGate( QString type, QString id )

@@ -31,7 +31,7 @@ listItem_t WaveGen::libraryItem(){
         "Sources",
         "wavegen.png",
         "WaveGen",
-        [](QString id){ return (Component*)new WaveGen("WaveGen", id ); } };
+        [](QString type, QString id){ return (Component*)new WaveGen( type, id ); } };
 }
 
 WaveGen::WaveGen( QString type, QString id )

@@ -127,6 +127,7 @@ int McuCreator::createMcu( Mcu* mcuComp, QString name )
 
 int McuCreator::processFile( QString fileName )
 {
+    //qDebug() << "processFile" << fileName;
     fileName = m_basePath+"/"+fileName;
     QDomDocument domDoc = fileToDomDoc( fileName, "McuCreator::processFile" );
     if( domDoc.isNull() ) return 1;
@@ -148,12 +149,7 @@ int McuCreator::processFile( QString fileName )
         }
     }
 
-    if( root.hasAttribute("core") ) m_core = root.attribute("core");
-
-    //if( root.hasAttribute("data") )       createDataMem( root.attribute("data").toUInt(0,0) );
-    //if( root.hasAttribute("prog") )       createProgMem( root.attribute("prog").toUInt(0,0) );
-    //if( root.hasAttribute("progword") )   mcu->m_wordSize = root.attribute("progword").toUInt(0,0);
-    //if( root.hasAttribute("eeprom") )     createRomMem( root.attribute("eeprom").toUInt(0,0) );
+    if( root.hasAttribute("core") )       m_core = root.attribute("core");
     if( root.hasAttribute("inst_cycle") ) mcu->setInstCycle( root.attribute("inst_cycle").toDouble() );
     if( root.hasAttribute("cpu_cycle") )  mcu->m_cPerTick = root.attribute("cpu_cycle").toDouble();
     if( root.hasAttribute("freq") )       m_mcuComp->setExtFreq( root.attribute("freq").toDouble() );
@@ -331,6 +327,7 @@ void McuCreator::createRam( QDomElement* e )
     int size = e->attribute("size").toInt();
     m_mcuRam->setWordBits( bits );
     m_mcuRam->resize( size );
+    m_mcuRam->m_addrMap.resize( size,-1 );
 }
 
 void McuCreator::createRom( QDomElement* e )
