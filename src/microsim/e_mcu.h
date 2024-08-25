@@ -76,6 +76,7 @@ class eMcu : public eIou // public DataSpace,
         McuTimer* getTimer( QString name );
         McuPort* getMcuPort( QString name );
         McuPin*  getMcuPin( QString pinName );
+        IoPin* getIoPin( QString pinName );
 
         McuModule* getModule( QString name );
 

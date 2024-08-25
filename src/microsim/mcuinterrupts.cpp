@@ -22,7 +22,8 @@ Interrupt::Interrupt( QString name, uint16_t vector, eMcu* mcu )
     m_nextInt = NULL;
     m_intPin  = NULL;
 
-    /// Fixme m_ram = mcu->getRam();
+    McuRam* mcuRam = (McuRam*)m_mcu->getModule("ram");
+    m_ram = mcuRam->rawData();
 }
 Interrupt::~Interrupt(){}
 

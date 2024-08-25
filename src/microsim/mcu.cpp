@@ -92,29 +92,12 @@ Mcu::Mcu( QString type, QString id )
 
     addPropGroup( { tr("Main"), {},0} );
 
-    m_device = m_name;//.split("_").last(); // for example: "atmega328-1" to: "atmega328"
+    m_device = m_name;
     if( m_device.contains("@") ) m_device = m_device.split("@").last(); // MCU in Subcircuit
+    setName( m_device );
 
     QString baseFile;
     QString dataFile = ComponentList::self()->getDataFile( m_device );
-
-    m_isTQFP = false;
-    if( dataFile.isEmpty() )
-    {
-        if( m_device.endsWith("TQFP") ) // Compatibilty with 1.1.0
-        {
-            m_isTQFP = true;
-            m_device.remove(" TQFP");
-            if( m_device.startsWith("m") ) m_device.replace("m", "mega");
-        }
-        else if( m_device.startsWith("p") ) // Compatibilty with 0.4.15
-        {
-            if( m_device.endsWith("a") ) m_device.remove( m_device.size()-1, 1 );
-            m_device.replace("f", "F");
-        }
-        dataFile = ComponentList::self()->getDataFile( m_device );
-    }
-    setName( m_device );
 
     if( dataFile.isEmpty() ) // Component is not in SimulIDE, search in Circuit folder
     {
@@ -225,6 +208,8 @@ Mcu::~Mcu()
 
 void Mcu::setupMcu()
 {
+    m_eMcu.setup();
+
     if( m_pSelf == nullptr ) slotmain();
 
     // Main Property Group --------------------------------------
@@ -301,8 +286,7 @@ void Mcu::setupMcu()
 
     if( hi.propList.size() > 0 ) addPropGroup( hi );
 
-    int index = m_isTQFP ? 1 : 0;
-    setPackage( m_packageList.keys().at( index ) );
+    setPackage( m_packageList.keys().at( 0 ) );
 
     ///if( m_ram ) m_ram->getRamTable()->setRegisters( m_ram->regInfo()->keys() );
 }

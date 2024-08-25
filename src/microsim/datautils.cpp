@@ -28,7 +28,7 @@ regBits_t getRegBits( QString bitNames, McuRam* ram ) // Get a set of bits in a 
     }
     regBits.regAddr = ram->bitRegs()->value( bitList.first() );
     uint32_t* ramData = ram->rawData();
-    regBits.reg = (uint32_t*) &ramData[regBits.regAddr];
+    regBits.reg = ramData + regBits.regAddr;
 
     return regBits;
 }

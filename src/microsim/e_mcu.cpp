@@ -230,7 +230,17 @@ McuPin* eMcu::getMcuPin( QString pinName )
         pin = port->getPin( pinName );
         if( pin ) break;
     }
-    if( !pin ) qDebug() << "ERROR: eMcu::getPin nullptr Pin:"<< pinName;
+    if( !pin ) qDebug() << "ERROR: eMcu::getMcuPin nullptr Pin:"<< pinName;
+    return pin;
+}
+
+IoPin*  eMcu::getIoPin( QString pinName )
+{
+    if( pinName.isEmpty() || pinName == "0" ) return NULL;
+    IoPin* pin = eIou::getIoPin( pinName );
+
+    if( !pin ) pin = getMcuPin( pinName );
+    if( !pin ) qDebug() << "ERROR: eMcu::getIoPin NULL Pin:"<< pinName;
     return pin;
 }
 

@@ -25,7 +25,7 @@ class eIou : public eElement
         void reset();
 
         IoPort* getIoPort( QString name );
-        IoPin*  getIoPin( QString pinName );
+        IoPin* getIoPin( QString pinName );
 
         Watcher* getWatcher() { return m_watcher; }
         void createWatcher( CpuBase* cpu );
