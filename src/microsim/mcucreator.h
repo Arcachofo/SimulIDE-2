@@ -32,10 +32,9 @@ class McuCreator
 
     private:
         static int  processFile( QString fileName );
-        //static void createProgMem( uint32_t size );
-        static void createRam( uint32_t size );
-        //static void createRomMem( uint32_t size );
-        static void createEeprom( QDomElement* e );
+        static void createPgm( QDomElement* e );
+        static void createRam( QDomElement* e );
+        static void createRom( QDomElement* e );
         static void createCfgWord( QDomElement* e );
         static void createDataBlock( QDomElement* d );
         static void createRegisters( QDomElement* e );

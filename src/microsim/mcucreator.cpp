@@ -165,7 +165,10 @@ int McuCreator::processFile( QString fileName )
         QDomElement el = node.toElement();
         QString   part = el.tagName();
 
-        if     ( part == "regblock" )   createRegisters( &el );
+        if     ( part == "ram" )        createRam( &el );
+        else if( part == "rom" )        createRom( &el );
+        else if( part == "pgm" )        createPgm( &el );
+        else if( part == "regblock" )   createRegisters( &el );
         else if( part == "datablock" )  createDataBlock( &el );
         //else if( part == "progblock" )  createProgBlock( &el );
         else if( part == "stack" )      { m_stackEl = el; m_newStack = true; }
@@ -186,12 +189,9 @@ int McuCreator::processFile( QString fileName )
         else if( part == "comp" )       createAcomp( &el );
         else if( part == "vref" )       createVref( &el );
         else if( part == "wdt" )        createWdt( &el );
-        else if( part == "rom" )        createEeprom( &el );
         else if( part == "sleep" )      createSleep( &el );
         else if( part == "configwords") createCfgWord( &el );
         else if( part == "intosc")      createIntOsc( &el );
-        //else if( part == "extmem" )     createExtMem( &el );
-        //else if( part == "intmem" )     createIntMem( &el );
         else if( part == "display" )    createDisplay( &el );
         else if( part == "console" )    m_console = true;
 
@@ -309,45 +309,47 @@ void McuCreator::createCfgWord( QDomElement* e )
     }
 }
 
-/*void McuCreator::createProgMem( uint32_t size )
+void McuCreator::createPgm( QDomElement* e )
 {
-    mcu->m_flashSize = size;
-    if     ( m_core == "Pic14" )  mcu->m_progMem.resize( size, 0x3FFF );
-    else if( m_core == "Pic14e" ) mcu->m_progMem.resize( size, 0x3FFF );
-    else                          mcu->m_progMem.resize( size, 0xFFFF );
-}*/
+    McuPgm* pgm = new McuPgm( mcu, "pgm" );
 
-void McuCreator::createRam( uint32_t size )
-{
-    m_mcuRam = new McuRam( mcu, "ram" );
-    m_mcuRam->resize( size );
-    //mcu->m_ramSize = size;
-    //mcu->m_dataMem.resize( size, 0 );
-    //mcu->m_addrMap.resize( size, 0xFFFF ); // Not Maped values = 0xFFFF -> don't exist
+    mcu->m_modules.emplace_back( pgm );
+
+    int bits = e->attribute("bits").toInt();
+    int size = e->attribute("size").toInt();
+    pgm->setWordBits( bits );
+    pgm->resize( size );
 }
 
-/*void McuCreator::createRomMem( uint32_t size )
+void McuCreator::createRam( QDomElement* e )
 {
-    if( size == 0 ) return;
+    m_mcuRam = new McuRam( mcu, "ram" );
 
-    mcu->m_romSize = size;
-    mcu->m_eeprom.resize( size );
-    mcu->m_eeprom.fill( 0xFF );
-}*/
+    mcu->m_modules.emplace_back( m_mcuRam );
 
-void McuCreator::createEeprom( QDomElement* e )
+    int bits = e->attribute("bits").toInt();
+    int size = e->attribute("size").toInt();
+    m_mcuRam->setWordBits( bits );
+    m_mcuRam->resize( size );
+}
+
+void McuCreator::createRom( QDomElement* e )
 {
     McuRom* eeprom = nullptr;
-    QString eepromName = e->attribute("name");
 
-    if     ( m_core == "AVR"    ) eeprom = new AvrEeprom( mcu, eepromName );
-    else if( m_core == "Pic14"  ) eeprom = new PicEeprom( mcu, eepromName );
-    else if( m_core == "Pic14e" ) eeprom = new PicEeprom( mcu, eepromName );
-    else return;
+    if     ( m_core == "AVR"    ) eeprom = new AvrEeprom( mcu, "rom" );
+    else if( m_core == "Pic14"  ) eeprom = new PicEeprom( mcu, "rom" );
+    else if( m_core == "Pic14e" ) eeprom = new PicEeprom( mcu, "rom" );
+    else                          eeprom = new McuRom( mcu, "rom" );
 
     mcu->m_modules.emplace_back( eeprom );
 
     setConfigRegs( e, eeprom );
+
+    int bits = e->attribute("bits").toInt();
+    int size = e->attribute("size").toInt();
+    eeprom->setWordBits( bits );
+    eeprom->resize( size );
 
     if( e->hasAttribute("dataregs") )
         eeprom->m_dataReg = (uint8_t*) m_mcuRam->getReg( e->attribute("dataregs") );
