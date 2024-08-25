@@ -25,14 +25,13 @@ MCUMonitor::MCUMonitor( QWidget* parent, eMcu* mcu )
     m_jumpToAddress = false;
 
     m_statusReg  = nullptr;
-    m_ramTable   = nullptr;
+    //m_ramTable   = nullptr;
     //m_ramMonitor = nullptr;
     //m_pgmMonitor = nullptr;
     //m_romMonitor = nullptr;
 
-    createStatusPC();
+    //createStatusPC();
 
-    horizontalLayout->setStretchFactor( byteButton, 20 );
     QSplitter* spl = nullptr;
 
     m_watcher = m_processor->getWatcher();
@@ -101,21 +100,6 @@ void MCUMonitor::tabChanged( int )
     updateStep();
 }
 
-void MCUMonitor::on_byteButton_toggled( bool byte )
-{
-    /*if( m_pgmMonitor )
-    {
-        int bytes = byte ? 1 : m_processor->wordSize();
-        m_pgmMonitor->setCellBytes( bytes );
-    }*/
-    updateStep();
-}
-
-void  MCUMonitor::on_jumpButton_toggled( bool jump )
-{
-    m_jumpToAddress = jump;
-}
-
 void MCUMonitor::updateStep()
 {
     int pc = m_processor->cpu()->getPC();
@@ -168,12 +152,7 @@ void MCUMonitor::updateStep()
     }*/
 }
 
-void MCUMonitor::updateRamTable()
-{
-    /// if( m_ramTable ) m_ramTable->updateItems();
-}
-
-void MCUMonitor::createStatusPC()
+/*void MCUMonitor::createStatusPC()
 {
     /// m_statusReg = m_processor->cpu()->getStatus();
     if( !m_statusReg )
@@ -251,4 +230,4 @@ void MCUMonitor::createStatusPC()
     horizontalLayout->insertWidget( 0, &m_pc);
     horizontalLayout->setStretchFactor( &m_pc, 30 );
     verticalLayout->insertWidget( 0, &m_status);
-}
+}*/

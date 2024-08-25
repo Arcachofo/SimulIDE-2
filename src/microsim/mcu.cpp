@@ -310,7 +310,7 @@ void Mcu::setupMcu()
     int index = m_isTQFP ? 1 : 0;
     setPackage( m_packageList.keys().at( index ) );
 
-    if( m_ram ) m_ram->getRamTable()->setRegisters( m_ram->regInfo()->keys() );
+    ///if( m_ram ) m_ram->getRamTable()->setRegisters( m_ram->regInfo()->keys() );
 }
 
 bool Mcu::setPropStr( QString prop, QString val )
@@ -324,7 +324,7 @@ bool Mcu::setPropStr( QString prop, QString val )
 void Mcu::initialize()
 {
     m_crashed = false;
-    if( m_mcuMonitor ) m_mcuMonitor->updateRamTable();
+    ///if( m_mcuMonitor ) m_mcuMonitor->updateRamTable();
 }
 
 void Mcu::stamp()
@@ -379,14 +379,14 @@ void Mcu::setProgram( QString file )
 
 QString Mcu::varList()
 {
-    RamTable* ramTable = m_ram->getRamTable();
-    if( ramTable ) return ramTable->getVarSet().join(",");
+    ///RamTable* ramTable = m_ram->getRamTable();
+    ///if( ramTable ) return ramTable->getVarSet().join(",");
     return "";
 }
 
 void Mcu::setVarList( QString vl )
 {
-    RamTable* ramTable = m_ram->getRamTable();
+    /*RamTable* ramTable = m_ram->getRamTable();
     if( !ramTable ) return;
 
     if( vl.isEmpty() ) return;
@@ -405,7 +405,7 @@ void Mcu::setVarList( QString vl )
         if( ok ) m_ram->getRamTable()->addVariable( name, addr, type );
         varSet.append( name );
     }
-    ramTable->loadVarSet( varSet );
+    ramTable->loadVarSet( varSet );*/
 }
 
 QString Mcu::cpuRegs()

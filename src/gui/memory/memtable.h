@@ -33,6 +33,8 @@ class MemTable : public QWidget, private Ui::MemTable
         void on_table_cellClicked( int row, int col ) { cellClicked( row, col ); }
         void on_table_itemEntered( QTableWidgetItem* item );
         void on_context_menu_requested( const QPoint &pos );
+        void on_byteButton_toggled( bool byte );
+        void on_jumpButton_toggled( bool jump );
         void saveTable();
         void loadTable();
 

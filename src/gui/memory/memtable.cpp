@@ -280,6 +280,19 @@ void MemTable::cellClicked( int row, int col )
     table->item( row, col+17 )->setSelected( true );
 }
 
+void MemTable::on_byteButton_toggled( bool byte )
+{
+    int bytes = byte ? 1 : m_wordBytes;
+    setCellBytes( bytes );
+
+    //updateStep();
+}
+
+void  MemTable::on_jumpButton_toggled( bool jump )
+{
+    //m_jumpToAddress = jump;
+}
+
 QString MemTable::valToHex( int val, int bytes )
 {
     QString sval = QString::number( val, 16 ).toUpper();

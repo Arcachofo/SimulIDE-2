@@ -24,24 +24,21 @@ class MCUMonitor : public QDialog, private Ui::McuMonitor
         MCUMonitor( QWidget* parent=0, eMcu* mcu=0 );
 
         void updateStep();
-        void updateRamTable();
 
         void addTable( MemTable* table, QString tittle );
 
     public slots:
         void tabChanged(int);
-        void on_byteButton_toggled( bool byte );
-        void on_jumpButton_toggled( bool jump );
 
     private:
-        void createStatusPC();
+        //void createStatusPC();
 
         eMcu* m_processor;
 
         uint32_t* m_statusReg;  // STATUS register
 
         Watcher*  m_watcher;
-        RamTable* m_ramTable;
+        //RamTable* m_ramTable;
 
         QTableWidget m_status;
         QTableWidget m_pc;
