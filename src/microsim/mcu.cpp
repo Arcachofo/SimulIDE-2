@@ -24,7 +24,7 @@
 #include "infowidget.h"
 #include "mainwindow.h"
 #include "componentlist.h"
-#include "mcumonitor.h"
+#include "monitor.h"
 #include "mcuuart.h"
 #include "mcuintosc.h"
 #include "mcupgm.h"
@@ -586,7 +586,7 @@ void Mcu::slotOpenMcuMonitor()
 {
     if( !m_mcuMonitor )
     {
-        m_mcuMonitor = new MCUMonitor( CircuitWidget::self(), &m_eMcu );
+        m_mcuMonitor = new Monitor( CircuitWidget::self(), &m_eMcu );
         if( m_ram ) m_mcuMonitor->addTable( m_ram->getTable(), "RAM" );
         if( m_rom ) m_mcuMonitor->addTable( m_rom->getTable(), "ROM" );
         if( m_pgm ) m_mcuMonitor->addTable( m_pgm->getTable(), "PGM" );

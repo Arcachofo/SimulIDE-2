@@ -19,7 +19,7 @@
     typeMCU
 };*/
 
-class MCUMonitor;
+class Monitor;
 class ScriptCpu;
 class McuRam;
 class McuRom;
@@ -163,7 +163,7 @@ class Mcu : public Chip, public Linker
         IoPin*  m_resetPin;
         McuPin* m_portRstPin;
 
-        MCUMonitor* m_mcuMonitor;
+        Monitor* m_mcuMonitor;
 
         ScriptCpu* m_scriptLink;
 };

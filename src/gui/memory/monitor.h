@@ -3,25 +3,24 @@
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-#ifndef MCUMONITOR_H
-#define MCUMONITOR_H
+#ifndef MONITOR_H
+#define MONITOR_H
 
 #include <QDialog>
 #include <QTableWidget>
 
-#include "ui_mcumonitor.h"
+#include "ui_monitor.h"
 
 class eMcu;
 class MemTable;
-class RamTable;
 class Watcher;
 
-class MCUMonitor : public QDialog, private Ui::McuMonitor
+class Monitor : public QDialog, private Ui::Monitor
 {
     Q_OBJECT
     
     public:
-        MCUMonitor( QWidget* parent=0, eMcu* mcu=0 );
+        Monitor( QWidget* parent=0, eMcu* mcu=0 );
 
         void updateStep();
 
@@ -31,19 +30,11 @@ class MCUMonitor : public QDialog, private Ui::McuMonitor
         void tabChanged(int);
 
     private:
-        //void createStatusPC();
 
         eMcu* m_eMcu;
 
-        uint32_t* m_statusReg;  // STATUS register
-
         Watcher*  m_watcher;
-        //RamTable* m_ramTable;
 
-        QTableWidget m_status;
-        QTableWidget m_pc;
-
-        bool m_jumpToAddress;
 };
 
 #endif
