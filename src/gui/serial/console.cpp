@@ -12,7 +12,7 @@
 #include "mainwindow.h"
 #include "simulator.h"
 
-Console::Console( CoreBase* cpu, QWidget* parent )
+Console::Console( Watchable* cpu, QWidget* parent )
        : QPlainTextEdit( parent )
 {
     m_cpu = cpu;

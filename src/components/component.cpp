@@ -36,8 +36,8 @@ Component::Component( QString type, QString id )
     m_Vflip  = 1;
     m_color  = QColor( Qt::white );
 
-    m_backPixmap = NULL;
-    //m_group = NULL;
+    m_backPixmap = nullptr;
+    //m_group = nullptr;
 
     m_showId     = false;
     m_showVal    = false;
@@ -52,6 +52,8 @@ Component::Component( QString type, QString id )
     m_background = "";
     m_showProperty = "";
     m_linkNumber = -1;
+
+    m_compMonitor = nullptr;
 
     m_boardPos = QPointF(-1e6,-1e6 );
     m_boardRot = -1e6;

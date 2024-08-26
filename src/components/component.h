@@ -18,6 +18,7 @@ class Label;
 class Connector;
 class ConnectorLine;
 class Linker;
+class Monitor;
 class Component;
 
 
@@ -232,6 +233,8 @@ class Component : public CompBase, public QGraphicsItem, public Updatable
 
         std::vector<Pin*> m_pin;
         QList<Pin*> m_signalPin;
+
+        Monitor* m_compMonitor;
 
         //QGraphicsItemGroup* m_group;
 };

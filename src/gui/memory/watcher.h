@@ -15,13 +15,14 @@ class ValueWidget;
 class QStandardItemModel;
 class ScriptCpu;
 class Console;
+class Watchable;
 
 class Watcher : public QWidget, private Ui::Watcher
 {
     Q_OBJECT
 
     public:
-        Watcher( QWidget* parent=0, CoreBase* cpu=NULL );
+        Watcher( QWidget* parent=nullptr, Watchable* cpu=nullptr );
 
         void updateValues();
 
@@ -49,7 +50,7 @@ class Watcher : public QWidget, private Ui::Watcher
 
         bool m_header;
 
-        CoreBase* m_core;
+        Watchable* m_core;
         Console* m_console;
 
         QStandardItemModel* m_registerModel;

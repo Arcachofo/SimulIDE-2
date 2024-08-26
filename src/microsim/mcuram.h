@@ -14,6 +14,7 @@
 #include "mcutypes.h"
 
 class Watcher;
+class Watchable;
 class CoreBase;
 
 class McuRam : public McuModule, public Memory
@@ -38,7 +39,7 @@ class McuRam : public McuModule, public Memory
         void     writeReg( uint32_t addr, uint32_t v, bool masked=true );   // Write Register (call watchers)
 
         Watcher* getWatcher() { return m_watcher; }
-        void createWatcher( CoreBase* cpu );
+        void createWatcher( Watchable* cpu );
 
         //QStringList registerList() { return m_regInfo.keys(); }
         QMap<QString, uint32_t>*  bitMasks()  { return &m_bitMasks; }

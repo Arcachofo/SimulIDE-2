@@ -15,13 +15,13 @@
 #include "console.h"
 #include "scriptcpu.h"
 
-Watcher::Watcher( QWidget* parent, CoreBase* cpu )
+Watcher::Watcher( QWidget* parent, Watchable* cpu )
        : QWidget( parent )
 {
     setupUi(this);
 
     m_core = cpu;
-    m_console= NULL;
+    m_console = nullptr;
     m_header = false;
 
     QFont font;

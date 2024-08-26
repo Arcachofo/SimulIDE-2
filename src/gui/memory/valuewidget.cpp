@@ -3,15 +3,13 @@
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-//#include <math.h>
-
 #include "valuewidget.h"
 #include "mainwindow.h"
 #include "e_mcu.h"
 #include "cpubase.h"
 #include "utils.h"
 
-ValueWidget::ValueWidget( QString name, QString type, CoreBase* core, QWidget* parent )
+ValueWidget::ValueWidget( QString name, QString type, Watchable* core, QWidget* parent )
            : QWidget( parent )
 {
     setupUi(this);

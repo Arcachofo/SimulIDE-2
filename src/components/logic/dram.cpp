@@ -11,6 +11,7 @@
 #include "simulator.h"
 #include "circuit.h"
 #include "iopin.h"
+#include "monitor.h"
 #include "memtable.h"
 #include "utils.h"
 
@@ -333,21 +334,37 @@ void DRAM::deleteDataPins( int bits )
 
 void DRAM::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
 {
+    QAction* openMonitor = menu->addAction( QIcon(":/terminal.svg"),tr("Open Memory Monitor.") );
+    QObject::connect( openMonitor, &QAction::triggered, [=](){ slotOpenMonitor(); } );
+
     QAction* loadAction = menu->addAction( QIcon(":/load.svg"),tr("Load data") );
     QObject::connect( loadAction, &QAction::triggered, [=](){ loadData(); } );
 
     QAction* saveAction = menu->addAction(QIcon(":/save.png"), tr("Save data") );
     QObject::connect( saveAction, &QAction::triggered, [=](){ saveData(); } );
 
-    QAction* showEepAction = menu->addAction(QIcon(":/save.png"), tr("Show Memory Table") );
-    QObject::connect( showEepAction, &QAction::triggered, [=](){ slotShowTable(); } );
+    //QAction* showEepAction = menu->addAction(QIcon(":/save.png"), tr("Show Memory Table") );
+    //QObject::connect( showEepAction, &QAction::triggered, [=](){ slotShowTable(); } );
 
     menu->addSeparator();
     Component::contextMenu( event, menu );
 }
 
-void DRAM::slotShowTable()
+/*void DRAM::slotShowTable()
 {
     showTable();
     m_memTable->setWindowTitle( "DRAM: "+idLabel() );
+}*/
+
+void DRAM::slotOpenMonitor()
+{
+    if( !m_compMonitor )
+    {
+
+        showTable();
+        m_compMonitor = new Monitor( CircuitWidget::self() );
+        m_compMonitor->addTable( m_memTable, "RAM" );
+    }
+    m_compMonitor->setWindowTitle( idLabel() );
+    m_compMonitor->show();
 }

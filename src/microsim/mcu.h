@@ -19,7 +19,6 @@
     typeMCU
 };*/
 
-class Monitor;
 class ScriptCpu;
 class McuRam;
 class McuRom;
@@ -116,12 +115,11 @@ class Mcu : public Chip, public Linker
 
         virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w ) override;
 
-    //public slots:
         void slotmain();
         void slotLoad();
         void slotReload();
         void slotOpenTerm( int num );
-        void slotOpenMcuMonitor();
+        void slotOpenMonitor();
         void slotLinkComp();
 
         void loadEEPROM();
@@ -162,8 +160,6 @@ class Mcu : public Chip, public Linker
 
         IoPin*  m_resetPin;
         McuPin* m_portRstPin;
-
-        Monitor* m_mcuMonitor;
 
         ScriptCpu* m_scriptLink;
 };

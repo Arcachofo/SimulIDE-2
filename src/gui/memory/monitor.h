@@ -20,20 +20,21 @@ class Monitor : public QDialog, private Ui::Monitor
     Q_OBJECT
     
     public:
-        Monitor( QWidget* parent=0, eMcu* mcu=0 );
+        Monitor( QWidget* parent=0/*, eMcu* mcu=0*/ );
 
         void updateStep();
 
         void addTable( MemTable* table, QString tittle );
+        void addWatcher( Watcher* watcher );
 
     public slots:
         void tabChanged(int);
 
     private:
 
-        eMcu* m_eMcu;
+        //eMcu* m_eMcu;
 
-        Watcher*  m_watcher;
+        Watcher* m_watcher;
 
 };
 

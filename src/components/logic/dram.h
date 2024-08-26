@@ -39,8 +39,8 @@ class DRAM : public LogicComponent, public Memory
 
         void updatePins();
 
-    public slots:
-        void slotShowTable();
+        //void slotShowTable();
+        void slotOpenMonitor();
 
     protected:
         virtual void contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu ) override;

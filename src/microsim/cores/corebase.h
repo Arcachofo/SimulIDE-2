@@ -9,9 +9,11 @@
 #include <QStringList>
 #include <QMap>
 
+#include "watchable.h"
+
 class Display;
 
-class CoreBase
+class CoreBase : public Watchable
 {
     public:
         CoreBase();
@@ -22,10 +24,7 @@ class CoreBase
         virtual void extClock( bool clkState ){;}
         virtual void updateStep(){;}
 
-        virtual void command( QString c ){;}
-
-        virtual int getCpuReg( QString reg );
-        virtual QString getStrReg( QString ){ return "";}
+        virtual int getCpuReg( QString reg ) override;
 
         virtual QStringList getEnumUids( QString ) { return m_enumUids;}    // For enum properties
         virtual QStringList getEnumNames( QString ) { return m_enumNames; } // For enum properties

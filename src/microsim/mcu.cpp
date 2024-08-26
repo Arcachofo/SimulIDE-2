@@ -77,7 +77,6 @@ Mcu::Mcu( QString type, QString id )
 
     m_resetPin   = nullptr;
     m_portRstPin = nullptr;
-    m_mcuMonitor = nullptr;
     m_scriptLink = nullptr;
 
     m_savePGM  = false;
@@ -201,7 +200,7 @@ Mcu::Mcu( QString type, QString id )
 }
 Mcu::~Mcu()
 {
-    if( m_mcuMonitor ) delete m_mcuMonitor;
+    if( m_compMonitor ) delete m_compMonitor;
     if( m_pSelf == this ) m_pSelf = nullptr;
     InfoWidget::self()->updtMcu();
 }
@@ -300,7 +299,7 @@ bool Mcu::setPropStr( QString prop, QString val )
 void Mcu::initialize()
 {
     m_crashed = false;
-    ///if( m_mcuMonitor ) m_mcuMonitor->updateRamTable();
+    ///if( m_compMonitor ) m_compMonitor->updateRamTable();
 }
 
 void Mcu::stamp()
@@ -334,8 +333,8 @@ void Mcu::updateStep()
         Simulator::self()->setWarning( /*m_warning*/0 );
         update();
     }
-    if( m_mcuMonitor
-     && m_mcuMonitor->isVisible() ) m_mcuMonitor->updateStep();
+    if( m_compMonitor
+     && m_compMonitor->isVisible() ) m_compMonitor->updateStep();
 
     m_eMcu.m_cpu->updateStep();
 }
@@ -449,7 +448,7 @@ void Mcu::loadEEPROM()
 
    m_rom->loadData();
 
-   if( m_mcuMonitor ) m_mcuMonitor->tabChanged( 1 );
+   if( m_compMonitor ) m_compMonitor->tabChanged( 1 );
 }
 
 void Mcu::saveEEPROM() { m_rom->saveData(); }
@@ -539,8 +538,8 @@ void Mcu::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
     }
     menu->addSeparator();
 
-    QAction* openRamTab = menu->addAction( QIcon(":/terminal.svg"),tr("Open Mcu Monitor.") );
-    QObject::connect( openRamTab, &QAction::triggered, [=](){ slotOpenMcuMonitor(); } );
+    QAction* openMonitor = menu->addAction( QIcon(":/terminal.svg"),tr("Open Mcu Monitor.") );
+    QObject::connect( openMonitor, &QAction::triggered, [=](){ slotOpenMonitor(); } );
 
     if( m_eMcu.m_usarts.size() )
     {
@@ -582,17 +581,21 @@ void Mcu::setIdLabel( QString id )
     }
 }
 
-void Mcu::slotOpenMcuMonitor()
+void Mcu::slotOpenMonitor()
 {
-    if( !m_mcuMonitor )
+    if( !m_compMonitor )
     {
-        m_mcuMonitor = new Monitor( CircuitWidget::self(), &m_eMcu );
-        if( m_ram ) m_mcuMonitor->addTable( m_ram->getTable(), "RAM" );
-        if( m_rom ) m_mcuMonitor->addTable( m_rom->getTable(), "ROM" );
-        if( m_pgm ) m_mcuMonitor->addTable( m_pgm->getTable(), "PGM" );
+        m_compMonitor = new Monitor( CircuitWidget::self() );
+        if( m_ram )
+        {
+            m_compMonitor->addWatcher(m_ram->getWatcher() );
+            m_compMonitor->addTable( m_ram->getTable(), "RAM" );
+        }
+        if( m_rom ) m_compMonitor->addTable( m_rom->getTable(), "ROM" );
+        if( m_pgm ) m_compMonitor->addTable( m_pgm->getTable(), "PGM" );
     }
-    m_mcuMonitor->setWindowTitle( findIdLabel() );
-    m_mcuMonitor->show();
+    m_compMonitor->setWindowTitle( findIdLabel() );
+    m_compMonitor->show();
 }
 
 void Mcu::slotOpenTerm( int num )
@@ -725,9 +728,9 @@ QStringList Mcu::getEnumNames( QString prop )
     return m_eMcu.m_cpu->getEnumNames( prop );
 }
 
-void Mcu::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+void Mcu::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )
 {
-    Chip::paint( p, option, widget );
+    Chip::paint( p, o, w );
 
     if( m_pSelf == this )
     {
