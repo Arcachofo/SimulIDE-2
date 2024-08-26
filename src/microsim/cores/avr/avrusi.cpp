@@ -91,8 +91,8 @@ void AvrUsi::voltChanged()  // Clk Pin changed
 
 void AvrUsi::callBack()  // Called at Timer0 Compare Match
 {
-    stepCounter();
     shiftData();
+    stepCounter();
     setOutput();
 }
 
