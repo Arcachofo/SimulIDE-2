@@ -39,6 +39,7 @@ class Z80Core : public CpuBase, public eElement
         virtual void runStep() override;
         virtual void extClock( bool clkState ) override;
 
+        virtual Watcher* getWatcher() override;
         virtual int getCpuReg( QString reg ) override;
         virtual QString getStrReg( QString reg ) override;
 

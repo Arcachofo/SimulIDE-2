@@ -6,7 +6,7 @@
 #include "valuewidget.h"
 #include "mainwindow.h"
 #include "e_mcu.h"
-#include "cpubase.h"
+#include "watchable.h"
 #include "utils.h"
 
 ValueWidget::ValueWidget( QString name, QString type, Watchable* core, QWidget* parent )

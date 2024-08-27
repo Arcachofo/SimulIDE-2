@@ -11,7 +11,6 @@
 
 #include "ui_monitor.h"
 
-class eMcu;
 class MemTable;
 class Watcher;
 
@@ -20,7 +19,7 @@ class Monitor : public QDialog, private Ui::Monitor
     Q_OBJECT
     
     public:
-        Monitor( QWidget* parent=0/*, eMcu* mcu=0*/ );
+        Monitor( QWidget* parent=nullptr );
 
         void updateStep();
 
@@ -32,10 +31,7 @@ class Monitor : public QDialog, private Ui::Monitor
 
     private:
 
-        //eMcu* m_eMcu;
-
         Watcher* m_watcher;
-
 };
 
 #endif

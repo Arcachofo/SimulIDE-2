@@ -7,15 +7,18 @@
 #define CPUCORE_H
 
 #include "e_mcu.h"
-#include "corebase.h"
 #include "mcuram.h"
 #include "mcupgm.h"
+#include "watchable.h"
 
 #define REG_SPL      m_spl[0]
 #define REG_SPH      m_sph[0]
 #define STATUS(bit) (*m_STATUS & (1<<bit))
 
-class CpuBase : public CoreBase
+class Display;
+class Watcher;
+
+class CpuBase : public Watchable
 {
         friend class McuCreator;
 
@@ -23,7 +26,15 @@ class CpuBase : public CoreBase
         CpuBase( eMcu* mcu );
         virtual ~CpuBase();
 
-        virtual void reset() override;
+        virtual void reset();
+        virtual void runStep(){;}
+        virtual void extClock( bool clkState ){;}
+        virtual void updateStep(){;}
+
+        //virtual Watcher* createWatcher() { return nullptr;}}
+
+        virtual QStringList getEnumUids( QString ) { return m_enumUids;}    // For enum properties
+        virtual QStringList getEnumNames( QString ) { return m_enumNames; } // For enum properties
 
         //virtual uint32_t* getStatus() { return m_STATUS; }  // Used my Monitor: All CPUs must use m_STATUS
 
@@ -40,6 +51,11 @@ class CpuBase : public CoreBase
 
         McuRam* m_mcuRam;
         McuPgm* m_mcuPgm;
+
+        QStringList m_enumUids;  // For enum properties
+        QStringList m_enumNames; // For enum properties
+
+        Display* m_display; // Find a place for this
 
         uint8_t m_retCycles;
 

@@ -53,8 +53,6 @@ Component::Component( QString type, QString id )
     m_showProperty = "";
     m_linkNumber = -1;
 
-    m_compMonitor = nullptr;
-
     m_boardPos = QPointF(-1e6,-1e6 );
     m_boardRot = -1e6;
     m_circPos  = QPointF(0, 0);

@@ -75,6 +75,7 @@ Mcu::Mcu( QString type, QString id )
 {
     qDebug() << "        Initializing"<<id;
 
+    m_monitor = nullptr;
     m_resetPin   = nullptr;
     m_portRstPin = nullptr;
     m_scriptLink = nullptr;
@@ -200,7 +201,6 @@ Mcu::Mcu( QString type, QString id )
 }
 Mcu::~Mcu()
 {
-    if( m_compMonitor ) delete m_compMonitor;
     if( m_pSelf == this ) m_pSelf = nullptr;
     InfoWidget::self()->updtMcu();
 }
@@ -299,7 +299,7 @@ bool Mcu::setPropStr( QString prop, QString val )
 void Mcu::initialize()
 {
     m_crashed = false;
-    ///if( m_compMonitor ) m_compMonitor->updateRamTable();
+    ///if( m_monitor ) m_monitor->updateRamTable();
 }
 
 void Mcu::stamp()
@@ -333,8 +333,8 @@ void Mcu::updateStep()
         Simulator::self()->setWarning( /*m_warning*/0 );
         update();
     }
-    if( m_compMonitor
-     && m_compMonitor->isVisible() ) m_compMonitor->updateStep();
+    if( m_monitor
+     && m_monitor->isVisible() ) m_monitor->updateStep();
 
     m_eMcu.m_cpu->updateStep();
 }
@@ -385,14 +385,14 @@ void Mcu::setVarList( QString vl )
 
 QString Mcu::cpuRegs()
 {
-    Watcher* watcher = m_ram->getWatcher();
+    Watcher* watcher = m_eMcu.cpu()->getWatcher();
     if( !watcher ) return "";
     return watcher->getVarSet().join(",");
 }
 
 void Mcu::setCpuRegs( QString vl )
 {
-    Watcher* watcher = m_ram->getWatcher();
+    Watcher* watcher = m_eMcu.cpu()->getWatcher();
     if( !watcher ) return;
     watcher->loadVarSet( vl.split(",") );
 }
@@ -448,7 +448,7 @@ void Mcu::loadEEPROM()
 
    m_rom->loadData();
 
-   if( m_compMonitor ) m_compMonitor->tabChanged( 1 );
+   ///if( m_monitor ) m_monitor->tabChanged( 1 );
 }
 
 void Mcu::saveEEPROM() { m_rom->saveData(); }
@@ -583,19 +583,19 @@ void Mcu::setIdLabel( QString id )
 
 void Mcu::slotOpenMonitor()
 {
-    if( !m_compMonitor )
+    if( !m_monitor )
     {
-        m_compMonitor = new Monitor( CircuitWidget::self() );
-        if( m_ram )
-        {
-            m_compMonitor->addWatcher(m_ram->getWatcher() );
-            m_compMonitor->addTable( m_ram->getTable(), "RAM" );
-        }
-        if( m_rom ) m_compMonitor->addTable( m_rom->getTable(), "ROM" );
-        if( m_pgm ) m_compMonitor->addTable( m_pgm->getTable(), "PGM" );
+        m_monitor = new Monitor();
+
+        Watcher* watcher = m_eMcu.cpu()->getWatcher();
+        m_monitor->addWatcher( watcher );
+
+        if( m_ram ) m_monitor->addTable( m_ram->getTable(), "RAM" );
+        if( m_rom ) m_monitor->addTable( m_rom->getTable(), "ROM" );
+        if( m_pgm ) m_monitor->addTable( m_pgm->getTable(), "PGM" );
     }
-    m_compMonitor->setWindowTitle( findIdLabel() );
-    m_compMonitor->show();
+    m_monitor->setWindowTitle( findIdLabel() );
+    m_monitor->show();
 }
 
 void Mcu::slotOpenTerm( int num )

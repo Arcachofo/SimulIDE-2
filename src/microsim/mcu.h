@@ -12,6 +12,7 @@
 #include "chip.h"
 #include "linker.h"
 
+
 /*enum deviceType_t{
     typeNONE=0,
     typeIOU,
@@ -24,6 +25,7 @@ class McuRam;
 class McuRom;
 class McuPgm;
 class McuIntOsc;
+class Monitor;
 
 class Mcu : public Chip, public Linker
 {
@@ -162,6 +164,8 @@ class Mcu : public Chip, public Linker
         McuPin* m_portRstPin;
 
         ScriptCpu* m_scriptLink;
+
+        Monitor* m_monitor;
 };
 
 #endif

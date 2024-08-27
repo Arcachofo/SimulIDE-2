@@ -28,6 +28,8 @@ class Mcs65Cpu : public Mcs65Interface
         Mcs65Cpu( eMcu* mcu );
         ~Mcs65Cpu();
 
+        virtual Watcher* getWatcher() override;
+        virtual int getCpuReg( QString reg ) override;
         virtual QString getStrReg( QString reg ) override;
 
         virtual void stamp() override;
@@ -76,6 +78,8 @@ class Mcs65Cpu : public Mcs65Interface
         inline uint8_t readDataBus();
 
         inline void writeMem( uint16_t addr );
+
+        QMap<QString, uint8_t*> m_cpuRegs;
 
         uint32_t m_debugPC; // PC for dDebugger
 

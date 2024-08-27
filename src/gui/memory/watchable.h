@@ -8,15 +8,28 @@
 
 #include <QString>
 
+class Watcher;
+
 class Watchable
 {
-public:
-    Watchable(){;}
+    public:
+        Watchable();
+        ~Watchable();
 
-    virtual int getCpuReg( QString ){ return -1;}
-    virtual QString getStrReg( QString ){ return "";}
+        //Monitor* getMonitor();
 
-    virtual void command( QString ){;}
+        virtual Watcher* getWatcher();
+        //void createWatcher( Watchable* cpu );
+
+        virtual int getCpuReg( QString ){ return -1;}
+        virtual QString getStrReg( QString ){ return "";}
+
+        virtual void command( QString ){;}
+
+    protected:
+
+        //Monitor* m_monitor;
+        Watcher* m_watcher;
 };
 
 #endif

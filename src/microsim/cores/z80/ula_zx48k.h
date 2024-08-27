@@ -36,6 +36,7 @@ class ULA_ZX48k : public CpuBase, public eElement
 
         virtual void runStep() override;
 
+        virtual Watcher* getWatcher() override;
         virtual int getCpuReg( QString reg ) override;
 
         QString type() { return m_enumUids.at((int)m_type); }

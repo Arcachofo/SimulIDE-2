@@ -8,12 +8,13 @@
 
 #include "cpubase.h"
 
-
 class McuCpu : public CpuBase
 {
     public:
         McuCpu( eMcu* mcu );
         ~McuCpu();
+
+        virtual Watcher* getWatcher() override;
 
         virtual void CALL_ADDR( uint32_t addr ) override; // Used by MCU Interrupts:: All MCUs should use or override this
 

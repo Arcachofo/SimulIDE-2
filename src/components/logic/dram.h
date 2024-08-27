@@ -7,9 +7,12 @@
 #define DRAM_H
 
 #include "logiccomponent.h"
+#include "watchable.h"
 #include "memory.h"
 
-class DRAM : public LogicComponent, public Memory
+class Monitor;
+
+class DRAM : public LogicComponent, public Memory, public Watchable
 {
     public:
         DRAM( QString type, QString id );
@@ -65,6 +68,8 @@ class DRAM : public LogicComponent, public Memory
         IoPin* m_CasPin;
         IoPin* m_WePin;
         IoPin* m_OePin;
+
+        Monitor* m_monitor;
 };
 
 #endif

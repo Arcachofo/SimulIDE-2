@@ -14,17 +14,6 @@
 Mcs65Cpu::Mcs65Cpu( eMcu* mcu )
         : Mcs65Interface( mcu )
 {
-    // CPU registers to show in Monitor
-
-    m_cpuRegs.insert("P" , (uint8_t*) &m_P  );
-    m_cpuRegs.insert("S" , &m_SP );
-    m_cpuRegs.insert("A" , &m_Ac );
-    m_cpuRegs.insert("IR", &m_IR );
-    m_cpuRegs.insert("X" , &m_rX );
-    m_cpuRegs.insert("Y" , &m_rY );
-    //m_rI = nullptr;
-    m_mcuRam->getWatcher()->setRegisters( m_cpuRegs.keys() );
-
     // <register name="P"  addr="0x05" bits="C,Z,I,D,B,1,V,N" reset="00110100" mask="11011111" />
     m_STATUS = &m_P;
     m_mcuRam->setStatusBits({"C","Z","I","D","B","1","V","N"});
@@ -56,12 +45,42 @@ new BoolProp<Mcu>( "Ext_Osc", tr("External Clock"),"", this, &Mcu::extOscEnabled
 }
 Mcs65Cpu::~Mcs65Cpu() {}
 
+Watcher* Mcs65Cpu::getWatcher()
+{
+    if( !m_watcher )
+    {
+        m_watcher = new Watcher( nullptr, this );
+        m_watcher->addVariable( "Instruction", "string" );
+
+        // CPU registers to show in Monitor
+
+        m_cpuRegs.insert("P" , (uint8_t*) &m_P  );
+        m_cpuRegs.insert("S" , &m_SP );
+        m_cpuRegs.insert("A" , &m_Ac );
+        m_cpuRegs.insert("IR", &m_IR );
+        m_cpuRegs.insert("X" , &m_rX );
+        m_cpuRegs.insert("Y" , &m_rY );
+        //m_rI = nullptr;
+        m_watcher->addRegisters( m_cpuRegs.keys() );
+    }
+    return m_watcher;
+}
+
+int Mcs65Cpu::getCpuReg( QString reg )
+{
+    if( m_cpuRegs.contains( reg ) )
+    {
+        uint8_t* regPtr = m_cpuRegs.value( reg );
+        return *regPtr;
+    }
+    return -1;
+}
+
 QString Mcs65Cpu::getStrReg( QString reg ) // Called by Mcu Monitor to get String values
 {
     QString value = "";
 
     if( reg == "Instruction") value = getStrInst( m_IR );
-
 
     return value;
 }

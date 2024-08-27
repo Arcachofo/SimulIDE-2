@@ -29,24 +29,22 @@ McuCpu::McuCpu( eMcu* mcu )
         if( sregAddr ) m_STATUS = &m_dataMem[sregAddr];
     }
     m_progAddrSize = m_mcuRam->wordBytes();
-
-    QMap<QString, regInfo_t>* regInfo = m_mcuRam->regInfo();
-    if( !regInfo->isEmpty() )
-    {
-        m_mcuRam->createWatcher( this );
-        Watcher* watcher = m_mcuRam->getWatcher();
-
-        QStringList regList;
-        for( QString name : regInfo->keys() )
-        {
-            regList.append( name );
-            uint32_t addr = regInfo->value( name ).address;
-            m_cpuRegs.insert( name , (uint8_t*) &m_dataMem[addr] );
-        }
-        watcher->setRegisters( regList );
-    }
 }
 McuCpu::~McuCpu() {}
+
+Watcher* McuCpu::getWatcher()
+{
+    if( !m_watcher )
+    {
+        QMap<QString, regInfo_t>* regInfo = m_mcuRam->regInfo();
+        if( !regInfo->isEmpty() )
+        {
+            m_watcher = new Watcher( nullptr, this );
+            m_watcher->addRegisters( regInfo->keys() );
+        }
+    }
+    return m_watcher;
+}
 
 void McuCpu::CALL_ADDR( uint32_t addr ) // Used by MCU Interrupts:: All MCUs should use or override this
 {

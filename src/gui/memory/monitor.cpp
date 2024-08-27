@@ -13,18 +13,13 @@
 #include "mcuram.h"
 #include "watcher.h"
 
-Monitor::Monitor( QWidget* parent/*, eMcu* mcu*/ )
-          : QDialog( parent )
+Monitor::Monitor( QWidget* parent )
+       : QDialog( parent )
 {
     setupUi(this);
     hide();
 
     m_watcher = nullptr;
-    //m_eMcu = mcu;
-
-    //McuRam* mcuRam = (McuRam*)m_eMcu->getModule("ram");
-    //m_watcher = mcuRam->getWatcher();
-    //if( m_watcher ) tabWidget->addTab( m_watcher, tr("Watch") );
 
     connect( tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)) );
 }

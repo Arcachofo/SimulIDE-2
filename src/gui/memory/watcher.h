@@ -10,7 +10,6 @@
 
 #include "ui_watcher.h"
 
-class CoreBase;
 class ValueWidget;
 class QStandardItemModel;
 class ScriptCpu;
@@ -26,7 +25,7 @@ class Watcher : public QWidget, private Ui::Watcher
 
         void updateValues();
 
-        void setRegisters( QStringList regs );
+        void addRegisters( QStringList regs );
         void addRegister( QString name, QString type );
 
         void setVariables( QStringList vars );

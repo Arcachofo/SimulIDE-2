@@ -33,9 +33,12 @@ listItem_t DRAM::libraryItem(){
 DRAM::DRAM( QString type, QString id )
     : LogicComponent( type, id )
     , Memory()
+    , Watchable()
 {
     m_width  = 4;
     m_height = 11;
+
+    m_monitor = nullptr;
 
     m_otherPin.resize( 4 );
     m_WePin = new IoPin( 180, QPoint( 0,0 ), m_id+"-Pin_We", 0, this, input );
@@ -358,13 +361,12 @@ void DRAM::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu )
 
 void DRAM::slotOpenMonitor()
 {
-    if( !m_compMonitor )
+    if( !m_monitor )
     {
-
         showTable();
-        m_compMonitor = new Monitor( CircuitWidget::self() );
-        m_compMonitor->addTable( m_memTable, "RAM" );
+        m_monitor = new Monitor();
+        m_monitor->addTable( m_memTable, "RAM" );
     }
-    m_compMonitor->setWindowTitle( idLabel() );
-    m_compMonitor->show();
+    m_monitor->setWindowTitle( idLabel() );
+    m_monitor->show();
 }

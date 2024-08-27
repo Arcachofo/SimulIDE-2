@@ -45,8 +45,8 @@ Watcher::Watcher( QWidget* parent, Watchable* cpu )
 
     m_variableModel = new QStandardItemModel( this );
     variables->setEditTriggers( QAbstractItemView::NoEditTriggers );
-    variables->setFont( font );
     variables->setModel( m_variableModel );
+    variables->setFont( font );
 
     splitter->setSizes( {{50,320}} );
     splitter_2->setSizes( {100,30} );
@@ -72,7 +72,7 @@ void Watcher::updateValues()
     for( ValueWidget* vw : m_values ) vw->updateValue();
 }
 
-void Watcher::setRegisters( QStringList regs )
+void Watcher::addRegisters( QStringList regs )
 {
     regs.sort();
     // m_regNames = regs;

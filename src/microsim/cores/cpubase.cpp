@@ -6,7 +6,7 @@
 #include "cpubase.h"
 
 CpuBase::CpuBase( eMcu* mcu )
-       : CoreBase()
+       : Watchable()
 {
     m_mcu = mcu;
 

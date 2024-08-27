@@ -32,52 +32,6 @@ Z80Core::Z80Core( eMcu* mcu )
        : CpuBase( mcu )
        , eElement( mcu->getId()+"-Z80Core" )
 {
-    // Values to show in Monitor High Area (any type)
-    m_mcuRam->createWatcher( this );
-    Watcher* watcher = m_mcuRam->getWatcher();
-
-    watcher->addRegister( "A", "uint8" );
-    watcher->addRegister( "B", "uint8" );
-    watcher->addRegister( "C", "uint8" );
-    watcher->addRegister( "D", "uint8" );
-    watcher->addRegister( "E", "uint8" );
-    watcher->addRegister( "H", "uint8" );
-    watcher->addRegister( "L", "uint8" );
-    watcher->addRegister( "XH", "uint8" );
-    watcher->addRegister( "XL", "uint8" );
-    watcher->addRegister( "YH", "uint8" );
-    watcher->addRegister( "YL", "uint8" );
-    watcher->addRegister( "I", "uint8" );
-    watcher->addRegister( "R", "uint8" );
-    watcher->addRegister( "AF", "uint16" );
-    watcher->addRegister( "BC", "uint16" );
-    watcher->addRegister( "DE", "uint16" );
-    watcher->addRegister( "HL", "uint16" );
-    watcher->addRegister( "IX", "uint16" );
-    watcher->addRegister( "IY", "uint16" );
-    watcher->addRegister( "AF'", "uint16" );
-    watcher->addRegister( "BC'", "uint16" );
-    watcher->addRegister( "DE'", "uint16" );
-    watcher->addRegister( "HL'", "uint16" );
-    watcher->addRegister( "IR", "uint16" );
-    watcher->addRegister( "SP", "uint16" );
-    watcher->addRegister( "WZ", "uint16" );
-    watcher->addRegister( "IFF1", "string" );
-    watcher->addRegister( "IFF2", "string" );
-
-    // Values to show in Monitor Low Area (any type)
-    watcher->addVariable( "TState", "string" );
-    watcher->addVariable( "TState_Int", "uint32" );
-    watcher->addVariable( "MCycle", "string" );
-    watcher->addVariable( "M1_Type", "string" );
-    watcher->addVariable( "Op_Code", "uint8" );
-    watcher->addVariable( "Instruction", "string" );
-    watcher->addVariable( "Address_Bus", "uint16" );
-    watcher->addVariable( "Data_Bus_In", "uint8" );
-    watcher->addVariable( "Data_Bus_Out", "uint8" );
-    watcher->addVariable( "Bus_Op", "string" );
-    watcher->addVariable( "Bus_HighZ", "string" );
-
     /// Fixme m_STATUS = &regF;
     m_mcuRam->setStatusBits({"C","N","PV","y","H","x","Z","S"});
 
@@ -121,8 +75,58 @@ new BoolProp<Z80Core>( "Single cycle I/O", QObject::tr("Single cycle I/O")     ,
 new BoolProp<Z80Core>( "Int_Vector"      , QObject::tr("Interrupt Vector 0xFF"), "", this, &Z80Core::intVector, &Z80Core::setIntVector ),
     },0} );
 }
-
 Z80Core::~Z80Core() {}
+
+Watcher* Z80Core::getWatcher()
+{
+    if( !m_watcher )
+    {
+        m_watcher = new Watcher( nullptr, this );
+        // Values to show in Monitor High Area (any type)
+        m_watcher->addRegister( "A", "uint8" );
+        m_watcher->addRegister( "B", "uint8" );
+        m_watcher->addRegister( "C", "uint8" );
+        m_watcher->addRegister( "D", "uint8" );
+        m_watcher->addRegister( "E", "uint8" );
+        m_watcher->addRegister( "H", "uint8" );
+        m_watcher->addRegister( "L", "uint8" );
+        m_watcher->addRegister( "XH", "uint8" );
+        m_watcher->addRegister( "XL", "uint8" );
+        m_watcher->addRegister( "YH", "uint8" );
+        m_watcher->addRegister( "YL", "uint8" );
+        m_watcher->addRegister( "I", "uint8" );
+        m_watcher->addRegister( "R", "uint8" );
+        m_watcher->addRegister( "AF", "uint16" );
+        m_watcher->addRegister( "BC", "uint16" );
+        m_watcher->addRegister( "DE", "uint16" );
+        m_watcher->addRegister( "HL", "uint16" );
+        m_watcher->addRegister( "IX", "uint16" );
+        m_watcher->addRegister( "IY", "uint16" );
+        m_watcher->addRegister( "AF'", "uint16" );
+        m_watcher->addRegister( "BC'", "uint16" );
+        m_watcher->addRegister( "DE'", "uint16" );
+        m_watcher->addRegister( "HL'", "uint16" );
+        m_watcher->addRegister( "IR", "uint16" );
+        m_watcher->addRegister( "SP", "uint16" );
+        m_watcher->addRegister( "WZ", "uint16" );
+        m_watcher->addRegister( "IFF1", "string" );
+        m_watcher->addRegister( "IFF2", "string" );
+
+        // Values to show in Monitor Low Area (any type)
+        m_watcher->addVariable( "TState", "string" );
+        m_watcher->addVariable( "TState_Int", "uint32" );
+        m_watcher->addVariable( "MCycle", "string" );
+        m_watcher->addVariable( "M1_Type", "string" );
+        m_watcher->addVariable( "Op_Code", "uint8" );
+        m_watcher->addVariable( "Instruction", "string" );
+        m_watcher->addVariable( "Address_Bus", "uint16" );
+        m_watcher->addVariable( "Data_Bus_In", "uint8" );
+        m_watcher->addVariable( "Data_Bus_Out", "uint8" );
+        m_watcher->addVariable( "Bus_Op", "string" );
+        m_watcher->addVariable( "Bus_HighZ", "string" );
+    }
+    return m_watcher;
+}
 
 int Z80Core::getCpuReg( QString reg ) // Called by Mcu Monitor to get Integer values
 {

@@ -13,9 +13,7 @@
 #include "memory.h"
 #include "mcutypes.h"
 
-class Watcher;
 class Watchable;
-class CoreBase;
 
 class McuRam : public McuModule, public Memory
 {
@@ -37,9 +35,6 @@ class McuRam : public McuModule, public Memory
         bool     regExist( QString reg ) { return m_regInfo.contains( reg ); }
         uint32_t  readReg( uint32_t addr );                                 // Read Register (call watchers)
         void     writeReg( uint32_t addr, uint32_t v, bool masked=true );   // Write Register (call watchers)
-
-        Watcher* getWatcher() { return m_watcher; }
-        void createWatcher( Watchable* cpu );
 
         //QStringList registerList() { return m_regInfo.keys(); }
         QMap<QString, uint32_t>*  bitMasks()  { return &m_bitMasks; }
@@ -78,8 +73,6 @@ class McuRam : public McuModule, public Memory
 
         uint32_t m_sregAddr;                      // STATUS Reg Address
         QStringList m_statusBits;
-
-        Watcher* m_watcher;
 };
 
 #endif

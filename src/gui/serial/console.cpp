@@ -8,7 +8,7 @@
 #include <QTextCursor>
 
 #include "console.h"
-#include "corebase.h"
+#include "watchable.h"
 #include "mainwindow.h"
 #include "simulator.h"
 
