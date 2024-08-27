@@ -13,9 +13,9 @@ Mcs65Interface::Mcs65Interface( eMcu* mcu )
 }
 Mcs65Interface::~Mcs65Interface() {}
 
-int Mcs65Interface::getCpuReg( QString reg ) // Called by Mcu Monitor to get Integer values
+int Mcs65Interface::getIntReg( QString reg ) // Called by Mcu Monitor to get Integer values
 {
-    return CpuBase::getCpuReg( reg );
+    return CpuBase::getIntReg( reg );
 }
 
 QString Mcs65Interface::getStrInst( uint8_t IR ) // Called by Mcu Monitor to get String values

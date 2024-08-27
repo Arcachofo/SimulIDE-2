@@ -36,11 +36,15 @@ Watcher* McuCpu::getWatcher()
 {
     if( !m_watcher )
     {
-        QMap<QString, regInfo_t>* regInfo = m_mcuRam->regInfo();
-        if( !regInfo->isEmpty() )
+        QMap<QString, regInfo_t>* regInfoList = m_mcuRam->regInfo();
+        if( !regInfoList->isEmpty() )
         {
             m_watcher = new Watcher( nullptr, this );
-            m_watcher->addRegisters( regInfo->keys() );
+            for( QString reg : regInfoList->keys() )
+            {
+                regInfo_t ri = regInfoList->value( reg );
+                m_watcher->addRegister( reg, "uint8", ri.bitNames );
+            }
         }
     }
     return m_watcher;

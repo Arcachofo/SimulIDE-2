@@ -201,6 +201,8 @@ Mcu::Mcu( QString type, QString id )
 }
 Mcu::~Mcu()
 {
+    if( m_monitor ) delete m_monitor;
+
     if( m_pSelf == this ) m_pSelf = nullptr;
     InfoWidget::self()->updtMcu();
 }

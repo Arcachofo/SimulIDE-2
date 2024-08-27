@@ -21,7 +21,7 @@ class Watchable
         virtual Watcher* getWatcher();
         //void createWatcher( Watchable* cpu );
 
-        virtual int getCpuReg( QString ){ return -1;}
+        virtual int getIntReg( QString ){ return -1;}
         virtual QString getStrReg( QString ){ return "";}
 
         virtual void command( QString ){;}

@@ -5,12 +5,12 @@
 
 #include "monitor.h"
 #include "simulator.h"
-#include "e_mcu.h"
-#include "cpubase.h"
+//#include "e_mcu.h"
+//#include "cpubase.h"
 #include "memtable.h"
-#include "mainwindow.h"
-#include "utils.h"
-#include "mcuram.h"
+//#include "mainwindow.h"
+//#include "utils.h"
+//#include "mcuram.h"
 #include "watcher.h"
 
 Monitor::Monitor( QWidget* parent )

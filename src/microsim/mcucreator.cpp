@@ -441,7 +441,7 @@ void McuCreator::getRegisters( QDomElement* e, uint16_t offset )
                 if( !wMask.isEmpty() ) m_mcuRam->m_regMask[regAddr] = wMask.toUInt(0,2);
                 m_mcuRam->m_addrMap[regAddr] = regAddr;
 
-                regInfo_t regInfo = { regAddr, resetVal/*, writeMask*/ };
+                regInfo_t regInfo = { regAddr, resetVal, bits };
                 m_mcuRam->m_regInfo.insert( regName, regInfo );
 
                 if( !bits.isEmpty() )                    // Create bitMasks

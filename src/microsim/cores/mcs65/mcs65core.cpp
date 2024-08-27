@@ -66,7 +66,7 @@ Watcher* Mcs65Cpu::getWatcher()
     return m_watcher;
 }
 
-int Mcs65Cpu::getCpuReg( QString reg )
+int Mcs65Cpu::getIntReg( QString reg )
 {
     if( m_cpuRegs.contains( reg ) )
     {

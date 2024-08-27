@@ -128,7 +128,7 @@ Watcher* Z80Core::getWatcher()
     return m_watcher;
 }
 
-int Z80Core::getCpuReg( QString reg ) // Called by Mcu Monitor to get Integer values
+int Z80Core::getIntReg( QString reg ) // Called by Mcu Monitor to get Integer values
 {
     int value = -1;
     if( reg == "A") value = regA;

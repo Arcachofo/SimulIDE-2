@@ -15,7 +15,7 @@ class Mcs65Interface : public CpuBase, public eElement
         Mcs65Interface( eMcu* mcu );
         ~Mcs65Interface();
 
-        virtual int getCpuReg( QString reg ) override;
+        virtual int getIntReg( QString reg ) override;
 
 
     protected:

@@ -6,8 +6,8 @@
 #ifndef MONITOR_H
 #define MONITOR_H
 
-#include <QDialog>
-#include <QTableWidget>
+//#include <QDialog>
+//#include <QTableWidget>
 
 #include "ui_monitor.h"
 

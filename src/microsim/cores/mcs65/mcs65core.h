@@ -29,7 +29,7 @@ class Mcs65Cpu : public Mcs65Interface
         ~Mcs65Cpu();
 
         virtual Watcher* getWatcher() override;
-        virtual int getCpuReg( QString reg ) override;
+        virtual int getIntReg( QString reg ) override;
         virtual QString getStrReg( QString reg ) override;
 
         virtual void stamp() override;

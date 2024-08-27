@@ -76,13 +76,14 @@ void Watcher::addRegisters( QStringList regs )
 {
     regs.sort();
     // m_regNames = regs;
-    for( QString reg : regs ) addRegister( reg, "uint8" );
+    for( QString reg : regs ) addRegister( reg, "uint8",{} );
 }
 
-void Watcher::addRegister( QString name, QString type )
+void Watcher::addRegister( QString name, QString type, QString bits )
 {
     if( m_typeTable.keys().contains( name ) ) return;
     m_typeTable[ name ] = type;
+    m_bitTable[ name ] = bits;
     m_registerModel->appendRow( new QStandardItem(name) );
 }
 
@@ -100,6 +101,11 @@ void Watcher::addVariable( QString name, QString type )
     m_typeTable[ name ] = type;
     m_variableModel->appendRow( new QStandardItem(name) );
 }
+
+/*void Watcher::addbitField( QString name, QString type, QStringList bits )
+{
+
+}*/
 
 void Watcher::loadVarSet( QStringList varSet )
 {
@@ -158,6 +164,8 @@ void Watcher::insertValue( QString name )
 
     ValueWidget* valwid = new ValueWidget( name, type, m_core, this );
     m_values[name] = valwid;
+
+    valwid->setBitNames( m_bitTable.value( name ));
 
     int last = m_console ? 1 : 0;
     m_valuesLayout->insertWidget( m_valuesLayout->count()-last, valwid );

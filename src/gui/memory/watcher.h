@@ -26,10 +26,11 @@ class Watcher : public QWidget, private Ui::Watcher
         void updateValues();
 
         void addRegisters( QStringList regs );
-        void addRegister( QString name, QString type );
+        void addRegister( QString name, QString type, QString bits="" );
 
         void setVariables( QStringList vars );
         void addVariable( QString name, QString type );
+        //void addbitField( QString name, QString type, QStringList bits );
 
         void loadVarSet( QStringList varSet );
         QStringList getVarSet();
@@ -55,8 +56,9 @@ class Watcher : public QWidget, private Ui::Watcher
         QStandardItemModel* m_registerModel;
         QStandardItemModel* m_variableModel;
 
-        QHash<QString, QString> m_typeTable;
-        QHash<QString, ValueWidget*> m_values;
+        QMap<QString, QString> m_typeTable;
+        QMap<QString, QString> m_bitTable;
+        QMap<QString, ValueWidget*> m_values;
 
         QBoxLayout* m_valuesLayout;
 };

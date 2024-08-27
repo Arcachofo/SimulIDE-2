@@ -29,8 +29,8 @@ BitWidget::BitWidget( QString name, QString type, Watchable* core, QWidget* pare
     font.setBold( true );
     font.setPixelSize( round(12.5*scale) );
 
-    nameLabel->setFont( font );
-    nameLabel->setText( m_name );
+    //nameLabel->setFont( font );
+    //nameLabel->setText( m_name );
 
     bitTable->setFixedWidth( round(120*scale) );
     //bitTable->setReadOnly( true );

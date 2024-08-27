@@ -41,7 +41,7 @@ ScriptCpu::ScriptCpu( eMcu* mcu )
     m_extClock    = nullptr;
     m_extClockF   = nullptr;
     m_INTERRUPT   = nullptr;
-    m_getCpuReg   = nullptr;
+    m_getIntReg   = nullptr;
     m_getStrReg   = nullptr;
     m_command     = nullptr;
     m_setLinkedVal= nullptr;
@@ -240,7 +240,7 @@ int ScriptCpu::compileScript()
     m_runStep     = module->GetFunctionByDecl("void runStep()");
     m_extClock    = module->GetFunctionByDecl("void extClock( bool clkState )");
     m_extClockF   = module->GetFunctionByDecl("void extClock()");
-    m_getCpuReg   = module->GetFunctionByDecl("int getCpuReg( string reg )");
+    m_getIntReg   = module->GetFunctionByDecl("int getIntReg( string reg )");
     m_getStrReg   = module->GetFunctionByDecl("string getStrReg( string reg )");
     m_command     = module->GetFunctionByDecl("void command( string c )");
     m_setLinkedVal= module->GetFunctionByDecl("void setLinkedValue( double v, int i )");
@@ -265,7 +265,7 @@ int ScriptCpu::compileScript()
         m_propSetters[propName] = asFunc;
     }
 
-    /*if( m_getCpuReg || m_getStrReg )
+    /*if( m_getIntReg || m_getStrReg )
     {
         m_mcuRam->createWatcher( this );
     }*/
@@ -399,11 +399,11 @@ void ScriptCpu::addCpuVar( string name, string type )
     m_watcher->addVariable( QString::fromStdString( name ), QString::fromStdString( type ) );
 }
 
-int ScriptCpu::getCpuReg( QString reg )
+int ScriptCpu::getIntReg( QString reg )
 {
-    if( !m_getCpuReg ) return 0;
+    if( !m_getIntReg ) return 0;
 
-    prepare( m_getCpuReg );
+    prepare( m_getIntReg );
     std::string str = reg.toStdString();
     m_context->SetArgObject( 0, &str );
     execute();

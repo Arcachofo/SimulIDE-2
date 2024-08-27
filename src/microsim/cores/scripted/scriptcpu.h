@@ -39,7 +39,7 @@ class ScriptCpu : public ScriptBase, public McuCpu
 
         void addCpuReg( string name, string type );
         void addCpuVar( string name, string type );
-        virtual int getCpuReg( QString reg ) override;
+        virtual int getIntReg( QString reg ) override;
         virtual QString getStrReg( QString ) override;
 
         void addProperty( QString group, QString name, QString type, QString unit );
@@ -88,7 +88,7 @@ class ScriptCpu : public ScriptBase, public McuCpu
         asIScriptFunction* m_extClockF;
         asIScriptFunction* m_INTERRUPT;
 
-        asIScriptFunction* m_getCpuReg;
+        asIScriptFunction* m_getIntReg;
         asIScriptFunction* m_getStrReg;
         asIScriptFunction* m_command;
 

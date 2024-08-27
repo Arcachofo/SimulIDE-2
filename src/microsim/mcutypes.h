@@ -7,11 +7,14 @@
 #define MCUTYPES_H
 
 #include <inttypes.h>
+#include <QString>
+
 #include "mcusignal.h"
 
 struct regInfo_t{
     uint32_t address;
-    uint32_t  resetVal;
+    uint32_t resetVal;
+    QString  bitNames;
 };
 
 struct regBits_t{

@@ -17,13 +17,13 @@ HeaderWidget::HeaderWidget( QString name, QString type, QWidget* parent )
     m_name = name;
     m_type = type;
 
-    nameLabel->setContentsMargins( 2, 2, 2, 6 );
-    typeLabel->setContentsMargins( 2, 2, 2, 6 );
-    valueLine->setContentsMargins( 2, 2, 2, 6 );
+    //nameLabel->setContentsMargins( 2, 2, 2, 6 );
+    //typeLabel->setContentsMargins( 2, 2, 2, 6 );
+    //valueLine->setContentsMargins( 2, 2, 2, 6 );
 
     nameLabel->setText( m_name );
     typeLabel->setText( m_type );
-    valueLine->setText("Value");
+    //valueLine->setText("Value");
 
     float scale = MainWindow::self()->fontScale();
 

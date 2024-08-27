@@ -108,7 +108,7 @@ Watcher* ULA_ZX48k::getWatcher()
     return m_watcher;
 }
 
-int ULA_ZX48k::getCpuReg( QString reg ) // Called by Mcu Monitor to get Integer values
+int ULA_ZX48k::getIntReg( QString reg ) // Called by Mcu Monitor to get Integer values
 {
     int value = -1;
     if     ( reg == "Horizontal Counter") value = m_C;

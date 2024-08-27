@@ -31,9 +31,9 @@ class BitWidget : public QWidget, private Ui::BitWidget
         QString m_type;
 
         QStringList m_bitNames;
-        int     m_intVal;
 
         int m_bits;
+        //int m_intVal;
 
         Watchable* m_core;
 };

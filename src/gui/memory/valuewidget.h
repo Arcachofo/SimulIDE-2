@@ -21,15 +21,23 @@ class ValueWidget : public QWidget, private Ui::ValueWidget
 
         void updateValue();
 
+        void setBitNames( QString bits );
+
         void setValueInt( int val );
         void setValueStr( QString str );
 
     private:
+        void setupTable();
+
         QString m_name;
         QString m_type;
 
+        QStringList m_bitNames;
+
         QString m_strVal;
-        int     m_intVal;
+
+        int m_intVal;
+        int m_bits;
 
         Watchable* m_core;
 };

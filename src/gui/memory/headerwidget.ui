@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>454</width>
-    <height>25</height>
+    <width>372</width>
+    <height>31</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,26 +56,29 @@
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
+     <property name="styleSheet">
+      <string notr="true">background-color : #707090; color : white;</string>
+     </property>
      <property name="locale">
       <locale language="C" country="AnyCountry"/>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
+      <enum>QFrame::Plain</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
      </property>
      <property name="text">
-      <string>Name</string>
+      <string notr="true">Name</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
      <property name="margin">
-      <number>0</number>
+      <number>6</number>
      </property>
     </widget>
    </item>
@@ -93,43 +96,6 @@
        <height>0</height>
       </size>
      </property>
-     <property name="palette">
-      <palette>
-       <active>
-        <colorrole role="Text">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>32</red>
-           <green>32</green>
-           <blue>144</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </active>
-       <inactive>
-        <colorrole role="Text">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>32</red>
-           <green>32</green>
-           <blue>144</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </inactive>
-       <disabled>
-        <colorrole role="Text">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>144</red>
-           <green>144</green>
-           <blue>144</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </disabled>
-      </palette>
-     </property>
      <property name="font">
       <font>
        <family>Ubuntu Mono</family>
@@ -141,20 +107,26 @@
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color : #707090; color : white;</string>
+     </property>
      <property name="locale">
       <locale language="C" country="AnyCountry"/>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
+      <enum>QFrame::Plain</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
      </property>
      <property name="text">
-      <string>Value</string>
+      <string notr="true">Value</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -176,20 +148,26 @@
        <bold>true</bold>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">background-color : #707090; color : white;</string>
+     </property>
      <property name="locale">
       <locale language="C" country="AnyCountry"/>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
+      <enum>QFrame::Plain</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
      </property>
      <property name="text">
-      <string>Type</string>
+      <string notr="true">Type</string>
+     </property>
+     <property name="margin">
+      <number>6</number>
      </property>
     </widget>
    </item>
