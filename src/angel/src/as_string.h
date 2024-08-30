@@ -25,7 +25,10 @@
    http://www.angelcode.com/angelscript/
 
    Andreas Jonsson
-   andreas@angelcode.com
+*/
+/*
+   This file was modified by:
+   Santiago Gonzalez santigoro@gmail.com
 */
 
 // This class has been designed to be easy to use, but not necessarily efficiency.

@@ -10,7 +10,6 @@
 
 class Component;
 class McuPort;
-class eMcu;
 
 class AvrPin : public McuPin
 {

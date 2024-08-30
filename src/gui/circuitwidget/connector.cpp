@@ -28,7 +28,7 @@ Connector::Connector( QString type, QString id, Pin* startpin, Pin* endpin )
     setIsBus( m_startPin->isBus() );
 
     if( endpin ) closeCon( endpin );
-    else m_endPin   = NULL;
+    else m_endPin   = nullptr;
 
     Circuit::self()->compMap()->insert( id, this );
 
@@ -84,7 +84,6 @@ void Connector::remConLine( ConnectorLine* line  )
 void Connector::setPointListStr( QString pl )
 {
     setPointList( pl.split(",") );
-    //remNullLines();
 }
 
 void Connector::setPointList( QStringList plist )
@@ -95,10 +94,10 @@ void Connector::setPointList( QStringList plist )
     int index = 0;
     int p1x = plist.at(0).toInt();
     int p1y = plist.at(1).toInt();
-    int p2x = plist.at(plist.size()-2).toInt();
-    int p2y = plist.last().toInt();
+    int p2x;
+    int p2y;
 
-    ConnectorLine* line1 = NULL;
+    ConnectorLine* line1 = nullptr;
 
     for( int i=2; i<plist.size(); i+=2 )
     {
@@ -184,8 +183,8 @@ void Connector::disconnectLines( int index1, int index2 )
     if( index1 < 0 || index2 < 0 || index2 > m_conLineList.length()-1 )
         return;
 
-    m_conLineList.at( index1 )->setNextLine( NULL );
-    m_conLineList.at( index2 )->setPrevLine( NULL );
+    m_conLineList.at( index1 )->setNextLine( nullptr );
+    m_conLineList.at( index2 )->setPrevLine( nullptr );
 }
 
 void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
@@ -197,7 +196,7 @@ void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
     bool diagonal = false;
     int length = m_conLineList.length();
     ConnectorLine* line;
-    ConnectorLine* preline = NULL;
+    ConnectorLine* preline = nullptr;
 
     if( pin == m_startPin )
     {
@@ -223,7 +222,7 @@ void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
 
         if( length > 1 ){
             preline = m_conLineList.at( m_lastindex-1 );
-            if( pin != NULL ) m_actLine = m_lastindex-1;
+            if( pin != nullptr ) m_actLine = m_lastindex-1;
         }
         if( diagonal || m_freeLine ) 
         {
@@ -380,13 +379,6 @@ void Connector::splitCon( int index, Pin* pin0, Pin* pin2 )
 void Connector::updateLines()
 {
     for( ConnectorLine* line : m_conLineList ) line->update();
-
-    /*eNode* enode = startPin()->getEnode();
-    if( enode && enode->voltchanged() )
-    {
-        enode->setVoltChanged( false );
-        for( ConnectorLine* line : m_conLineList ) line->update();
-    }*/
 }
 
 void Connector::setIsBus( bool bus )

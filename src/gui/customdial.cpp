@@ -116,7 +116,7 @@ void CustomDial::paintEvent( QPaintEvent* e )
     painter.setPen( QPen(Qt::NoPen) );
     painter.drawEllipse( br );                          // Draw first circle
 
-    double ratio = double(QDial::value())/QDial::maximum();    // Get ratio between current value and maximum to calculate angle
+    double ratio = double(QDial::value())/QDial::maximum();  // Get ratio between current value and maximum to calculate angle
     double angle = ratio*degreer - degrees;                  // The maximum amount of degrees is 270, offset by 225
 
     // Add r to have (0,0) in center of dial

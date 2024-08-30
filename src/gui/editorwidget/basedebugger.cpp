@@ -314,14 +314,9 @@ bool BaseDebugger::isNoValid( QString line )
 
 void BaseDebugger::setLineToFlash( codeLine_t line, int addr )
 {
-    //int lineNumber = line.lineNumber;
     if( !m_flashToSource.contains( addr ) )
     {
-        //qDebug() << " line:" << line << "addr:" << addr;
-        //if( lineNumber > m_lastLine ) m_lastLine = lineNumber;
         m_flashToSource[ addr ] = line;
-        ///qDebug() <<addr<<line.lineNumber<<line.file;
-        //m_sourceToFlash[ lineNumber ] = addr;
     }
 }
 
@@ -351,5 +346,3 @@ QString BaseDebugger::getVarType( QString var )
 {
     return m_varTypes.value( var );
 }
-
-//#include "moc_basedebugger.cpp"

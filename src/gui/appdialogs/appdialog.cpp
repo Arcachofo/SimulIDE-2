@@ -67,7 +67,6 @@ AppDialog::AppDialog( QWidget* parent )
     m_showHelp = false;
     helpText->setVisible( false );
     mainLayout->removeWidget( helpText );
-    //helpText->setText( help );
 
     this->adjustSize();
 }

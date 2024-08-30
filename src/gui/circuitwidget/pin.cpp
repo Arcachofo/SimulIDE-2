@@ -65,7 +65,6 @@ Pin::Pin( int angle, const QPoint pos, QString id, int index, Component* parent,
     m_label.setText("");
     m_label.setBrush( QColor( 250, 250, 200 ) );
 
-    /// setObjectName( id );
     setConnector( NULL );
     setPos( pos );
     setRotation( 180-angle );
