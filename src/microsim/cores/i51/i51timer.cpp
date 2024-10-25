@@ -7,7 +7,7 @@
 #include "e_mcu.h"
 #include "mcupin.h"
 #include "simulator.h"
-#include "datautils.h"
+#include "mcuram.h"
 
 #define COUNT_L m_countL[0]
 #define COUNT_H m_countH[0]
@@ -21,14 +21,14 @@ I51Timer::~I51Timer(){}
 void I51Timer::setup()
 {
     QString n = m_name.right(1);
-    m_TxM  = getRegBits( "T"+n+"M0,T"+n+"M1", m_mcuRam );
-    m_CTx  = getRegBits( "C/T"+n, m_mcuRam );
-    m_GATE = getRegBits( "GATE"+n, m_mcuRam );
+    m_TxM  = m_mcuRam->getRegBits("T"+n+"M0,T"+n+"M1");
+    m_CTx  = m_mcuRam->getRegBits("C/T"+n );
+    m_GATE = m_mcuRam->getRegBits("GATE"+n );
 
     m_trEnabled = false;
-    if( n == "0" ) m_gatePin = m_mcu->getMcuPin("P32");
+    if     ( n == "0" ) m_gatePin = m_mcu->getMcuPin("P32");
     else if( n == "1" ) m_gatePin = m_mcu->getMcuPin("P33");
-    else m_gatePin = NULL;
+    else                m_gatePin = nullptr;
 }
 
 void I51Timer::initialize()
@@ -46,15 +46,15 @@ void I51Timer::voltChanged()
     McuTimer::voltChanged();  // External Clock Pin changed voltage
 }
 
-void I51Timer::enable( uint8_t en )
+void I51Timer::enableChanged()
 {
-    m_trEnabled = en;
+    m_trEnabled = m_enableBit.getRegBitsVal();
     doUpdateEnable();
 }
 
-void I51Timer::configureA( uint8_t newTMOD ) // TxM0,TxM1
+void I51Timer::configureA() // TMOD  TxM0,TxM1
 {
-    uint8_t mode = getRegBitsVal( newTMOD, m_TxM );
+    uint8_t mode = m_TxM.getRegBitsVal();
 
     if( mode != m_mode )
     {
@@ -80,12 +80,12 @@ void I51Timer::configureA( uint8_t newTMOD ) // TxM0,TxM1
         m_ovfPeriod = m_ovfMatch+1;
     }
 
-    bool extClock = getRegBitsBool( newTMOD, m_CTx );
+    bool extClock = m_CTx.getRegBitsBool();
     if( extClock != m_extClock )
     {
         enableExtClock( extClock );
     }
-    bool gate = getRegBitsBool( newTMOD, m_GATE );
+    bool gate = m_GATE.getRegBitsBool();
     if( gate != m_gate )
     {
         m_gate = gate;
@@ -126,7 +126,7 @@ void I51Timer::updtCycles() // Recalculate ovf, comps, etc
     sheduleEvents();
 }
 
-void I51Timer::updtCount( uint8_t )     // Write counter values to Ram
+void I51Timer::updtCount()     // Write counter values to Ram
 {
     if( !m_running ) return; // If no running, values were already written at timer stop.
 

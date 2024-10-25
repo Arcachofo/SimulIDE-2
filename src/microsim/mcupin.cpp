@@ -164,10 +164,10 @@ void McuPin::setExtraSource( double vddAdmit, double gndAdmit ) // Comparator Vr
     IoPin::updtState();
 }
 
-void McuPin::ConfExtInt( uint8_t bits )
+void McuPin::ConfExtInt()
 {
     if( !m_extInt ) return;
-    m_extIntTrigger = (extIntTrig_t)getRegBitsVal( bits, m_extIntBits );
+    m_extIntTrigger = (extIntTrig_t)m_extIntBits.getRegBitsVal();
     voltChanged();
 }
 

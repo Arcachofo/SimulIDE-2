@@ -41,6 +41,7 @@ class PicMrCore : public McuCpu
         virtual uint8_t getRam( uint16_t addr )=0;
         virtual void    setRam( uint16_t addr, uint8_t v )=0;
 
+        virtual void bankChanged(){ setBank( m_bankBits.getRegBitsVal() ); }
         virtual void setBank( uint8_t bank );
 
         void incDefault()
@@ -65,12 +66,12 @@ class PicMrCore : public McuCpu
         virtual void setPC( uint32_t pc ) override
         {
             m_PC = pc & 0x00001FFF;
-            m_dataMem[ m_PCLaddr] = m_PC & 0xFF;
+            m_mcuRam->write_08( m_PCLaddr, m_PC & 0xFF );
         }
 
         void setValue( uint8_t newV, uint8_t f, uint8_t d )
         {
-            if( d ) SET_RAM( f, newV );
+            if( d ) m_mcuRam->write_08( f, newV );
             else    *m_Wreg = newV;
         }
         void setValueZ( uint8_t newV, uint8_t f, uint8_t d )

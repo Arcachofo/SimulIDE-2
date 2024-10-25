@@ -17,17 +17,20 @@ class AvrSpi : public McuSpi
         ~AvrSpi();
 
         virtual void setup() override;
+        virtual void initialize() override;
 
         virtual void setMode( spiMode_t mode ) override;
-        virtual void configureA( uint8_t newSPCR ) override;
-        virtual void writeStatus( uint8_t newSPSR ) override;
-        virtual void writeSpiReg( uint8_t newSPDR ) override;
+        virtual void configureA() override;
+        virtual void writeStatus() override;
+        virtual void writeSpiReg() override;
         virtual void endTransaction() override;
 
     protected:
         void updateSpeed();
 
         bool m_speed2x;
+
+        uint8_t m_status;
 
         regBits_t m_SPR;
         regBits_t m_SPE;

@@ -34,19 +34,21 @@ class McuTimer : public McuPrescaled, public eElement
         virtual void sleep( int mode ) override;
 
         virtual void resetTimer();
+        virtual void enable( bool e );
 
-        virtual void enable( uint8_t en );
-        virtual void countWriteL( uint8_t val );
-        virtual void countWriteH( uint8_t val );
+        virtual void enableChanged();
 
-        virtual void updtCount( uint8_t val=0 );
+        virtual void countWriteL();
+        virtual void countWriteH();
+
+        virtual void updtCount();
 
         virtual void addOcUnit( McuOcUnit* ocUnit ) { m_ocUnit.emplace_back( ocUnit ); }
         virtual McuOcUnit* getOcUnit( QString name ) {return NULL;}
 
         virtual McuIcUnit* getIcUnit() { return m_ICunit; }
 
-        virtual void topReg0Changed( uint8_t val ){;}
+        virtual void topReg0Changed(){;}
 
         void enableExtClock( bool en );
         bool extClocked() { return m_extClock; }
@@ -73,6 +75,8 @@ class McuTimer : public McuPrescaled, public eElement
         bool m_bidirec;  // is Timer bidirectional?
         bool m_reverse;  // is Timer counting backwards?
         bool m_extClock;
+
+        regBits_t m_enableBit;
 
         uint8_t* m_countL; // Actual ram for counter Low byte
         uint8_t* m_countH; // Actual ram for counter High byte

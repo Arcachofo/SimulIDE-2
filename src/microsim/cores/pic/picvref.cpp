@@ -4,7 +4,7 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "picvref.h"
-#include "datautils.h"
+#include "mcuram.h"
 #include "e_mcu.h"
 #include "mcupin.h"
 
@@ -16,10 +16,10 @@ PicVref::~PicVref(){}
 
 void PicVref::setup()
 {
-    m_VREN = getRegBits("VREN", m_mcuRam );
-    m_VROE = getRegBits("VROE", m_mcuRam );
-    m_VRR  = getRegBits("VRR" , m_mcuRam );
-    m_VR   = getRegBits("VR0,VR1,VR2,VR3", m_mcuRam );
+    m_VREN = m_mcuRam->getRegBits("VREN");
+    m_VROE = m_mcuRam->getRegBits("VROE");
+    m_VRR  = m_mcuRam->getRegBits("VRR");
+    m_VR   = m_mcuRam->getRegBits("VR0,VR1,VR2,VR3");
 }
 
 void PicVref::initialize()
@@ -27,12 +27,12 @@ void PicVref::initialize()
     m_vref = m_mcu->vdd()/4; //setMode( 0 );
 }
 
-void PicVref::configureA( uint8_t newVRCON )
+void PicVref::configureA()
 {
-    m_enabled = getRegBitsBool( newVRCON, m_VREN );
+    m_enabled = m_VREN.getRegBitsBool();
 
-    bool     vrr = getRegBitsBool( newVRCON, m_VRR );
-    uint8_t mode = getRegBitsVal( newVRCON, m_VR );
+    bool     vrr = m_VRR.getRegBitsBool();
+    uint8_t mode = m_VR.getRegBitsVal();
     if( mode != m_mode || vrr != m_vrr )
     {
         m_mode = mode;
@@ -45,7 +45,7 @@ void PicVref::configureA( uint8_t newVRCON )
         }
         else m_vref = 0;
     }
-    bool vroe = getRegBitsBool( newVRCON, m_VROE );
+    bool vroe = m_VROE.getRegBitsBool();
     if( vroe != m_vroe )    // VDD-┬-8R-R-..16 Stages..-R-8R-┬-GND
     {                       // VrP-┘                     -VRR┴-VrN
         m_vroe = vroe;      /// TODO: Add VrefP/VrefN option to ladder
@@ -81,17 +81,17 @@ PicVrefE::~PicVrefE(){}
 
 void PicVrefE::setup()
 {
-    m_FVREN  = getRegBits("FVREN", m_mcuRam );
-    m_ADFVR  = getRegBits("ADFVR0,ADFVR1", m_mcuRam );   // ADC Vref
-    m_CDAFVR = getRegBits("CDAFVR0,CDAFVR1", m_mcuRam ); // DAC Vref
+    m_FVREN  = m_mcuRam->getRegBits("FVREN");
+    m_ADFVR  = m_mcuRam->getRegBits("ADFVR0,ADFVR1");   // ADC Vref
+    m_CDAFVR = m_mcuRam->getRegBits("CDAFVR0,CDAFVR1"); // DAC Vref
 }
 
-void PicVrefE::configureA( uint8_t newFVRCON )
+void PicVrefE::configureA() // FVRCON
 {
-    m_enabled = getRegBitsVal( newFVRCON, m_FVREN );
+    m_enabled = m_FVREN.getRegBitsVal();
 
     double vdd = m_mcu->vdd();
-    uint8_t adfvr = getRegBitsVal( newFVRCON, m_ADFVR );
+    uint8_t adfvr = m_ADFVR.getRegBitsVal();
     switch( adfvr ) {
         case 0: m_adcVref = 0.000; break;
         case 1: m_adcVref = 1.024; break;
@@ -100,7 +100,7 @@ void PicVrefE::configureA( uint8_t newFVRCON )
     }
     if( m_adcVref > vdd ) m_adcVref = vdd;
 
-    uint8_t cdafvr = getRegBitsVal( newFVRCON, m_CDAFVR );
+    uint8_t cdafvr = m_CDAFVR.getRegBitsVal();
     switch( cdafvr ) {
         case 0: m_dacVref = 0.000; break;
         case 1: m_dacVref = 1.024; break;

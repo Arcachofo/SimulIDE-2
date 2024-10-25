@@ -10,11 +10,11 @@
 PicMrCore::PicMrCore( eMcu* mcu )
          : McuCpu( mcu )
 {
-    m_sp = 0;
+    m_sp   = 0;
     m_bank = 0;
 
-    m_PCLaddr = m_mcuRam->getRegAddress("PCL");
-    m_PCHaddr = m_mcuRam->getRegAddress("PCLATH");
+    /// FIXME: m_PCLaddr = m_mcuRam->getRegAddress("PCL");
+    /// FIXME: m_PCHaddr = m_mcuRam->getRegAddress("PCLATH");
 }
 PicMrCore::~PicMrCore() {}
 
@@ -27,7 +27,7 @@ void PicMrCore::reset()
 
 void PicMrCore::setBank( uint8_t bank )
 {
-    m_bank = getRegBitsVal( bank, m_bankBits );
+    m_bank = bank;
     m_bank <<= 7;
 }
 
@@ -214,12 +214,12 @@ inline void PicMrCore::BTFSS( uint8_t f, uint8_t b )
 
 inline void PicMrCore::CALL( uint16_t k )
 {
-    CALL_ADDR( k | ((uint16_t)(m_dataMem[m_PCHaddr] & 0b00011000)<<8) );
+    CALL_ADDR( k | ((uint16_t)(GET_RAM(m_PCHaddr) & 0b00011000)<<8) );
 }
 
 inline void PicMrCore::GOTO( uint16_t k )
 {
-    setPC( k | ((uint16_t)(m_dataMem[m_PCHaddr] & 0b00011000)<<8) );
+    setPC( k | ((uint16_t)(GET_RAM(m_PCHaddr) & 0b00011000)<<8) );
     m_mcu->cyclesDone = 2;
 }
 
@@ -266,7 +266,7 @@ inline void PicMrCore::ADDLW( uint8_t k ) //// C,DC,Z
 
 void PicMrCore::runStep()
 {
-    uint16_t instr = m_progMem[m_PC] & 0x3FFF;
+    uint16_t instr = m_mcuPgm->read_16(m_PC) & 0x3FFF;
 
     m_mcu->cyclesDone = 0;
     incDefault();

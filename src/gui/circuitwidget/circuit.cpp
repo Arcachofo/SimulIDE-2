@@ -29,7 +29,7 @@
 #include "tunnel.h"
 #include "createcomp.h"
 
-Circuit* Circuit::m_pSelf = NULL;
+Circuit* Circuit::m_pSelf = nullptr;
 
 Circuit::Circuit( int width, int height, CircuitView* parent )
        : QGraphicsScene( parent )
@@ -61,9 +61,9 @@ Circuit::Circuit( int width, int height, CircuitView* parent )
     m_cicuitBatch = 0;
     m_circRev = 1e6;          /// Fixme
 
-    m_creCompDialog = NULL;
-    m_board = NULL;
-    m_newConnector = NULL;
+    m_creCompDialog = nullptr;
+    m_board = nullptr;
+    m_newConnector = nullptr;
     m_seqNumber = 0;
     m_conNumber = 0;
     m_maxUndoSteps = 100;
@@ -238,8 +238,8 @@ void Circuit::loadStrDoc( QString &doc )
 
         if( type == "Wire" )
         {
-            Pin* startpin = NULL;
-            Pin* endpin   = NULL;
+            Pin* startpin = nullptr;
+            Pin* endpin   = nullptr;
             QString startpinid, endpinid;
             QStringList pointList;
 
@@ -455,7 +455,7 @@ bool Circuit::saveString( QString &fileName, QString doc )
     if( !file.open( QFile::WriteOnly | QFile::Text ))
     {
         QApplication::restoreOverrideCursor();
-        QMessageBox::warning( NULL, "Circuit::saveString",
+        QMessageBox::warning( nullptr, "Circuit::saveString",
         tr("Cannot write file %1:\n%2.").arg(fileName).arg(file.errorString()));
         return false;
     }
@@ -690,7 +690,7 @@ void Circuit::beginUndoStep() // Save current state
     m_oldConns = m_connList;
     m_oldComps = m_compList;
     m_oldNodes = m_nodeList;
-    m_compStrMap.clear();      /// FIXME: optimize this, we are saving the whole circuit every time
+    m_compStrMap.clear();      /// TODO: optimize this, we are saving the whole circuit every time
 
     //save all comps
     for( Connector* conn : m_oldConns ) m_compStrMap.insert( conn, conn->toString() );

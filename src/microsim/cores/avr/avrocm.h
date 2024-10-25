@@ -16,12 +16,14 @@ class AvrOcm : public McuOcm
         AvrOcm( eMcu* mcu, QString name);
         ~AvrOcm();
 
-        virtual void setup() override{;}
+        virtual void setup() override;
 
-        virtual void configureA( uint8_t newVal ) override;
+        virtual void configureA() override;
 
     protected:
         virtual void OutputOcm() override;
+
+        regBits_t m_PD2;
 };
 
 #endif

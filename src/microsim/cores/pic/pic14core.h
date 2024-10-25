@@ -15,30 +15,30 @@ class Pic14Core : public PicMrCore
         ~Pic14Core();
 
 protected:
-    virtual void setBank( uint8_t bank ) override { PicMrCore::setBank( bank ); }
+    virtual void bankChanged() override { PicMrCore::bankChanged(); }
 
         uint8_t* m_FSR;
         uint8_t m_WregHidden;
 
         uint8_t getRam( uint16_t addr ) override //
         {
-            addr = m_mcuRam->getMapperAddr( addr+m_bank );
+            addr = m_mcuRam->getMappedAddr( addr+m_bank );
 
             if( addr == 0 ) addr = getINDF();// INDF
-            return McuCpu::GET_RAM( addr );
+            return m_mcuRam->read_08( addr );
         }
         void setRam( uint16_t addr, uint8_t v ) override//
         {
-            addr = m_mcuRam->getMapperAddr( addr+m_bank );
+            addr = m_mcuRam->getMappedAddr( addr+m_bank );
 
-            if( addr == m_PCLaddr ) setPC( v + (m_dataMem[m_PCHaddr]<<8) ); // Writting to PCL
+            if( addr == m_PCLaddr ) setPC( v + (m_mcuRam->read_08(m_PCHaddr)<<8) ); // Writting to PCL
             else if( addr == 0 ) addr = getINDF();      // INDF
 
-            McuCpu::SET_RAM( addr, v );
+            m_mcuRam->write_08( addr, v );
         }
         inline uint16_t getINDF()
         {
-            uint16_t  addr = *m_FSR;
+            uint16_t addr = *m_FSR;
             if( *m_STATUS & 1<<IRP ) addr |= 1<<8;
             return addr;
         }

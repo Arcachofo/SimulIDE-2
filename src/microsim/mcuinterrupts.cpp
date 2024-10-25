@@ -9,6 +9,8 @@
 #include "cpubase.h"
 #include "mcupin.h"
 #include "e_mcu.h"
+#include "mcummu.h"
+#include "mcuregister.h"
 #include "datautils.h"
 
 Interrupt::Interrupt( QString name, uint16_t vector, eMcu* mcu )
@@ -19,11 +21,14 @@ Interrupt::Interrupt( QString name, uint16_t vector, eMcu* mcu )
     m_wakeup = 0;
     m_autoClear = true;
     m_remember  = true;      /// Remember by deafult: find out exceptions
-    m_nextInt = NULL;
-    m_intPin  = NULL;
 
-    McuRam* mcuRam = (McuRam*)m_mcu->getModule("ram");
-    m_ram = mcuRam->rawData();
+    m_nextInt = nullptr;
+    m_intPin  = nullptr;
+
+    m_enableReg = nullptr;
+    m_flagReg   = nullptr;
+
+    //m_ram = (McuRam*)m_mcu->getModule("ram");
 }
 Interrupt::~Interrupt(){}
 
@@ -35,8 +40,14 @@ void Interrupt::reset()
     m_continuous = false;
 }
 
-void Interrupt::enableFlag( uint8_t en )
+void Interrupt::setPriority()
 {
+    m_priority = m_prioBits.getRegBitsVal();
+}
+
+void Interrupt::enableFlag()
+{
+    bool en = m_enableBit.getRegBitsBool();
     if( m_enabled == en ) return;
     m_enabled = en;
 
@@ -52,22 +63,28 @@ void Interrupt::clearFlag()
     if( !m_raised ) return;
     m_raised = false;
 
-    m_ram[m_flagReg] &= ~m_flagMask; // Clear Interrupt flag
+    *m_flagReg &= ~m_flagMask;
+    //m_ram->write_08( m_flagReg, m_ram->read_08(m_flagReg) & ~m_flagMask ); // Clear Interrupt flag
 
     m_interrupts->remFromPending( this );
 }
 
-void Interrupt::flagCleared( uint8_t )  // Interrupt flag was cleared by software
+void Interrupt::flagCleared()  // Interrupt flag was cleared by software
 {
     if( !m_raised ) return;
     m_raised = false;
     m_interrupts->remFromPending( this );
 }
 
-void Interrupt::writeFlag( uint8_t v ) // Clear Interrupt flag by writting 1 to it
+void Interrupt::writeFlag() // Clear Interrupt flag by writting 1 to it
 {
     /// Fixme
-    /*if( v & m_flagMask ){
+    if( *m_flagReg & m_flagMask )
+    {
+        *m_flagReg &= ~m_flagMask; // Clear flag
+        flagCleared();             // Pin INT continuous while low level
+    }
+    /*{
         int overrided = m_mcu->m_regOverride;
         if( overrided > 0 ) v = overrided;      // Get previous overrides
         m_mcu->m_regOverride = v & ~m_flagMask; // Clear flag
@@ -94,7 +111,9 @@ void Interrupt::raise( uint8_t v )
 
         if( !m_continuous )                  // Set Interrupt flag
         {                                    // If Continuous don't set the flag (AVR Pin INT)
-             m_ram[m_flagReg] |= m_flagMask;
+            //m_ram->write_08( m_flagReg, m_ram->read_08(m_flagReg) | m_flagMask );
+            //m_ram[m_flagReg] |= m_flagMask;
+            *m_flagReg |= m_flagMask;
         }
 
         if( m_enabled )
@@ -198,16 +217,17 @@ void Interrupts::runInterrupts()
     m_pending = m_pending->m_nextInt;
 }
 
-void Interrupts::writeGlobalFlag( uint8_t flag )
+void Interrupts::writeGlobalFlag( uint8_t flag ) // Set/Clear Enable Global Interrupts flag
 {
-    writeRegBits( m_enGlobalFlag, flag );   // Set/Clear Enable Global Interrupts flag
+    if( flag ) m_enGlobalFlag.set_08();
+    else       m_enGlobalFlag.clear_08();
 
-    m_enabled = flag;                       // Enable/Disable interrupts
+    m_enabled = flag;  // Enable/Disable interrupts
 }
 
-void Interrupts::enableGlobal( uint8_t en )
+void Interrupts::enableGlobal()
 {
-    m_enabled = en;
+    m_enabled = m_enGlobalFlag.getRegBitsVal();
 }
 
 void Interrupts::remove()

@@ -23,9 +23,9 @@ class PicDac:  public McuDac
         virtual void initialize() override;
         virtual void voltChanged() override;
 
-        virtual void configureA( uint8_t newDACCON0 ) override;
+        virtual void configureA() override;
 
-        virtual void outRegChanged( uint8_t val ) override;
+        virtual void outRegChanged() override;
 
         virtual void callBack() override;
 

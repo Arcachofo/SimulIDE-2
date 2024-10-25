@@ -22,7 +22,7 @@ class McuDac: public McuModule, public eElement
 
         virtual void initialize() override;
 
-        virtual void outRegChanged( uint8_t ){;}
+        virtual void outRegChanged(){;}
 
     protected:
 

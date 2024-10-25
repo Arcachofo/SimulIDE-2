@@ -19,18 +19,17 @@ class PicUsart : public McuUsart
 
         virtual void setup() override;
 
-        virtual void configureA( uint8_t newTXSTA ) override;
-        virtual void configureB( uint8_t newRCSTA ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
-        virtual void sendByte( uint8_t data ) override;
+        virtual void dataRegChanged() override;
+        //virtual void sendByte( uint8_t data ) override;
         virtual void bufferEmpty() override;
         virtual void frameSent( uint8_t data ) override;
 
         virtual void setRxFlags( uint16_t frame ) override;
 
-        void setSPBRGL( uint8_t val );
-        void setSPBRGH( uint8_t val );
-        void setBaurrate( uint8_t val=0 );
+        void setBaurrate();
 
         virtual void sleep( int mode ) override;
 

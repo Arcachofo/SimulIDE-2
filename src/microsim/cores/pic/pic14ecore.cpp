@@ -21,8 +21,8 @@ Pic14eCore::Pic14eCore( eMcu* mcu )
     m_FSR1H = (uint8_t*) m_mcuRam->getReg("FSR1H");
 
     m_BSR = (uint8_t*) m_mcuRam->getReg("BSR");
-    m_bankBits = getRegBits("BSR0,BSR1,BSR2,BSR3,BSR4", m_mcuRam );
-    watchBitNames("BSR0,BSR1,BSR2,BSR3,BSR4", R_WRITE, this, &Pic14eCore::setBank, m_mcuRam );
+    m_bankBits = m_mcuRam->getRegBits("BSR0,BSR1,BSR2,BSR3,BSR4");
+    m_mcuRam->watchBitNames("BSR0,BSR1,BSR2,BSR3,BSR4", R_WRITE, this, &Pic14eCore::bankChanged );
 }
 Pic14eCore::~Pic14eCore() {}
 
@@ -35,12 +35,12 @@ Pic14eCore::~Pic14eCore() {}
 
 inline void Pic14eCore::CALLW()
 {
-    CALL_ADDR( *m_Wreg | ((uint16_t)(m_dataMem[m_PCHaddr] & 0b00011000)<<8) );
+    CALL_ADDR( *m_Wreg | ((uint16_t)(GET_RAM(m_PCHaddr) & 0b00011000)<<8) );
 }
 
 inline void Pic14eCore::BRW()
 {
-    setPC( *m_Wreg | ((uint16_t)(m_dataMem[m_PCHaddr] & 0b00011000)<<8) );
+    setPC( *m_Wreg | ((uint16_t)(GET_RAM(m_PCHaddr) & 0b00011000)<<8) );
     m_mcu->cyclesDone = 2;
 }
 
@@ -187,12 +187,12 @@ inline void Pic14eCore::ADDFSR( uint8_t n, uint8_t k )
 
 inline void Pic14eCore::MOVLP( uint8_t k )
 {
-    m_dataMem[m_PCHaddr] = k;
+    SET_RAM( m_PCHaddr, k );
 }
 
 inline void Pic14eCore::BRA( uint8_t k )
 {
-    setPC( k | ((uint16_t)(m_dataMem[m_PCHaddr] & 0b00011000)<<8) );
+    setPC( k | ((uint16_t)(GET_RAM(m_PCHaddr) & 0b00011000)<<8) );
     m_mcu->cyclesDone = 2;
 }
 

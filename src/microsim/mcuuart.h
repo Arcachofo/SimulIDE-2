@@ -17,10 +17,11 @@ class McuUsart : public McuModule, public UsartModule
         McuUsart( eMcu* mcu, QString name, int number );
         virtual ~McuUsart();
 
-        virtual void sendByte( uint8_t data ) override{ UsartModule::sendByte( data ); }
+        virtual void dataRegChanged(){;}
+        /// virtual void sendByte( uint8_t data ) override{ UsartModule::sendByte( data ); }
         virtual void bufferEmpty() override;
         virtual void frameSent( uint8_t data ) override;
-        virtual void readByte( uint8_t data ) override;
+        virtual uint32_t getData() override;
 
         virtual uint8_t getBit9Tx() override;
         virtual void setBit9Rx( uint8_t bit ) override;
@@ -29,6 +30,8 @@ class McuUsart : public McuModule, public UsartModule
         int m_number;
 
         bool m_speedx2;
+
+        uint8_t* m_txReg;
 
         regBits_t m_bit9Tx;
         regBits_t m_bit9Rx;

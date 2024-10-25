@@ -20,7 +20,7 @@ class PicPin : public McuPin
         PicPin( McuPort* port, int i, QString id , Component* mcu );
         ~PicPin();
 
-        virtual void ConfExtInt( uint8_t bits ) override;
+        virtual void ConfExtInt() override;
 
         virtual void setAnalog( bool an ) override;
 

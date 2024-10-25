@@ -19,10 +19,10 @@ void AvrPin::setPortState( bool state )
     McuPin::setPortState( state );
 }
 
-void AvrPin::ConfExtInt( uint8_t bits )
+void AvrPin::ConfExtInt()
 {
     if( !m_extInt ) return;
-    m_extIntTrigger = (extIntTrig_t)getRegBitsVal( bits, m_extIntBits );
+    m_extIntTrigger = (extIntTrig_t)m_extIntBits.getRegBitsVal();
     m_extInt->setContinuous( m_extIntTrigger == pinLow );
     voltChanged();
 }

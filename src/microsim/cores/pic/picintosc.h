@@ -31,7 +31,7 @@ class PicIntOsc00 : public PicIntOsc
         PicIntOsc00( eMcu* mcu, QString name );
         ~PicIntOsc00();
 
-        virtual void configureA( uint8_t newOSCCON ) override;
+        virtual void configureA() override;
 
     protected:
         regBits_t m_SCS;
@@ -44,7 +44,7 @@ class PicIntOsc01 : public PicIntOsc
         PicIntOsc01( eMcu* mcu, QString name );
         ~PicIntOsc01();
 
-        virtual void configureA( uint8_t newOSCCON ) override;
+        virtual void configureA() override;
 
     protected:
         regBits_t m_OSCF;
@@ -56,7 +56,7 @@ class PicIntOsc02 : public PicIntOsc
         PicIntOsc02( eMcu* mcu, QString name );
         ~PicIntOsc02();
 
-        virtual void configureA( uint8_t newOSCCON ) override;
+        virtual void configureA() override;
 
     protected:
         regBits_t m_SCS;

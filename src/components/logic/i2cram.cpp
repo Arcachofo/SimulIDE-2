@@ -52,7 +52,7 @@ I2CRam::I2CRam( QString type, QString id )
     m_persistent = false;
     m_cCode = 0b01010000; // 0x50, 80
     m_size  = 65536;
-    m_data.resize( m_size );
+    Memory::resize( m_size );
 
     IoComponent::initState();
 
@@ -155,7 +155,7 @@ void I2CRam::writeByte() // Read from RAM
 void I2CRam::setMem( QString m )
 {
     if( m.isEmpty() ) return;
-    setMem( m );
+    Memory::loadCsv( m );
 }
 
 QString I2CRam::getMem()
@@ -163,7 +163,7 @@ QString I2CRam::getMem()
     QString m;
     if( !m_persistent ) return m;
 
-    return getMem();
+    return Memory::getCsv();
 }
 
 void I2CRam::setRSize( int size )

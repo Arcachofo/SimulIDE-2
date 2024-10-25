@@ -16,7 +16,7 @@ Mcs65Cpu::Mcs65Cpu( eMcu* mcu )
 {
     // <register name="P"  addr="0x05" bits="C,Z,I,D,B,1,V,N" reset="00110100" mask="11011111" />
     m_STATUS = &m_P;
-    m_mcuRam->setStatusBits({"C","Z","I","D","B","1","V","N"});
+    /// FIXME: m_mcuRam->setStatusBits({"C","Z","I","D","B","1","V","N"});
 
     // Buses
     m_dataBus = mcu->getIoPort("PORTD");

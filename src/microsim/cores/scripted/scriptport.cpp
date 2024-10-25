@@ -14,17 +14,17 @@ ScriptPort::ScriptPort( eMcu* mcu, QString name )
 }
 ScriptPort::~ScriptPort(){}
 
-void ScriptPort::configureA( uint8_t newVal )
+void ScriptPort::configureA()
 {
     //callFunction( &m_configureA, {QScriptValue( (int)newVal )} );
 }
 
-void ScriptPort::configureB( uint8_t newVal )
+void ScriptPort::configureB()
 {
     //callFunction( &m_configureB, {QScriptValue( (int)newVal )} );
 }
 
-void ScriptPort::configureC( uint8_t newVal )
+void ScriptPort::configureC()
 {
     //m_configureC.call( m_thisObject, newVal );
 }

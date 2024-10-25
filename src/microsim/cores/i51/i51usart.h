@@ -20,11 +20,12 @@ class I51Usart : public McuUsart
         virtual void setup() override;
         virtual void reset() override;
 
-        virtual void configureA( uint8_t newSCON ) override;
-        virtual void configureB( uint8_t newPCON ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
-        virtual void sendByte( uint8_t data ) override;
-        virtual void readByte( uint8_t data ) override;
+        virtual void dataRegChanged() override;
+        //virtual void sendByte( uint8_t data ) override;
+        virtual uint32_t getData() override;
         virtual void setRxFlags( uint16_t frame ) override;
 
         virtual void callBack() override; // Called by Timer 1 interrupt

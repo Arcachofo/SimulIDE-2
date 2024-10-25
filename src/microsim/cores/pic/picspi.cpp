@@ -4,7 +4,7 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "picspi.h"
-#include "datautils.h"
+#include "mcuram.h"
 #include "iopin.h"
 #include "e_mcu.h"
 #include "mcuinterrupts.h"
@@ -20,9 +20,9 @@ void PicSpi::setup()
 {
     m_sleepMode = 0xFF;
 
-    m_SSPEN = getRegBits( "SSPEN", m_mcuRam );
-    m_CKP   = getRegBits( "CKP", m_mcuRam );
-    m_CKE   = getRegBits( "CKE", m_mcuRam );
+    m_SSPEN = m_mcuRam->getRegBits("SSPEN");
+    m_CKP   = m_mcuRam->getRegBits("CKP");
+    m_CKE   = m_mcuRam->getRegBits("CKE");
 }
 
 void PicSpi::setMode( spiMode_t mode )
@@ -62,9 +62,9 @@ void PicSpi::setMode( spiMode_t mode )
     }
 }
 
-void PicSpi::configureA( uint8_t newSSPCON ) // SSPCON is being written
+void PicSpi::configureA() // SSPCON is being written
 {
-    m_clkPol = getRegBitsBool( newSSPCON, m_CKP ); // Clock polarity
+    m_clkPol = m_CKP.getRegBitsBool(); // Clock polarity
     m_sampleEdge = ( m_clkPol == m_clkPha ) ? Clock_Rising : Clock_Falling;
     m_leadEdge = m_clkPol ? Clock_Falling : Clock_Rising;
     m_tailEdge = m_clkPol ? Clock_Rising  : Clock_Falling;
@@ -72,16 +72,15 @@ void PicSpi::configureA( uint8_t newSSPCON ) // SSPCON is being written
     if( m_mode == SPI_MASTER ) m_clkPin->setOutState( m_clkPol );
 }
 
-void PicSpi::writeStatus( uint8_t newSSPSTAT ) // SSPSTAT is being written
+void PicSpi::writeStatus() // SSPSTAT is being written
 {
-    m_clkPha = getRegBitsBool( newSSPSTAT, m_CKE ); // Clock phase
+    m_clkPha = m_CKE.getRegBitsBool(); // Clock phase
     m_sampleEdge = ( m_clkPol == m_clkPha ) ? Clock_Rising : Clock_Falling;
-
 }
 
-void PicSpi::writeSpiReg( uint8_t newSSPBUF ) // SSPBUF is being written
+void PicSpi::writeSpiReg() // SSPBUF is being written
 {
-    m_srReg = newSSPBUF;
+    m_srReg = *m_dataReg;
 
     if( m_mode == SPI_MASTER ) StartTransaction();
 }

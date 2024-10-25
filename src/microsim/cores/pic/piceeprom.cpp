@@ -17,11 +17,12 @@ PicEeprom::~PicEeprom(){}
 
 void PicEeprom::setup()
 {
+    m_EECON2 = (uint8_t*)m_mcuRam->getReg("EECON0");
     //m_EECR  = m_mcu->getReg( "EECR" );
-    m_WRERR = getRegBits("WRERR", m_mcuRam );
-    m_WREN  = getRegBits("WREN", m_mcuRam );
-    m_WR    = getRegBits("WR", m_mcuRam );
-    m_RD    = getRegBits("RD", m_mcuRam );
+    m_WRERR = m_mcuRam->getRegBits("WRERR");
+    m_WREN  = m_mcuRam->getRegBits("WREN");
+    m_WR    = m_mcuRam->getRegBits("WR");
+    m_RD    = m_mcuRam->getRegBits("RD");
 }
 
 void PicEeprom::initialize()
@@ -35,11 +36,11 @@ void PicEeprom::initialize()
 void PicEeprom::runEvent() // Write cycle end reached
 {
     writeEeprom();
-    clearRegBits( m_WR );
+    m_WR.clear_08();
     m_wrMask = 0;
 }
 
-void PicEeprom::configureA( uint8_t newEECON1 ) // EECR is being written
+void PicEeprom::configureA() // EECON1 (EECR ?) is being written
 {
     if( m_writeEnable ) // Write enabled
     {
@@ -47,8 +48,8 @@ void PicEeprom::configureA( uint8_t newEECON1 ) // EECR is being written
 
         if( m_mcu->cycle() == m_nextCycle ) // Must happen in next cycle
         {
-            bool wren = getRegBitsBool( newEECON1, m_WREN );
-            bool write = wren && getRegBitsBool( newEECON1, m_WR );
+            bool wren  = m_WREN.getRegBitsBool();
+            bool write = wren && m_WR.getRegBitsBool();
             if( write )
             {
                 m_wrMask = m_WR.mask; // Don't clear WR until write finished
@@ -57,18 +58,19 @@ void PicEeprom::configureA( uint8_t newEECON1 ) // EECR is being written
         }
         m_nextCycle = 0;
     }
-    else if( getRegBitsBool( newEECON1, m_RD ) ) // Read enable
+    else if( m_RD.getRegBitsBool() ) // Read enable
     {
         readEeprom();
     }
-    newEECON1 &= ~(m_WR.mask);                                    // Clear WR if not in write cycle
-    m_mcuRam->m_regOverride = (newEECON1 | m_wrMask) & ~(m_RD.mask); // Clear RD, set WR if in write cycle
+    m_WR.clear_08();
+    //newEECON1 &= ~(m_WR.mask);                                    // Clear WR if not in write cycle
+    //m_mcuRam->m_regOverride = (newEECON1 | m_wrMask) & ~(m_RD.mask); // Clear RD, set WR if in write cycle
 }
 
-void PicEeprom::configureB( uint8_t newEECON2 )
+void PicEeprom::configureB() // EECON2
 {
-    if     ( newEECON2 == 0x55 ) m_nextCycle = m_mcu->cycle()+2;
-    else if( newEECON2 == 0xAA )
+    if     ( *m_EECON2 == 0x55 ) m_nextCycle = m_mcu->cycle()+2;
+    else if( *m_EECON2 == 0xAA )
     {
         if( m_mcu->cycle() == m_nextCycle )
         {
@@ -76,7 +78,7 @@ void PicEeprom::configureB( uint8_t newEECON2 )
             m_writeEnable = true;
         }
     }
-    m_mcuRam->m_regOverride = 0; // Don't write value (this is not a physical register).
+    /// FIXME: m_mcuRam->m_regOverride = 0; // Don't write value (this is not a physical register).
 }
 
 /*void PicEeprom::writeEeprom()

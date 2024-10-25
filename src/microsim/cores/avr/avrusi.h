@@ -25,8 +25,8 @@ class AvrUsi : public McuModule, public eElement
         virtual void reset() override;
         virtual void voltChanged() override;
 
-        virtual void configureA( uint8_t ) override;
-        virtual void configureB( uint8_t ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
         virtual void callBack() override; // Called at Timer0 Compare Match
 
         void setPins( QString pinStr );
@@ -36,13 +36,15 @@ class AvrUsi : public McuModule, public eElement
         inline void shiftData();
         inline void setOutput();
         inline void toggleClock();
-        void dataRegWritten( uint8_t newUSIDR );
+
+        void dataRegWritten();
 
         bool m_twi;
         bool m_spi;
         bool m_timer;
         bool m_extClk;
         bool m_usiClk;
+        bool m_usiSR;
         bool m_clkEdge;
         bool m_clkState;
         bool m_sdaState;

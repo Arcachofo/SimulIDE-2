@@ -26,7 +26,7 @@ class PicAdc : public McuAdc
         virtual void setup() override;
         virtual void initialize() override;
 
-        virtual void configureA( uint8_t newADCON0 ) override;
+        virtual void configureA() override;
         //virtual void configureB( uint8_t newADCON1 ) override;
         //virtual void callBack() override { if( !m_converting ) startConversion(); }
 
@@ -54,7 +54,7 @@ class PicAdc00 : public PicAdc
 
         virtual void setup() override;
 
-        virtual void configureB( uint8_t newADCSRB ) override;
+        virtual void configureB() override;
 
     protected:
         virtual void updtVref() override;
@@ -70,8 +70,7 @@ class PicAdc1 : public PicAdc
 
         virtual void setup() override;
 
-        virtual void setANSEL( uint8_t newANSEL );
-        void updtANSEL();
+        virtual void updtANSEL();
 
     protected:
         virtual void updtVref() override;
@@ -90,9 +89,9 @@ class PicAdc10 : public PicAdc1
 
         virtual void setup() override;
 
-        virtual void configureB( uint8_t newADCSRB ) override;
+        virtual void configureB() override;
 
-        void setANSELH( uint8_t newANSELH );
+        virtual void updtANSEL() override { PicAdc1::updtANSEL(); }
 };
 
 class PicAdc11 : public PicAdc1
@@ -103,9 +102,9 @@ class PicAdc11 : public PicAdc1
 
         virtual void setup() override;
 
-        virtual void configureA( uint8_t newADCON0 ) override;
+        virtual void configureA() override;
 
-        virtual void setANSEL( uint8_t newANSEL ) override;
+        virtual void updtANSEL() override;
 };
 
 class PicVrefE;
@@ -118,8 +117,8 @@ class PicAdc20 : public PicAdc
 
         virtual void setup() override;
 
-        virtual void configureA( uint8_t newADCON0 ) override;
-        virtual void configureB( uint8_t newADCON1 ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
     protected:
         virtual void updtVref() override;

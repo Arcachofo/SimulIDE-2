@@ -19,25 +19,26 @@ class AvrUsart : public McuUsart
 
         virtual void setup() override;
 
-        virtual void configureA( uint8_t newUCSRnA ) override;
-        virtual void configureB( uint8_t newUCSRnB ) override;
-        virtual void configureC( uint8_t newUCSRnC ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
+        virtual void configureC() override;
 
-        virtual void sendByte( uint8_t data ) override;
+        virtual void dataRegChanged() override;
+        //virtual void sendByte( uint8_t data ) override;
         virtual void frameSent( uint8_t data ) override;
 
         virtual void setRxFlags( uint16_t frame ) override;
 
         void setBaurrate( uint8_t ubrr=0 );
 
-    private:
-        void setUBRRnL( uint8_t v );
-        void setUBRRnH( uint8_t v );
+        void setUBRRnL();
+        void setUBRRnH();
 
-        uint8_t*  m_UCSRnA;
-        //uint8_t*  m_UCSRnB;
-        uint8_t*  m_UBRRnL;
-        uint8_t*  m_UBRRnH;
+    private:
+        uint8_t* m_UCSRnA;
+        uint8_t* m_UCSRnC;
+        uint8_t* m_UBRRnL;
+        uint8_t* m_UBRRnH;
         uint8_t  m_UBRRHval;
 
         uint8_t m_ucsz01;

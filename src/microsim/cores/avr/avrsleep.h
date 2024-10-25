@@ -29,7 +29,7 @@ class AvrSleep : public McuSleep
 
         virtual void setup() override;
         virtual void initialize() override;
-        virtual void configureA( uint8_t newVal ) override;
+        virtual void configureA() override;
 
         //virtual void sleep() override;
 

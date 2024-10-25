@@ -22,9 +22,9 @@ class PicSpi : public McuSpi
         //virtual void initialize() override;
 
         virtual void setMode( spiMode_t mode ) override;
-        virtual void configureA( uint8_t newSSPCON ) override;
-        virtual void writeStatus( uint8_t newSSPSTAT ) override;
-        virtual void writeSpiReg( uint8_t newSSPBUF ) override;
+        virtual void configureA() override;
+        virtual void writeStatus() override;
+        virtual void writeSpiReg() override;
         virtual void endTransaction() override;
         virtual void sleep( int mode ) override;
 

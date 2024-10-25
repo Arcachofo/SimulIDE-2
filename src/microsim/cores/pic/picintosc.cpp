@@ -4,7 +4,7 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "picintosc.h"
-#include "datautils.h"
+#include "mcuram.h"
 #include "simulator.h"
 #include "mcupin.h"
 #include "e_mcu.h"
@@ -54,14 +54,14 @@ void PicIntOsc::setPin( int n, McuPin* p )
 PicIntOsc00::PicIntOsc00( eMcu* mcu, QString name )
            : PicIntOsc( mcu, name )
 {
-    m_SCS  = getRegBits( "SCS", m_mcuRam );
-    m_IRCF = getRegBits( "IRCF0,IRCF1,IRCF2", m_mcuRam );
+    m_SCS  = m_mcuRam->getRegBits("SCS");
+    m_IRCF = m_mcuRam->getRegBits("IRCF0,IRCF1,IRCF2");
 }
 PicIntOsc00::~PicIntOsc00(){}
 
-void PicIntOsc00::configureA( uint8_t newOSCCON )
+void PicIntOsc00::configureA() // OSCCON
 {
-    uint8_t ircf = getRegBitsVal( newOSCCON, m_IRCF );
+    uint8_t ircf = m_IRCF.getRegBitsVal();
     switch( ircf ) {
         case 0: m_intOscFreq = 31*1e3;  break; // 31  kHz (LFINTOSC)
         case 1: m_intOscFreq = 125*1e3; break; // 125 kHz
@@ -72,7 +72,7 @@ void PicIntOsc00::configureA( uint8_t newOSCCON )
         case 6: m_intOscFreq = 4*1e6;   break; // 4 MHz (default)
         case 7: m_intOscFreq = 8*1e6;   break; // 8 MHz
     }
-    m_cfgWordCtrl = !getRegBitsBool( newOSCCON, m_SCS );
+    m_cfgWordCtrl = !m_SCS.getRegBitsBool();
 
     bool intOsc = !m_cfgWordCtrl || m_clkInIO; // Not controlled by CONFIG1 or controlled and set to INTOSC
     double freq = intOsc ? m_intOscFreq : m_mcu->component()->extFreq();
@@ -87,13 +87,13 @@ void PicIntOsc00::configureA( uint8_t newOSCCON )
 PicIntOsc01::PicIntOsc01( eMcu* mcu, QString name )
            : PicIntOsc( mcu, name )
 {
-    m_OSCF = getRegBits( "OSCF", m_mcuRam );
+    m_OSCF = m_mcuRam->getRegBits("OSCF");
 }
 PicIntOsc01::~PicIntOsc01(){}
 
-void PicIntOsc01::configureA( uint8_t newOSCCON )
+void PicIntOsc01::configureA() // OSCCON
 {
-    bool oscf = getRegBitsBool(  newOSCCON, m_OSCF );
+    bool oscf = m_OSCF.getRegBitsBool();
     m_intOscFreq = oscf ? 4*1e6 : 48*1e3;
 
     double freq = m_clkInIO ? m_intOscFreq : m_mcu->component()->extFreq(); // Not controlled by CONFIG1 or controlled and set to INTOSC
@@ -106,15 +106,15 @@ void PicIntOsc01::configureA( uint8_t newOSCCON )
 PicIntOsc02::PicIntOsc02( eMcu* mcu, QString name )
            : PicIntOsc( mcu, name )
 {
-    m_SCS    = getRegBits( "SCS0,SCS1", m_mcuRam );
-    m_IRCF   = getRegBits( "IRCF0,IRCF1,IRCF2,IRCF3", m_mcuRam );
-    m_SPLLEN = getRegBits( "SPLLEN", m_mcuRam );
+    m_SCS    = m_mcuRam->getRegBits("SCS0,SCS1");
+    m_IRCF   = m_mcuRam->getRegBits("IRCF0,IRCF1,IRCF2,IRCF3");
+    m_SPLLEN = m_mcuRam->getRegBits("SPLLEN");
 }
 PicIntOsc02::~PicIntOsc02(){}
 
-void PicIntOsc02::configureA( uint8_t newOSCCON )
+void PicIntOsc02::configureA() // OSCCON
 {
-    uint8_t ircf = getRegBitsVal( newOSCCON, m_IRCF );
+    uint8_t ircf = m_IRCF.getRegBitsVal();
     switch( ircf ) {
         case  0: // Fallthrough
         case  1: m_intOscFreq = 31*1e3;    break; // 31  kHz
@@ -131,12 +131,12 @@ void PicIntOsc02::configureA( uint8_t newOSCCON )
         case 13: m_intOscFreq = 4*1e6;     break; // 4 MHz (default)
         case 14:{                                 // 8 MHz or 32 MHz HF(see Section 5.2.2.1 “HFINTOSC”)
             double mult = m_multiplier;                                           // PLL enabled in cfg word?
-            if( mult == 1 ) mult = getRegBitsBool( newOSCCON, m_SPLLEN ) ? 4 : 1; // PLL set by SPLLEN bit
+            if( mult == 1 ) mult = m_SPLLEN.getRegBitsBool() ? 4 : 1; // PLL set by SPLLEN bit
             m_intOscFreq = 8*1e6*mult;
         } break;
         case 15: m_intOscFreq = 16*1e6;    break; // 16 MHz
     }
-    uint8_t scs = getRegBitsVal( newOSCCON, m_SCS );
+    uint8_t scs = m_SCS.getRegBitsVal();
     m_cfgWordCtrl = (scs == 0);
 
     bool intOsc = !m_cfgWordCtrl || m_clkInIO; // Not controlled by CONFIG1 or controlled and set to INTOSC

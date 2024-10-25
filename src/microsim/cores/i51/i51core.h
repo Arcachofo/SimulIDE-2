@@ -88,7 +88,7 @@ class I51Core : public McuCpu, public eElement
         uint8_t m_bitMask;
         bool    m_invert;
 
-        bool m_upperData;
+        //bool m_upperData;
 
         IoPin* m_eaPin;
 
@@ -146,26 +146,26 @@ class I51Core : public McuCpu, public eElement
         inline void addrDir();
         inline void addrBit( bool invert=false );
 
-        inline uint16_t checkAddr( uint16_t addr )
+        /*inline uint16_t checkAddr( uint16_t addr )
         {
             if( m_upperData && (addr > m_lowDataMemEnd) ) addr += m_regEnd ;
             return addr;
-        }
+        }*/
 
-        inline uint8_t readInd( uint16_t addr )
+        /*inline uint8_t readInd( uint16_t addr )
         {
             addr = checkAddr( addr );
             return McuCpu::GET_RAM( addr );
-        }
+        }*/
 
-        inline void writeInd( uint16_t addr, uint8_t val )
+        /*inline void writeInd( uint16_t addr, uint8_t val )
         {
             if( addr > m_lowDataMemEnd )
             {
                 if( m_upperData ) m_dataMem[addr+m_regEnd] = val;
             }
             else m_dataMem[m_opAddr] = val;
-        }
+        }*/
 
         inline void    pushStack8( uint8_t v );
         inline uint8_t popStack8();

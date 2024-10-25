@@ -10,6 +10,7 @@
 
 class Mcu;
 class eMcu;
+class McuMmu;
 class McuRam;
 class Component;
 class QString;
@@ -35,10 +36,11 @@ class McuCreator
         static void createPgm( QDomElement* e );
         static void createRam( QDomElement* e );
         static void createRom( QDomElement* e );
+        //static void createMmu( QDomElement* e );
         static void createCfgWord( QDomElement* e );
         static void createDataBlock( QDomElement* d );
         static void createRegisters( QDomElement* e );
-        static void getRegisters( QDomElement* e, uint16_t offset=0 );
+        //static void getRegisters( QDomElement* e, uint16_t offset=0 );
         //static void createProgBlock( QDomElement* p );
         static void createInterrupts( QDomElement* i );
         static void createIntOsc( QDomElement* p );
@@ -68,7 +70,6 @@ class McuCreator
         static QString m_CompName;
         static QString m_basePath;
         static QString m_core;
-        static QString m_txRegName;
 
         static bool m_newStack;
         static QDomElement m_stackEl;

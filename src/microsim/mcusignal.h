@@ -18,11 +18,12 @@ class CallBackBase
         virtual ~CallBackBase(){;}
 
         virtual void call( uint8_t ){;}
+        //virtual void call( uint32_t ){;}
 
         CallBackBase* nextCallBack;
 
     private:
-        uint8_t m_mask;
+        uint32_t m_mask;
 };
 
 template <class Obj>
@@ -99,6 +100,15 @@ class McuSignal
         }   }
 
         void emitValue( uint8_t val ) // Calls all connected functions with masked val.
+        {
+            CallBackBase* slot = m_slot;
+            while( slot )
+            {
+                slot->call( val & slot->m_mask );
+                slot = slot->nextCallBack;
+        }   }
+
+        void emitValue32( uint32_t val ) // Calls all connected functions with masked val.
         {
             CallBackBase* slot = m_slot;
             while( slot )

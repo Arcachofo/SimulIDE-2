@@ -15,7 +15,9 @@
 class eMcu;
 class Interrupts;
 class McuModule;
+class McuRegister;
 class IoPin;
+class McuMmu;
 
 class Interrupt
 {
@@ -33,12 +35,12 @@ class Interrupt
         uint8_t enabled() { return m_enabled; }
         uint8_t raised() { return m_raised; }
         void clearFlag();
-        void flagCleared( uint8_t f=0 );
-        void writeFlag( uint8_t v );
-        void enableFlag( uint8_t en );
+        void flagCleared();
+        void writeFlag();
+        void enableFlag();
 
         uint8_t priority() { return m_priority; }
-        void setPriority( uint8_t p ) { m_priority = p; }
+        void setPriority();
 
         void setAutoClear( bool a ) { m_autoClear = a; }
         void setContinuous( bool c ); // Pin INT
@@ -51,7 +53,7 @@ class Interrupt
 
     protected:
         eMcu* m_mcu;
-        uint32_t* m_ram;
+        //McuRam* m_ram;
 
         IoPin* m_intPin;
 
@@ -61,11 +63,15 @@ class Interrupt
         uint8_t  m_number;
         uint16_t m_vector;
 
-        uint8_t m_enabled;
+        bool m_enabled;
+        regBits_t m_enableBit;
+        McuRegister* m_enableReg;
+
         uint8_t m_priority;
+        regBits_t m_prioBits;
 
         uint8_t  m_flagMask;
-        uint16_t m_flagReg;
+        uint8_t* m_flagReg;
 
         uint8_t m_wakeup;
 
@@ -88,7 +94,8 @@ class Interrupts
         Interrupts( eMcu* mcu );
         virtual ~Interrupts();
 
-        void enableGlobal( uint8_t en ) ;
+        void enableGlobal() ;
+        void enable( bool e ) { m_enabled = e; }
         uint8_t enabled() { return m_enabled; }
 
         void runInterrupts();

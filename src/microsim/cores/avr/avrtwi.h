@@ -21,12 +21,12 @@ class AvrTwi : public McuTwi
         virtual void setup() override;
         virtual void initialize() override;
 
-        virtual void configureA( uint8_t newTWCR ) override;
-        virtual void configureB( uint8_t val ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
-        virtual void writeAddrReg( uint8_t newTWAR ) override;
-        virtual void writeStatus( uint8_t newTWSR ) override;
-        virtual void writeTwiReg( uint8_t newTWDR ) override;
+        virtual void writeAddrReg() override;
+        virtual void writeStatus() override;
+        virtual void writeTwiReg() override;
 
         virtual void writeByte() override;
 
@@ -39,8 +39,11 @@ class AvrTwi : public McuTwi
 
         uint8_t m_bitRate;
 
-        uint8_t*  m_TWCR;
-        //uint8_t*  m_TWSR;
+        bool m_start;
+        bool m_stop;
+
+        //uint8_t* m_TWCR;
+        uint8_t* m_TWBR;
 
         regBits_t m_TWEN;
         regBits_t m_TWWC;

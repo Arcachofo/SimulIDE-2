@@ -30,8 +30,8 @@ class AvrTimer : public McuTimer
         virtual void addOcUnit( McuOcUnit* ocUnit ) override;
         virtual McuOcUnit* getOcUnit( QString name ) override;
 
-        virtual void configureA( uint8_t newTCCRXA ) override;
-        virtual void configureB( uint8_t newTCCRXB ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
     protected:
         virtual void updtWgm(){;}
@@ -57,7 +57,7 @@ class AvrTimer8bit : public AvrTimer
         AvrTimer8bit( eMcu* mcu, QString name );
         ~AvrTimer8bit();
 
-        virtual void topReg0Changed( uint8_t val ) override;
+        virtual void topReg0Changed() override;
 
     protected:
         virtual void updtWgm() override;
@@ -82,7 +82,7 @@ class AvrTimer801 : public McuTimer
         virtual void setup() override{;}
         virtual void initialize() override;
 
-        virtual void configureA( uint8_t newTCCR0 ) override;
+        virtual void configureA() override;
 
     protected:
         void configureClock();
@@ -96,10 +96,10 @@ class AvrTimer810 : public AvrTimer
 
         virtual void setup() override;
 
-        virtual void configureA( uint8_t newTCCR1 ) override;
-        virtual void configureB( uint8_t newGTCCR ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
-        virtual void topReg0Changed( uint8_t val ) override;
+        virtual void topReg0Changed() override;
 
     protected:
         void updateMode();
@@ -131,7 +131,10 @@ class AvrTimer821 : public AvrTimer8bit
 
         virtual void setup() override{;}
 
-        virtual void configureA( uint8_t newTCCRx ) override;
+        virtual void configureA() override;
+
+    private:
+        uint8_t* m_TCCRx;
 };
 
 
@@ -145,8 +148,8 @@ class AvrTimer16bit : public AvrTimer
 
         virtual void runEvent() override;
 
-        virtual void topReg0Changed( uint8_t val ) override;
-        void ICRXLchanged( uint8_t val );
+        virtual void topReg0Changed() override;
+        void ICRXLchanged();
         //void ICRXHchanged( uint8_t val );
 
     protected:

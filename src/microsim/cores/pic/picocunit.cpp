@@ -27,7 +27,7 @@ PicOcUnit::~PicOcUnit( ){}
 
 void PicOcUnit::setup()
 {
-    m_GODO = getRegBits( "GO/DONE", m_mcuRam );
+    m_GODO = m_mcuRam->getRegBits("GO/DONE");
 }
 
 void PicOcUnit::runEvent()  // Compare match
@@ -46,7 +46,7 @@ void PicOcUnit::runEvent()  // Compare match
          uint64_t cycles = m_timer->scale()*m_mcu->psInst();
          Simulator::self()->addEvent( cycles, this ); // Reset Timer next Timer cycle
 
-         m_mcuRam->writeReg( m_GODO.regAddr, *m_GODO.reg | m_GODO.mask );  // Set ADC GO/DONE bit
+         /// FIXME: m_mcuRam->write_08( m_GODO.reg->getAddress(), *m_GODO.reg | m_GODO.mask );  // Set ADC GO/DONE bit
     }
     m_interrupt->raise();   // Trigger interrupt
     drivePin( m_comAct );
@@ -70,15 +70,15 @@ void PicOcUnit::configure( uint8_t CCPxM )  // CCPxM0,CCPxM1,CCPxM2,CCPxM3
     m_enabled = true;
 }
 
-void PicOcUnit::ocrWriteL( uint8_t val )
+void PicOcUnit::ocrWriteL()
 {
-    m_comMatch = (m_comMatch & 0xFF00) | val;
+    m_comMatch = (m_comMatch & 0xFF00) | *m_ocRegL;
     if( m_enabled ) sheduleEvents( m_timer->ovfMatch(), m_timer->getCount() );
 }
 
-void PicOcUnit::ocrWriteH( uint8_t val )
+void PicOcUnit::ocrWriteH()
 {
-    m_comMatch = (m_comMatch & 0x00FF) | (uint16_t)val<<8;
+    m_comMatch = (m_comMatch & 0x00FF) | (uint16_t)*m_ocRegH<<8;
     if( m_enabled ) sheduleEvents( m_timer->ovfMatch(), m_timer->getCount() );
 }
 
@@ -102,7 +102,7 @@ void PicPwmUnit::runEvent()  // Compare match
 
 void PicPwmUnit::configure( uint8_t newCCPxCON )
 {
-    m_cLow = getRegBitsVal( newCCPxCON, m_DCxB );
+    m_cLow = m_DCxB.getRegBitsVal();
 
     setOcActs( ocCLR, ocSET ); // Clear Out on match, set on TOV
 
@@ -137,10 +137,10 @@ void  PicPwmUnit::sheduleEvents( uint32_t ovf, uint32_t countVal, int ) // Use C
     McuOcUnit::sheduleEvents( ovf, countVal, 2 );
 }
 
-void PicPwmUnit::ocrWriteL( uint8_t val ) // CCPRxL
+void PicPwmUnit::ocrWriteL() // CCPRxL
 {
-    m_CCPRxL = val;
-    m_comMatch = (m_comMatch & 0xFF00) | val;
+    m_CCPRxL = *m_ocRegL;
+    m_comMatch = (m_comMatch & 0xFF00) | *m_ocRegL;
     //m_timer->updtCount();
     sheduleEvents( m_timer->ovfMatch(), m_timer->getCount() );
 }
@@ -158,8 +158,8 @@ void PicPwmUnit00::setup()
 {
     QString n = m_name.right(1); // name="PWM+2" => n="2"
 
-    m_DCxB  = getRegBits( "DC"+n+"B0,DC"+n+"B1", m_mcuRam );
-    if( m_enhanced ) m_PxM = getRegBits( "P"+n+"M0,P"+n+"M1", m_mcuRam );
+    m_DCxB  = m_mcuRam->getRegBits("DC"+n+"B0,DC"+n+"B1");
+    if( m_enhanced ) m_PxM = m_mcuRam->getRegBits("P"+n+"M0,P"+n+"M1");
 }
 
 //------------------------------------------------------
@@ -175,6 +175,6 @@ void PicPwmUnit01::setup()
 {
     QString n = m_name.right(1); // name="PWM+2" => n="2"
 
-    m_DCxB  = getRegBits( "CCP"+n+"Y,CCP"+n+"X", m_mcuRam );
+    m_DCxB  = m_mcuRam->getRegBits("CCP"+n+"Y,CCP"+n+"X");
     //if( m_enhanced ) m_PxM = getRegBits( "P"+n+"M0,P"+n+"M1", mcu );
 }

@@ -17,18 +17,19 @@ AvrComp::~AvrComp(){}
 
 void AvrComp::setup()
 {
-    m_ACD  = getRegBits("ACD" , m_mcuRam );
-    m_ACBG = getRegBits("ACBG", m_mcuRam );
-    m_ACO  = getRegBits("ACO" , m_mcuRam );
-    m_ACI  = getRegBits("ACI" , m_mcuRam );
-    m_ACIE = getRegBits("ACIE", m_mcuRam );
-    m_ACIC = getRegBits("ACIC", m_mcuRam );
-    m_ACIS = getRegBits("ACIS0,ACIS1", m_mcuRam );
+    m_ACD  = m_mcuRam->getRegBits("ACD");
+    m_ACBG = m_mcuRam->getRegBits("ACBG");
+    m_ACO  = m_mcuRam->getRegBits("ACO" );
+    m_ACOE = m_mcuRam->getRegBits("ACOE");
+    m_ACI  = m_mcuRam->getRegBits("ACI" );
+    m_ACIE = m_mcuRam->getRegBits("ACIE");
+    m_ACIC = m_mcuRam->getRegBits("ACIC");
+    m_ACIS = m_mcuRam->getRegBits("ACIS0,ACIS1");
 
-    m_AIN0D = getRegBits("AIN0D", m_mcuRam );
-    m_AIN1D = getRegBits("AIN1D", m_mcuRam );
+    m_AIN0D = m_mcuRam->getRegBits("AIN0D");
+    m_AIN1D = m_mcuRam->getRegBits("AIN1D");
 
-    watchRegNames("ACSR", R_READ, this, &AvrComp::readACO, m_mcuRam ); // Trigger a compare when ACO or ACI is read (ACSR)
+    m_mcuRam->watchRegName("ACSR", R_READ, this, &AvrComp::readACO ); // Trigger a compare when ACO or ACI is read (ACSR)
 }
 
 void AvrComp::initialize()
@@ -46,45 +47,46 @@ void AvrComp::voltChanged()
     compare();
 }
 
-void AvrComp::configureA( uint8_t newACSR ) // ACSR is being written
+void AvrComp::configureA() // ACSR is being written
 {
-    m_enabled = !getRegBitsBool( newACSR, m_ACD );
+    m_enabled = !m_ACD.getRegBitsBool();
 
-    m_acie = getRegBitsBool( newACSR, m_ACIE );  // Enable interrupt
+    m_acie = m_ACIE.getRegBitsBool( );  // Enable interrupt
     changeCallbacks();
 
-    m_fixVref = getRegBitsVal( newACSR, m_ACBG );
+    m_fixVref = m_ACBG.getRegBitsVal();
 
     /// TODO: ACIC: Analog Comparator Input Capture Enable
 
-    m_mode = getRegBitsVal( newACSR, m_ACIS );
+    m_mode = m_ACIS.getRegBitsVal();
 
-    if( !m_enabled ) m_mcuRam->m_regOverride = newACSR & ~m_ACO.mask; // Clear ACO
+    if( !m_enabled ) m_ACO.clear_08(); // Clear ACO
 }
 
-void AvrComp::configureB( uint8_t newAIND ) // AIN0D,AIN1D being written
+void AvrComp::configureB() // AIN0D,AIN1D being written
 {
     /// TODO: Disable Digital Input buffer.
     /// The corresponding PIN Register bit will always read as zero when this bit is set
 }
 
-void AvrComp::configureC( uint8_t newACOE ) // mega328PB
+void AvrComp::configureC() // ACOE mega328PB
 {
     if( m_pins.size() < 3 ) return;
 
-    if( newACOE ) m_pinOut = m_pins[2];
-    else          m_pinOut = nullptr;
-    m_pins[2]->controlPin( newACOE, newACOE );
+    m_acoe = m_ACOE.getRegBitsBool();
 
-    m_acoe = newACOE;
+    if( m_acoe ) m_pinOut = m_pins[2];
+    else         m_pinOut = nullptr;
+    m_pins[2]->controlPin( m_acoe, m_acoe );
+
     changeCallbacks();
 }
 
-void AvrComp::readACO( uint8_t )
+void AvrComp::readACO()
 {
     if( !m_enabled ) return;
     compare();
-    m_mcuRam->m_regOverride = *m_ACO.reg; // Clear ACO
+    /// m_mcuRam->m_regOverride = *m_ACO.reg; // Clear ACO
 }
 
 void AvrComp::compare( uint8_t ) //
@@ -97,8 +99,8 @@ void AvrComp::compare( uint8_t ) //
 
     if( m_compOut != compOut )
     {
-        if( compOut ) setRegBits( m_ACO );
-        else          clearRegBits( m_ACO );
+        if( compOut ) m_ACO.set_08();
+        else          m_ACO.clear_08();
 
         switch( m_mode ){
             case 0: m_interrupt->raise();               break; // Comparator Interrupt on Output Toggle.

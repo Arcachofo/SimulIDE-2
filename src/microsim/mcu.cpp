@@ -403,7 +403,7 @@ QString Mcu::getPGM()
 {
     if( m_pgm && m_savePGM )
     {
-        QString pgmStr = m_pgm->getMem();
+        QString pgmStr = m_pgm->getCsv();
         return pgmStr;
     }
     return "";
@@ -413,7 +413,7 @@ void Mcu::setPGM( QString pgm )
 {
     if( pgm.isEmpty() ) return;
     if( !m_pgm ) return;
-    m_pgm->loadDatStr( pgm, false );
+    m_pgm->loadDat( pgm );
 }
 
 bool Mcu::saveEepr() { return m_rom->m_saveEepr; }
@@ -422,7 +422,7 @@ void Mcu::setSaveEepr( bool s ) { m_rom->m_saveEepr = s; }
 void Mcu::setEeprom( QString eep )
 {
     if( eep.isEmpty() ) return;
-    m_rom->loadDatStr( eep, false );
+    m_rom->loadDat( eep );
 }
 
 QString Mcu::getEeprom()  // Used by property, stripped to last written value.
@@ -490,7 +490,7 @@ bool Mcu::load( QString fileName )
     }
     if( Simulator::self()->simState() > SIM_STARTING )  CircuitWidget::self()->powerCircOff();
 
-    if( !m_pgm->loadFile( cleanPathAbs, false, &m_eMcu ) )
+    if( !m_pgm->loadFile( cleanPathAbs, &m_eMcu ) )
         return false;
 
     qDebug() << "Firmware successfully loaded\n";
@@ -592,7 +592,11 @@ void Mcu::slotOpenMonitor()
         Watcher* watcher = m_eMcu.cpu()->getWatcher();
         m_monitor->addWatcher( watcher );
 
-        if( m_ram ) m_monitor->addTable( m_ram->getTable(), "RAM" );
+        if( m_ram )
+        {
+            /// TODO: add all RAM blocks Tables
+            //m_monitor->addTable( m_ram->getTable(), "RAM" );
+        }
         if( m_rom ) m_monitor->addTable( m_rom->getTable(), "ROM" );
         if( m_pgm ) m_monitor->addTable( m_pgm->getTable(), "PGM" );
     }

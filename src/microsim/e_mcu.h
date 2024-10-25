@@ -13,11 +13,6 @@
 //#include "mcudataspace.h"
 #include "mcusleep.h"
 
-enum{
-    R_READ = 0,
-    R_WRITE,
-};
-
 enum mcuState_t{
     mcuStopped=0,
     mcuError,
@@ -82,7 +77,7 @@ class eMcu : public eIou // public DataSpace,
 
         void wdr();
 
-        void enableInterrupts( uint8_t en );
+        /// void enableInterrupts( uint8_t en );
 
         int cyclesDone;
 

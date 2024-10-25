@@ -41,14 +41,14 @@ void McuRom::writeEeprom()
     m_data[m_address] = *m_dataReg;
 }
 
-void McuRom::addrWriteL( uint8_t val )
+void McuRom::addrWriteL()
 {
-    m_address = val;
+    m_address = *m_addressL;
     if( m_addressH ) m_address += *m_addressH << 8;
 }
 
-void McuRom::addrWriteH( uint8_t val )
+void McuRom::addrWriteH()
 {
-    m_address = (val << 8) + *m_addressL;
+    m_address = (*m_addressH << 8) + *m_addressL;
 }
 

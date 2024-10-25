@@ -28,13 +28,13 @@ class AvrAdc : public McuAdc
         virtual void setup() override;
         virtual void initialize() override;
 
-        virtual void configureA( uint8_t newADCSRA ) override;
-        virtual void configureB( uint8_t newADCSRB ) override;
-        virtual void setChannel( uint8_t newADMUX ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
+        virtual void setChannel() override;
         virtual void callBack() override { if( !m_converting ) startConversion(); }
 
     protected:
-        void updateAcme( uint8_t newVal );
+        void updateAcme();
         virtual void autotriggerConf(){;}
         virtual void endConversion() override;
 
@@ -127,7 +127,7 @@ class AvrAdc04 : public AvrAdc03
 
         virtual void setup() override;
 
-        virtual void configureB( uint8_t newADCSRB ) override;
+        virtual void configureB() override;
 
     protected:
 
@@ -171,7 +171,7 @@ class AvrAdc20 : public AvrAdc
 
         virtual void setup() override;
 
-        virtual void configureB( uint8_t newSFIOR ) override;
+        virtual void configureB() override;
 
     protected:
         virtual void autotriggerConf() override;

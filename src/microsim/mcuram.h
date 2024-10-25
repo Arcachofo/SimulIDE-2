@@ -8,14 +8,19 @@
 
 #include <QMap>
 #include <vector>
+#include <QDebug>
 
-#include "mcumodule.h"
-#include "memory.h"
-#include "mcutypes.h"
+#include "mcummu.h"
+//#include "mcutypes.h"
+
+enum{
+    R_READ = 0,
+    R_WRITE
+};
 
 class Watchable;
 
-class McuRam : public McuModule, public Memory
+class McuRam : public McuMmu
 {
     friend class McuCreator;
 
@@ -26,26 +31,54 @@ class McuRam : public McuModule, public Memory
         virtual void setup() override {;}
         void initialize();
 
-        uint32_t getRamValue( uint32_t address );
-        void     setRamValue( uint32_t address, uint32_t value );
+        void addRegBlock( McuRegBlock* b, uint32_t addr );
 
-        uint32_t getMapperAddr( uint32_t addr ) { return m_addrMap[addr]; } // Get mapped addresses in Data space
-        uint32_t getRegAddress( QString reg );                              // Get Reg address by name
-        uint32_t*  getReg( QString reg );                                   // Get pointer to Reg data by name
-        bool     regExist( QString reg ) { return m_regInfo.contains( reg ); }
-        uint32_t  readReg( uint32_t addr );                                 // Read Register (call watchers)
-        void     writeReg( uint32_t addr, uint32_t v, bool masked=true );   // Write Register (call watchers)
+        McuRegister* getRegByName( QString regName );
+        McuRegister* getRegByAddr( uint32_t addr );
+        McuRegister* getRegByBits( QString bits );
+
+        regBits_t getRegBits( QString bits );
+        uint32_t  getBitMask( QString bits );
+
+        template <class T>                // Add callback for Register changes by reg pointer
+        void watchRegister( McuRegister* reg, int write, T* obj, void (T::*func)() )
+        {
+            if( write ) reg->addWriteCallback( obj, func );
+            else        reg->addReadCallback( obj, func );
+        }
+        template <class T>                // Add callback for Register changes by reg address
+        void watchRegAddr( uint16_t addr, int write, T* obj, void (T::*func)() )
+        {
+            if( addr == 0 ) qDebug() << "Warning: watchRegister address 0 ";
+
+            McuRegister* reg = getRegByAddr( addr );
+            if( reg ) watchRegister( reg, write, obj, func );
+            else      qDebug() << "Error: watchRegister, No Register at Address" << addr;
+        }
+        template <class T>                // Add callback for Register changes by reg name
+        void watchRegName( QString regName, int write, T* obj, void (T::*func)() )
+        {
+            if( regName.isEmpty() ) return;
+
+            McuRegister* reg = getRegByName( regName );
+
+            if( reg ) watchRegister( reg, write, obj, func );
+            else      qDebug() << "ERROR: Register not found: " << reg;
+        }
+        template <class T>              // Add callback for Register bit changes by bit names
+        void watchBitNames( QString bitNames, int write, T* obj, void (T::*func)() )
+        {
+            if( bitNames.isEmpty() ) return;
+            McuRegister* reg = getRegByBits( bitNames );
+            if( reg ) watchRegister( reg, write, obj, func );
+        }
+
+        //uint32_t getMapperAddr( uint32_t addr ) { return m_addrMap[addr]; } // Get mapped addresses in Data space
+        //uint32_t getRegAddress( QString reg );                              // Get Reg address by name
+        uint8_t*  getReg( QString reg );                                   // Get pointer to Reg data by name
 
         //QStringList registerList() { return m_regInfo.keys(); }
-        QMap<QString, uint32_t>*  bitMasks()  { return &m_bitMasks; }
-        QMap<QString, uint32_t>*  bitRegs()   { return &m_bitRegs; }
-        QMap<QString, regInfo_t>* regInfo()   { return &m_regInfo; }
 
-        QMap<uint32_t, McuSignal*>* readSignals() { return &m_readSignals; }
-        QMap<uint32_t, McuSignal*>* writeSignals(){ return &m_writeSignals; }
-
-        uint32_t regStart() { return m_regStart; }
-        uint32_t regEnd()   { return m_regEnd; }
         uint32_t sregAddr() { return m_sregAddr; }
 
         void setStatusBits( QStringList bits ) { m_statusBits = bits; }
@@ -53,26 +86,20 @@ class McuRam : public McuModule, public Memory
 
         bool isCpuRead() { return m_isCpuRead; }
 
-        uint32_t m_regOverride;                   // Register value is overriden at write time
-
     protected:
-        uint32_t m_regStart;                      // First address of SFR section
-        uint32_t m_regEnd;                        // Last  address of SFR Section
 
         bool m_isCpuRead;
 
-        //std::vector<uint8_t>  m_dataMem;        // Whole Ram space including Registers
-        std::vector<uint32_t> m_addrMap;          // Maps addresses in Data space
-        std::vector<uint32_t> m_regMask;          // Registers Write mask
+        //std::vector<uint32_t> m_addrMap;          // Maps addresses in Data space
 
-        QMap<QString, regInfo_t>   m_regInfo;     // Access Reg Info by  Reg name
-        QMap<uint32_t, McuSignal*> m_readSignals; // Access read Reg Signals by Reg address
-        QMap<uint32_t, McuSignal*> m_writeSignals;// Access write Reg Signals by Reg address
-        QMap<QString, uint32_t>    m_bitMasks;    // Access Bit mask by bit name
-        QMap<QString, uint32_t>    m_bitRegs;     // Access Reg. address by bit name
+        QMap<QString, uint32_t> m_bitMasks;        // Access Bit mask by bit name
+        QMap<QString, McuRegister*> m_bitRegs;     // Access Register by bit name
 
-        uint32_t m_sregAddr;                      // STATUS Reg Address
+        uint32_t m_sregAddr;                   // STATUS Reg Address
         QStringList m_statusBits;
+
+
+        std::vector<McuRegBlock*> m_regBlocks;
 };
 
 #endif

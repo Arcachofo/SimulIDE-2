@@ -22,7 +22,7 @@ class AvrWdt : public McuWdt
         virtual void initialize() override;
         virtual void runEvent() override;
 
-        virtual void configureA( uint8_t newWDTCSR ) override;
+        virtual void configureA() override;
 
         virtual void reset() override;
 
@@ -30,7 +30,7 @@ class AvrWdt : public McuWdt
 
     protected:
         void wdtEnable();
-        virtual void updtPrescaler( uint8_t newWDTCSR ){;}
+        virtual void updtPrescaler(){;}
 
         bool m_allowChanges;
         bool m_disabled;
@@ -50,10 +50,10 @@ class AvrWdt00 : public AvrWdt
         AvrWdt00( eMcu* mcu, QString name );
         ~AvrWdt00();
 
-        virtual void configureA( uint8_t newWDTCSR ) override;
+        virtual void configureA() override;
 
     private:
-        virtual void updtPrescaler( uint8_t newWDTCSR ) override;
+        virtual void updtPrescaler() override;
 
         regBits_t m_WDIF;
         regBits_t m_WDIE;
@@ -66,9 +66,9 @@ class AvrWdt01 : public AvrWdt
         AvrWdt01( eMcu* mcu, QString name );
         ~AvrWdt01();
 
-        virtual void configureA( uint8_t newWDTCSR ) override;
+        virtual void configureA() override;
 
     private:
-        virtual void updtPrescaler( uint8_t newWDTCSR ) override;
+        virtual void updtPrescaler() override;
 };
 #endif

@@ -20,14 +20,16 @@ class PicEeprom : public McuRom
         virtual void initialize() override;
         virtual void runEvent() override;
 
-        virtual void configureA( uint8_t newEECON1 ) override;
-        virtual void configureB( uint8_t newEECON2 ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
     private:
         uint64_t m_nextCycle;
         bool m_writeEnable;
 
         uint8_t m_wrMask;
+
+        uint8_t* m_EECON2;
 
         regBits_t m_WRERR;
         regBits_t m_WREN;

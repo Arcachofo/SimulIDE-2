@@ -10,7 +10,13 @@
 McuCpu::McuCpu( eMcu* mcu )
       : CpuBase( mcu )
 {
-    m_dataMem    = m_mcuRam->rawData();
+    m_mcuRam = (McuRam*)m_mcu->getModule("ram");
+    m_mcuPgm = (McuMmu*)m_mcu->getModule("pgm");
+
+    /// m_progAddrBytes = m_mcuPgm->wordBytes();
+    /// m_progSize =
+
+    /*m_dataMem    = m_mcuRam->rawData();
     m_dataMemEnd = m_mcuRam->size();
     if( m_dataMemEnd ) m_dataMemEnd--;
 
@@ -27,8 +33,7 @@ McuCpu::McuCpu( eMcu* mcu )
     {
         uint16_t sregAddr = m_mcuRam->sregAddr();
         if( sregAddr ) m_STATUS = &m_dataMem[sregAddr];
-    }
-    m_progAddrSize = m_mcuRam->wordBytes();
+    }*/
 }
 McuCpu::~McuCpu() {}
 
@@ -36,7 +41,8 @@ Watcher* McuCpu::getWatcher()
 {
     if( !m_watcher )
     {
-        QMap<QString, regInfo_t>* regInfoList = m_mcuRam->regInfo();
+        /// TODO
+        /*QMap<QString, regInfo_t>* regInfoList = m_mcuRam->regInfo();
         if( !regInfoList->isEmpty() )
         {
             m_watcher = new Watcher( nullptr, this );
@@ -45,7 +51,7 @@ Watcher* McuCpu::getWatcher()
                 regInfo_t ri = regInfoList->value( reg );
                 m_watcher->addRegister( reg, "uint8", ri.bitNames );
             }
-        }
+        }*/
     }
     return m_watcher;
 }

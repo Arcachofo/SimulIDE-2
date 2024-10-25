@@ -18,57 +18,59 @@ AvrEeprom::~AvrEeprom(){}
 void AvrEeprom::setup()
 {
     m_EECR  = (uint8_t*) m_mcuRam->getReg("EECR");
-    m_EEPM  = getRegBits("EEPM0, EEPM1", m_mcuRam );
-    m_EEMPE = getRegBits("EEMPE", m_mcuRam );
-    m_EEPE  = getRegBits("EEPE", m_mcuRam );
-    m_EERE  = getRegBits("EERE", m_mcuRam );
+    m_EEPM  = m_mcuRam->getRegBits("EEPM0, EEPM1");
+    m_EEMPE = m_mcuRam->getRegBits("EEMPE" );
+    m_EEPE  = m_mcuRam->getRegBits("EEPE" );
+    m_EERE  = m_mcuRam->getRegBits("EERE" );
 }
 
 void AvrEeprom::initialize()
 {
     m_mode = 0;
+    m_oldEempe = 0;
+    m_oldEepe = 0;
     McuRom::initialize();
 }
 
 void AvrEeprom::runEvent() // Write cycle end reached
 {
-    bool eempe = getRegBitsBool( *m_EECR, m_EEMPE );
-    if( eempe ) clearRegBits( m_EEMPE );            // No read operation took place: clear EEMPE
-    else        clearRegBits( m_EEPE );             // Read operation took place: clear EEPE
+    bool eempe = m_EEMPE.getRegBitsBool();
+
+    if( eempe ) m_EEMPE.clear_08(); // No read operation took place: clear EEMPE
+    else        m_EEPE.clear_08();  // Read operation took place: clear EEPE
 }
 
-void AvrEeprom::configureA( uint8_t newEECR ) // EECR is being written
+void AvrEeprom::configureA() // EECR is being written
 {
-    bool eempe = getRegBitsBool( newEECR, m_EEMPE );
-    bool eepe  = getRegBitsBool( newEECR, m_EEPE );
+    bool eempe = m_EEMPE.getRegBitsBool();
+    bool eepe  = m_EEPE.getRegBitsBool();
 
     if( !eepe )
     {
-        m_mode = getRegBitsVal( newEECR, m_EEPM ); // EEPROM Programming Mode Bits
+        m_mode = m_EEPM.getRegBitsVal(); // EEPROM Programming Mode Bits
 
-        if( getRegBitsBool( newEECR, m_EERE ) ) // Read triggered
+        if( m_EERE.getRegBitsBool() ) // Read triggered
         {
-            m_mcuRam->m_regOverride = newEECR & ~(m_EERE.mask); // Clear EERE: it happens after 4 cycles, but cpu is halted for these cycles
+            m_EERE.clear_08(); // Clear EERE: it happens after 4 cycles, but cpu is halted for these cycles
             m_mcu->cyclesDone += 4;
             readEeprom(); // Should we return here?
         }
     }
     if( eempe )
     {
-        bool oldEepe = getRegBitsBool( *m_EECR, m_EEPE );
-
-        if( !oldEepe && eepe ) // Write triggered
+        if( !m_oldEepe && eepe ) // Write triggered
         {
-            m_mcuRam->m_regOverride = newEECR & ~(m_EEMPE.mask); // Clear EEMPE: it happens after 4 cycles but we need to cancel it now
-            Simulator::self()->cancelEvents( this );          // Cancel EEMPE clear event
+            m_EEMPE.clear_08();                      // Clear EEMPE: it happens after 4 cycles but we need to cancel it now
+            Simulator::self()->cancelEvents( this ); // Cancel EEMPE clear event
             m_mcu->cyclesDone += 2;
             writeEeprom();
             return;
         }
-        bool oldEempe = getRegBitsBool( *m_EECR, m_EEMPE );
-        if( !oldEempe ) // Shedule EEMPE clear: 4 cycles
+        if( !m_oldEempe ) // Shedule EEMPE clear: 4 cycles
             Simulator::self()->addEvent( m_mcu->psInst()*4, this );
     }
+    m_oldEempe = eempe;
+    m_oldEepe  = eepe;
 }
 
 void AvrEeprom::writeEeprom()

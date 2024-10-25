@@ -24,7 +24,7 @@ enum {
 
 #define get_vd5(o) \
         get_d5(o) \
-        const uint8_t vd = m_dataMem[d];
+        const uint8_t vd = m_mcuRam->read_08( d );
 
 #define get_r5(o) \
         const uint8_t r = ((o >> 5) & 0x10) | (o & 0xf);
@@ -44,12 +44,12 @@ enum {
 #define get_vd5_vr5(o) \
         get_r5(o); \
         get_d5(o); \
-        const uint8_t vd = m_dataMem[d], vr = m_dataMem[r];
+        const uint8_t vd = m_mcuRam->read_08( d ), vr = m_mcuRam->read_08( r );
 
 #define get_d5_vr5(o) \
         get_d5(o); \
         get_r5(o); \
-        const uint8_t vr = m_dataMem[r];
+        const uint8_t vr = m_mcuRam->read_08(r];
 
 #define get_h4_k8(o) \
         const uint8_t h = 16 + ((o >> 4) & 0xf); \
@@ -57,7 +57,7 @@ enum {
 
 #define get_vh4_k8(o) \
         get_h4_k8(o) \
-        const uint8_t vh = m_dataMem[h];
+        const uint8_t vh = m_mcuRam->read_08( h );
 
 #define get_d5_q6(o) \
         get_d5(o) \
@@ -77,7 +77,7 @@ enum {
 #define get_vp2_k6(o) \
         const uint8_t p = 24 + ((o >> 3) & 0x6); \
         const uint8_t k = ((o & 0x00c0) >> 2) | (o & 0xf); \
-        const uint16_t vp = m_dataMem[p] | (m_dataMem[p + 1] << 8);
+        const uint16_t vp = m_mcuRam->read_16( p );
 
 //#define AVR_DATA_TO_IO(v) ((v) - 32)
 //#define AVR_IO_TO_DATA(v) ((v) + 32)

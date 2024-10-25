@@ -135,9 +135,14 @@ void McuTimer::sheduleEvents()
     for( McuOcUnit* ocUnit : m_ocUnit ) ocUnit->sheduleEvents( m_ovfMatch, m_countVal );
 }
 
-void McuTimer::enable( uint8_t en )
+void McuTimer::enableChanged()
 {
-    bool e = en > 0;
+    uint8_t en = m_enableBit.getRegBitsVal();
+
+}
+
+void McuTimer::enable( bool e )
+{
     if( m_running == e ) return;
 
     updtCount();        // If disabling, write counter values to Ram
@@ -145,21 +150,21 @@ void McuTimer::enable( uint8_t en )
     updtCycles();       // This will shedule or cancel events
 }
 
-void McuTimer::countWriteL( uint8_t val ) // Someone wrote to counter low byte
+void McuTimer::countWriteL() // Someone wrote to counter low byte
 {
-    updtCount();
-    *m_countL = val;
+    calcCounter();
+    if( m_countH ) *m_countH = (m_countVal>>8) & 0xFF;
     updtCycles();       // update & Reshedule
 }
 
-void McuTimer::countWriteH( uint8_t val ) // Someone wrote to counter high byte
+void McuTimer::countWriteH() // Someone wrote to counter high byte
 {
-    updtCount();
-    *m_countH = val;
+    calcCounter();
+    *m_countL = m_countVal & 0xFF;
     updtCycles();       // update & Reshedule
 }
 
-void McuTimer::updtCount( uint8_t )       // Write counter values to Ram
+void McuTimer::updtCount()  // Write counter values to Ram
 {
     if( !m_running ) return;// If no running, values were already written at timer stop.
 

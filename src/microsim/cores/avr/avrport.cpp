@@ -15,11 +15,15 @@ AvrPort::AvrPort( eMcu* mcu, QString name )
 }
 AvrPort::~AvrPort(){}
 
-void AvrPort::pinRegChanged( uint8_t newPIN )
+void AvrPort::pinRegChanged() // PIN register written
 {
-    if( newPIN == 0 ) return;
-    McuPort::outChanged( *m_outReg ^ newPIN ); // Toggle bits = 1
-    m_mcuRam->m_regOverride = *m_inReg;
+    uint8_t inReg = *m_inReg;
+    *m_inReg = m_inpState;
+
+    if( inReg == 0 ) return;
+
+    *m_outReg ^= inReg;
+    McuPort::outChanged(); // Toggle bits = 1
 }
 
 McuPin* AvrPort::createPin( int i, QString id , Component* mcu )

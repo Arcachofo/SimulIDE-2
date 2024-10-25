@@ -20,30 +20,34 @@ class Memory
         Memory();
         ~Memory();
 
-        uint32_t getValue( int address ) { return m_data[address]; }
-        void     setValue( int address, uint32_t value ) { m_data[address] = value; }
+        uint32_t getValue( uint32_t addr );
+        virtual uint8_t  read_08( uint32_t addr ) { return m_data[addr]; }
+        virtual uint16_t read_16( uint32_t addr );
+        virtual uint32_t read_32( uint32_t addr );
 
-        bool loadData( bool resize=false );
+        void setValue( uint32_t addr, uint32_t val );
+        virtual void write_08( uint32_t addr, uint8_t val ) { m_data[addr] = val; }
+        virtual void write_16( uint32_t addr, uint16_t val );
+        virtual void write_32( uint32_t addr, uint32_t val );
+
+        bool loadData();
         void saveData();
 
-        bool loadFile( QString file, bool resize, eMcu* eMcu=nullptr );
-        bool loadDat( QString file, bool resize );
-        bool loadDatStr( QString data, bool resize );
-        bool loadHex( QString file, bool resize );
-        bool loadBin( QString file, bool resize );
+        bool loadFile( QString file, eMcu* eMcu=nullptr );
 
-        QString getMem();
-        void setMem( QString m );
+        bool loadDat( QString file );
+
+        QString getCsv();
 
         int wordBits() { return m_wordBits; }
         void setWordBits( int b );
-
         int wordBytes() { return m_wordBytes; }
 
+        uint32_t sizeWords() { return m_data.size()/m_wordBytes; }
         uint32_t size() { return m_data.size(); }
         void resize( int size );
 
-        uint32_t* rawData() { return m_data.data(); }  // Get pointer to data
+        uint8_t* rawData() { return m_rawData; }  // Get pointer to raw uint8_t array
 
         void fillMemory( uint32_t v );
 
@@ -52,9 +56,14 @@ class Memory
         MemTable* getTable();
 
     protected:
-        void saveDat( int bits );
-        void saveHex( int bits ); /// TODO
-        void saveBin( int bits );
+
+        bool loadCsv( QString data );
+        bool loadHex( QString file );
+        bool loadBin( QString file );
+
+        void saveCsv( QString file );
+        void saveHex( QString file ); /// TODO
+        void saveBin( QString file );
 
         int m_wordBits;
         int m_wordBytes;
@@ -62,7 +71,8 @@ class Memory
         MemTable* m_memTable;
         eMcu* m_eMcu;
 
-        std::vector<uint32_t> m_data;
+        std::vector<uint8_t> m_data;
+        uint8_t* m_rawData;
 };
 
 #endif

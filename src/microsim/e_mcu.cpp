@@ -142,7 +142,7 @@ void eMcu::reset()
     if( m_cpu ) m_cpu->reset(); // Must be after all modules reset
     else qDebug() << "ERROR: eMcu::reset nullptr Cpu";
 
-    for( McuPort* mcuPort : m_mcuPorts ) mcuPort->readPort( 0 ); // Update Pin Input register
+    for( McuPort* mcuPort : m_mcuPorts ) mcuPort->readPort(); // Update Pin Input register
 }
 
 void eMcu::hardReset( bool r )
@@ -246,11 +246,11 @@ IoPin*  eMcu::getIoPin( QString pinName )
 
 void eMcu::wdr() { if( m_wdt ) m_wdt->reset(); }
 
-void eMcu::enableInterrupts( uint8_t en )
+/*void eMcu::enableInterrupts( uint8_t en )
 {
     if( en > 1 ) en = 1;
     m_interrupts.enableGlobal( en );
-}
+}*/
 
 
 McuModule* eMcu::getModule( QString name )

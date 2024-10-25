@@ -21,9 +21,9 @@ class ScriptModule : public ScriptBase, public McuModule //eElement
         virtual void setScriptFile( QString scriptFile, bool compile=true ) override;
         virtual void setScript( QString script ) override;
 
-        virtual void configureA( uint8_t ) override;
-        virtual void configureB( uint8_t ) override;
-        virtual void configureC( uint8_t ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
+        virtual void configureC() override;
         virtual void callBackDoub( double )override;
         virtual void callBack()            override;
 

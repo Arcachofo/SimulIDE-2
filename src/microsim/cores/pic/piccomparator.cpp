@@ -4,7 +4,7 @@
  ***( see copyright.txt file at root folder )*******************************/
 
 #include "piccomparator.h"
-#include "datautils.h"
+#include "mcuram.h"
 #include "e_mcu.h"
 #include "mcupin.h"
 #include "mcuvref.h"
@@ -56,8 +56,7 @@ void PicComp::voltChanged()
         m_interrupt->raise();
         if( m_pinOut ) m_pinOut->setOutState( m_compOut );
 
-        if( m_compOut ) setRegBits( m_COUT );
-        else            clearRegBits( m_COUT );
+        m_COUT.setBits_08( m_compOut );
     }
 }
 
@@ -91,17 +90,17 @@ void PicComp::connect( McuPin* pinN, McuPin* pinP, McuPin* pinOut )
 PicComp0::PicComp0( eMcu* mcu, QString name )
         : PicComp( mcu, name )
 {
-    m_CM  = getRegBits("CM0,CM1,CM2", m_mcuRam );
-    m_CIS = getRegBits("CIS", m_mcuRam );
+    m_CM  = m_mcuRam->getRegBits("CM0,CM1,CM2");
+    m_CIS = m_mcuRam->getRegBits("CIS");
 }
 PicComp0::~PicComp0(){}
 
-void PicComp0::configureA( uint8_t newCMCON )
+void PicComp0::configureA() // CMCON
 {
-    m_cis = getRegBitsBool( newCMCON, m_CIS );
-    m_inv = getRegBitsBool( newCMCON, m_CINV );
+    m_cis = m_CIS.getRegBitsBool();
+    m_inv = m_CINV.getRegBitsBool();
 
-    uint8_t mode = getRegBitsVal( newCMCON, m_CM );
+    uint8_t mode = m_CM.getRegBitsVal();
     if( mode != m_mode )
     {
         m_mode = mode;
@@ -118,8 +117,8 @@ void PicComp0::configureA( uint8_t newCMCON )
 PicComp01::PicComp01( eMcu* mcu, QString name )
          : PicComp0( mcu, name )
 {
-    m_CINV = getRegBits("C1INV", m_mcuRam );
-    m_COUT = getRegBits("C1OUT", m_mcuRam );
+    m_CINV = m_mcuRam->getRegBits("C1INV");
+    m_COUT = m_mcuRam->getRegBits("C1OUT");
 }
 PicComp01::~PicComp01(){}
 
@@ -145,8 +144,8 @@ void PicComp01::setMode( uint8_t mode )
 PicComp02::PicComp02( eMcu* mcu, QString name )
          : PicComp0( mcu, name )
 {
-    m_CINV = getRegBits("C2INV", m_mcuRam );
-    m_COUT = getRegBits("C2OUT", m_mcuRam );
+    m_CINV = m_mcuRam->getRegBits("C2INV");
+    m_COUT = m_mcuRam->getRegBits("C2OUT");
 }
 PicComp02::~PicComp02(){}
 
@@ -172,8 +171,8 @@ void PicComp02::setMode( uint8_t mode )
 PicComp03::PicComp03( eMcu* mcu, QString name )
          : PicComp0( mcu, name )
 {
-    m_CINV = getRegBits("CINV", m_mcuRam );
-    m_COUT = getRegBits("COUT", m_mcuRam );
+    m_CINV = m_mcuRam->getRegBits("CINV");
+    m_COUT = m_mcuRam->getRegBits("COUT");
 }
 PicComp03::~PicComp03(){}
 
@@ -202,33 +201,35 @@ PicComp1::PicComp1( eMcu* mcu, QString name )
 {
     QString n = name.right(1); // name="Comp01" => n="1"
 
-    m_CxON = getRegBits("C"+n+"ON", m_mcuRam );
-    m_COUT = getRegBits("C"+n+"OUT", m_mcuRam );
-    m_CxOE = getRegBits("C"+n+"OE", m_mcuRam );
-    m_CINV = getRegBits("C"+n+"POL", m_mcuRam );
-    m_CxR  = getRegBits("C"+n+"R", m_mcuRam );
-    m_CxCH = getRegBits("C"+n+"CH0,C"+n+"CH1", m_mcuRam );
+    m_CMxCON0  = (uint8_t*) m_mcuRam->getReg("CM"+n+"CON0");
+
+    m_CxON = m_mcuRam->getRegBits("C"+n+"ON");
+    m_COUT = m_mcuRam->getRegBits("C"+n+"OUT");
+    m_CxOE = m_mcuRam->getRegBits("C"+n+"OE");
+    m_CINV = m_mcuRam->getRegBits("C"+n+"POL");
+    m_CxR  = m_mcuRam->getRegBits("C"+n+"R");
+    m_CxCH = m_mcuRam->getRegBits("C"+n+"CH0,C"+n+"CH1");
 }
 PicComp1::~PicComp1(){}
 
-void PicComp1::configureA( uint8_t newCMxCON0 )
+void PicComp1::configureA() // CMxCON0
 {
-    if( newCMxCON0 == m_mode ) return;
-    m_mode = newCMxCON0;
+    if( *m_CMxCON0 == m_mode ) return;
+    m_mode = *m_CMxCON0;
 
-    m_enabled = getRegBitsBool( newCMxCON0, m_CxON );
+    m_enabled = m_CxON.getRegBitsBool();
     if( !m_enabled )
     {
         connect( nullptr, nullptr, nullptr );
         return;
     }
-    bool OE = getRegBitsBool( newCMxCON0, m_CxOE );
+    bool OE = m_CxOE.getRegBitsBool();
     McuPin* pinOut = OE ? m_pins[5] : nullptr;
 
-    m_inv     = getRegBitsBool( newCMxCON0, m_CINV );
-    m_fixVref = getRegBitsBool( newCMxCON0, m_CxR );
+    m_inv     = m_CINV.getRegBitsBool();
+    m_fixVref = m_CxR.getRegBitsBool();
 
-    uint8_t channel = getRegBitsVal( newCMxCON0, m_CxCH );
+    uint8_t channel = m_CxCH.getRegBitsVal();
     connect( m_pins[channel], m_pins[4], pinOut );
 }
 
@@ -242,9 +243,9 @@ PicComp11::PicComp11( eMcu* mcu, QString name )
 }
 PicComp11::~PicComp11(){}
 
-void PicComp11::configureC( uint8_t newSRCON )
+void PicComp11::configureC() // SRCON
 {
-
+    /// TODO
 }
 
 //-------------------------------------------------------------
@@ -257,14 +258,14 @@ PicComp12::PicComp12( eMcu* mcu, QString name )
 }
 PicComp12::~PicComp12(){}
 
-void PicComp12::configureB( uint8_t newCM2CON1 )
+void PicComp12::configureB() // CM2CON1
 {
-
+    /// TODO
 }
 
-void PicComp12::configureC( uint8_t newSRCON )
+void PicComp12::configureC() // SRCON
 {
-
+    /// TODO
 }
 
 //-------------------------------------------------------------
@@ -277,12 +278,12 @@ PicComp20::PicComp20( eMcu* mcu, QString name )
 }
 PicComp20::~PicComp20(){}
 
-void PicComp20::configureA( uint8_t newCMxCON0 )
+void PicComp20::configureA() // CMxCON0
 {
-
+    /// TODO
 }
 
-void PicComp20::configureB( uint8_t newCMxCON1 )
+void PicComp20::configureB() // CMxCON1
 {
-
+    /// TODO
 }

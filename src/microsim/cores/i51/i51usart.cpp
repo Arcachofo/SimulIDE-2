@@ -30,12 +30,12 @@ void I51Usart::setup()
 
     m_scon = (uint8_t*) m_mcuRam->getReg( "SCON" );
 
-    m_SM     = getRegBits( "SM1,SM0", m_mcuRam );
-    m_bit9Tx = getRegBits( "TB8", m_mcuRam );
-    m_bit9Rx = getRegBits( "RB8", m_mcuRam );
-    m_SM2    = getRegBits( "SM2", m_mcuRam );
+    m_SM     = m_mcuRam->getRegBits("SM1,SM0");
+    m_bit9Tx = m_mcuRam->getRegBits("TB8");
+    m_bit9Rx = m_mcuRam->getRegBits("RB8");
+    m_SM2    = m_mcuRam->getRegBits("SM2");
 
-    m_SMOD = getRegBits( "SMOD", m_mcuRam );
+    m_SMOD = m_mcuRam->getRegBits("SMOD");
 }
 
 void I51Usart::reset()
@@ -47,10 +47,10 @@ void I51Usart::reset()
     m_counter = 0;
 }
 
-void I51Usart::configureA( uint8_t newSCON ) //SCON
+void I51Usart::configureA() //SCON
 {
-    uint8_t mode = getRegBitsVal( newSCON, m_SM );
-    bool     sm2 = getRegBitsBool( newSCON, m_SM2 );
+    uint8_t mode = m_SM.getRegBitsVal();
+    bool     sm2 = m_SM2.getRegBitsBool();
 
     if( mode == m_mode ){
         if( mode == 2 || mode == 3 ) m_receiver->ignoreData( sm2 );
@@ -89,17 +89,17 @@ void I51Usart::configureA( uint8_t newSCON ) //SCON
     if( useTimer ) setPeriod( 0 );
 }
 
-void I51Usart::configureB( uint8_t newPCON )
+void I51Usart::configureB() // PCON
 {
-    m_smodVal = getRegBitsVal( newPCON, m_SMOD );
+    m_smodVal = m_SMOD.getRegBitsVal();
 }
 
-void I51Usart::sendByte( uint8_t data )
+void I51Usart::dataRegChanged() // Buffer is being written
 {
     if( m_mcu->state() == mcuStopped ) return;
 
-    if( m_synchronous ) m_uartSync->sendSyncData( data );
-    else                m_sender->processData( data );
+    if( m_synchronous ) m_uartSync->sendSyncData( *m_txReg );
+    else                m_sender->processData( *m_txReg );
 }
 
 void I51Usart::callBack()
@@ -116,16 +116,18 @@ void I51Usart::callBack()
     m_receiver->runEvent();
 }
 
-void I51Usart::readByte( uint8_t ) // Reading SBUF
+uint32_t I51Usart::getData() // Reading SBUF
 {
     if( m_mcuRam->isCpuRead() )
     {
         m_stopBitError = false;
         uint8_t data = m_receiver->getData(); // This calls I51Usart::setRxFlags()
 
-        if( m_mode == 1 && m_stopBitError ) return; // Ignore frame
-        m_mcuRam->m_regOverride = data;
+        if( m_mode == 1 && m_stopBitError ) return -1; /// Fixme // Ignore frame
+        //m_mcuRam->m_regOverride = data;
+        return data;
     }
+    return -1;/// Fixme
 }
 
 void I51Usart::setRxFlags( uint16_t frame )

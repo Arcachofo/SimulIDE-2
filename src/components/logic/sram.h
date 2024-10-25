@@ -38,6 +38,9 @@ class SRAM : public IoComponent, public eElement, public Memory
         bool asynchro() { return m_asynchro; }
         void setAsynchro( bool a );
 
+        void setMem( QString m );
+        QString getMem();
+
         void updatePins();
 
     public slots:

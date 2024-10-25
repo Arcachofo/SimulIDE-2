@@ -169,9 +169,14 @@ void UartTR::initialize()
     m_enabled = false;
 }
 
-void UartTR::configureA( uint8_t val ) // Select Pin
+void UartTR::enableChanged()
 {
-    uint8_t pinNum = getRegBitsVal( val, m_configBitsA );
+    enable( m_enableBit.getRegBitsVal() );
+}
+
+void UartTR::configureA( ) // Select Pin
+{
+    uint8_t pinNum = m_configBitsA.getRegBitsVal();
     if( pinNum < m_pinList.size() ) m_ioPin = m_pinList.at( pinNum );
 }
 

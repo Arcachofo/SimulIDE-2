@@ -21,13 +21,13 @@ class PicTwi : public McuTwi
         virtual void setup() override;
         virtual void initialize() override;
 
-        virtual void configureA( uint8_t newSSPCON ) override;
-        virtual void configureB( uint8_t newSSPCON2 ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
-        virtual void writeAddrReg( uint8_t newSSPADD ) override;
-        virtual void writeStatus( uint8_t newSSPSTAT ) override;
-        virtual void writeTwiReg( uint8_t newSSPBUF ) override;
-        virtual void readTwiReg( uint8_t val ) override;
+        virtual void writeAddrReg() override;
+        virtual void writeStatus() override;
+        virtual void writeTwiReg() override;
+        virtual void readTwiReg() override;
 
         virtual void setMode( twiMode_t mode ) override;
         virtual void writeByte() override;

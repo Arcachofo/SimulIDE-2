@@ -18,7 +18,7 @@ class PicWdt : public McuWdt
         virtual void initialize() override;
         virtual void runEvent() override;
 
-        virtual void configureA( uint8_t newOPTION ) override;
+        virtual void configureA() override;
 
         virtual void reset() override;
 

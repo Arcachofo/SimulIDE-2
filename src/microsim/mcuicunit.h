@@ -23,6 +23,7 @@ class McuIcUnit : public McuModule, public eElement
         virtual void initialize() override;
         virtual void voltChanged() override;
 
+        virtual void configureA() override {;}
         virtual void configure( uint8_t val ) {;}
 
         void enable( bool en );

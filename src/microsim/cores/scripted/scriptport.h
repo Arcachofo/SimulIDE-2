@@ -15,9 +15,9 @@ class ScriptPort : public ScriptBase, public McuPort
         ScriptPort( eMcu* mcu, QString name );
         ~ScriptPort();
 
-        virtual void configureA( uint8_t newVal ) override;
-        virtual void configureB( uint8_t newVal ) override;
-        virtual void configureC( uint8_t newVal ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
+        virtual void configureC() override;
 
         virtual void reset() override;
 

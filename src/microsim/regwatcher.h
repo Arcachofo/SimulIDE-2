@@ -9,37 +9,29 @@
 #include <QDebug>
 
 #include "mcuram.h"
+#include "mcuregister.h"
 
-template <class T>                // Add callback for Register changes by address
+/*template <class T>                // Add callback for Register changes by address
 void watchRegister( uint16_t addr, int write
-                  , T* inst, void (T::*func)(uint8_t)
-                  , McuRam* ram, uint8_t mask=0xFF )
+                  , T* obj, void (T::*func)()
+                  , McuRam* ram )
 {
     if( addr == 0 ) qDebug() << "Warning: watchRegister address 0 ";
 
-    if( write )
+    McuRegister* reg = ram->getRegister( addr );
+    if( !reg )
     {
-        McuSignal* regSignal = ram->writeSignals()->value( addr );
-        if( !regSignal )
-        {
-            regSignal = new McuSignal;
-            ram->writeSignals()->insert( addr, regSignal );
-        }
-        regSignal->connect( inst, func, mask );
-    }else{
-        McuSignal* regSignal = ram->readSignals()->value( addr );
-        if( !regSignal )
-        {
-            regSignal = new McuSignal;
-            ram->readSignals()->insert( addr, regSignal );
-        }
-        regSignal->connect( inst, func, mask  );
+        qDebug() << "Error: watchRegister, No Register at Address" << addr;
+        return;
     }
-}
 
-template <class T>                // Add callback for Register changes by names
+    if( write ) reg->addWriteCallback( obj, func );
+    else        reg->addReadCallback( obj, func );
+}*/
+
+/*template <class T>                // Add callback for Register changes by names
 void watchRegNames( QString regNames, int write
-                  , T* inst, void (T::*func)(uint8_t)
+                  , T* obj, void (T::*func)()
                   , McuRam* ram)
 {
     if( regNames.isEmpty() ) return;
@@ -53,24 +45,19 @@ void watchRegNames( QString regNames, int write
             continue;
         }
         uint16_t addr = ram->regInfo()->value( reg ).address;
-        watchRegister( addr, write, inst, func, ram );
+        watchRegister( addr, write, obj, func, ram );
     }
-}
+}*/
 
-template <class T>              // Add callback for Register bit changes by names
+/*template <class T>              // Add callback for Register bit changes by names
 void watchBitNames( QString bitNames, int write
-              , T* inst, void (T::*func)(uint8_t)
+              , T* obj, void (T::*func)()
               , McuRam* ram )
 {
     if( bitNames.isEmpty() ) return;
 
-    uint16_t regAddr = 0;
-    QStringList bitList = bitNames.split(",");
-    uint8_t     bitMask = getBitMask( bitList, ram );
+    uint32_t regAddr = ram->bitRegAddr( bitNames );
 
-    regAddr = ram->bitRegs()->value( bitList.first() );
-
-    if( regAddr )
-        watchRegister( regAddr, write, inst, func, ram, bitMask );
-}
+    if( regAddr ) watchRegister( regAddr, write, obj, func, ram );
+}*/
 #endif

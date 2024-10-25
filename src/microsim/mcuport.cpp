@@ -19,14 +19,12 @@ McuPort::McuPort( eMcu* mcu, QString name )
 
     m_shortName = "P"+ name.right(1);
 
-    m_outReg = NULL;
-    m_dirReg = NULL;
-    m_inReg  = NULL;
+    m_outReg = nullptr;
+    m_dirReg = nullptr;
+    m_inReg  = nullptr;
+    m_puReg  = nullptr;
 
     m_intMask = 0;
-    m_outAddr = 0;
-    m_inAddr  = 0;
-    m_dirAddr = 0;
     m_dirInv  = false;
     m_rstIntMask = true;
 }
@@ -34,54 +32,57 @@ McuPort::~McuPort(){}
 
 void McuPort::reset()
 {
-    m_pinState = 0;
+    //m_pinState   = 0;
+    m_inpState = 0;
+    m_outState = 0;
+    m_dirState = 0;
     if( m_rstIntMask ) m_intMask = 0;
     /// for( McuPin* pin : m_pins ) pin->reset();
 }
 
 void McuPort::pinChanged( uint8_t pinMask, uint8_t val ) // Pin number in pinMask
 {
-    uint8_t pinState = (m_pinState & ~pinMask) | (val & pinMask);
+    uint8_t pinState = (m_inpState & ~pinMask) | (val & pinMask);
 
-    if( pinState == m_pinState ) return;
-    m_pinState = pinState;
+    if( pinState == m_inpState ) return;
+    m_inpState = pinState;
 
     if( (m_intMask & pinMask) && m_interrupt ) m_interrupt->raise(); // Pin change interrupt
 
     if( m_sleeping ) return;
-    if( m_inAddr ) *m_inReg = m_pinState; //m_mcu->writeReg( m_inAddr, m_pinState, false ); // Write to RAM
+    if( m_inReg ) *m_inReg = m_inpState; //m_mcu->writeReg( m_inAddr, m_pinState, false ); // Write to RAM
 }
 
-void McuPort::outChanged( uint8_t val )
+void McuPort::outChanged() // PORT register written
 {
-    uint8_t changed = *m_outReg ^ val; // See which Pins have actually changed
+    uint8_t changed = *m_outReg ^ m_outState; // See which Pins have actually changed
     if( changed == 0 ) return;
-    *m_outReg = val;
+    m_outState = *m_outReg;
 
     for( int i=0; i<m_numPins; ++i ){
-        if( changed & (1<<i) ) m_pins[i]->setPortState( val & (1<<i) ); // Pin changed
+        if( changed & (1<<i) ) m_pins[i]->setPortState( m_outState & (1<<i) ); // Pin changed
 }   }
 
-void McuPort::dirChanged( uint8_t val )
+void McuPort::dirChanged() // DIR register written
 {
-    uint8_t changed = *m_dirReg ^ val;  // See which Pins have actually changed
+    uint8_t changed = *m_dirReg ^ m_dirState;  // See which Pins have actually changed
     if( changed == 0 ) return;
+    m_dirState = *m_dirReg;
 
-    if( m_dirInv ) val = ~val;   // defaul: 1 for outputs, inverted: 0 for outputs (PICs)
+    uint8_t val = m_dirInv ? ~m_dirState : m_dirState;   // defaul: 1 for outputs, inverted: 0 for outputs (PICs)
 
     for( int i=0; i<m_numPins; ++i ){
         if( changed & 1<<i) m_pins[i]->setDirection( val & (1<<i) ); // Pin changed
 }   }
 
-void McuPort::readPort( uint8_t )
+void McuPort::readPort()
 {
-    if( m_inAddr ) *m_inReg = getInpState();
+    if( m_inReg ) *m_inReg = getInpState();
 }
 
-void McuPort::intChanged( uint8_t val )
+void McuPort::intChanged()
 {
-    if( m_intBits.reg ) m_intMask = getRegBitsVal( val, m_intBits );
-    else                m_intMask = val;
+    m_intMask = m_intBits.getRegBitsVal();
 }
 // Direct Control---------------------------------------------------
 
@@ -107,12 +108,12 @@ void McuPort::setOutState( uint val )
     }
 }
 
-uint McuPort::getInpState()
+uint32_t McuPort::getInpState()
 {
-    uint data = 0;
+    m_inpState = 0;
     for( int i=0; i<m_numPins; ++i )
-        if( m_pins[i]->getInpState() ) data += (1 << i);
-    return data;
+        if( m_pins[i]->getInpState() ) m_inpState |= (1 << i);
+    return m_inpState;
 }
 
 void McuPort::setPinMode( pinMode_t mode )
@@ -121,22 +122,10 @@ void McuPort::setPinMode( pinMode_t mode )
 }
 //-------------------------------------------------------------------
 
-void McuPort::setPullups( uint8_t puMask )
+void McuPort::setPullups( uint32_t puMask )
 {
     for( int i=0; i<m_numPins; ++i )
         m_pins[i]->setPullup( puMask & 1<<i );
-}
-
-void McuPort::setAllPullups( uint8_t val )
-{
-    uint8_t puMask = val ? 255 : 0;
-    setPullups( puMask );
-}
-
-void McuPort::clearAllPullups( uint8_t val )
-{
-    uint8_t puMask = val ? 0 : 255;
-    setPullups( puMask );
 }
 
 void McuPort::createPins( Mcu* mcuComp, QString pins, uint32_t pinMask )
@@ -170,13 +159,13 @@ McuPin* McuPort::createPin( int i, QString id , Component* mcu )
 
 McuPin* McuPort::getPinN( uint8_t i )
 {
-    if( i >= m_pins.size() ) return NULL;
+    if( i >= m_pins.size() ) return nullptr;
     return m_pins[i];
 }
 
 McuPin* McuPort::getPin( QString pinName )
 {
-    McuPin* pin = NULL;
+    McuPin* pin = nullptr;
 
     if( pinName.startsWith( m_name ) || pinName.startsWith( m_shortName ) )
     {
@@ -193,7 +182,7 @@ McuPin* McuPort::getPin( QString pinName )
         }
     }
     //if( !pin )
-    //    qDebug() << "ERROR: McuPort::getPin NULL Pin:"<< pinName;
+    //    qDebug() << "ERROR: McuPort::getPin nullptr Pin:"<< pinName;
     return pin;
 }
 

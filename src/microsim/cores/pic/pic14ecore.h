@@ -18,7 +18,7 @@ class Pic14eCore : public PicMrCore
 
     protected:
         virtual void runStep( uint16_t instr ) override;
-        virtual void setBank( uint8_t bank ) override { PicMrCore::setBank( bank ); }
+        virtual void bankChanged() override { PicMrCore::bankChanged(); }
 
         uint8_t* m_FSR0L;
         uint8_t* m_FSR0H;
@@ -41,7 +41,7 @@ class Pic14eCore : public PicMrCore
 
         virtual uint8_t getRam( uint16_t addr ) override //
         {
-            addr = m_mcuRam->getMapperAddr( addr+m_bank );
+            addr = m_mcuRam->getMappedAddr( addr+m_bank );
 
             if( addr == 0 )        // INDF0
             {
@@ -49,7 +49,7 @@ class Pic14eCore : public PicMrCore
                 if( addr & 1<<15 ) // Read Program Memory
                 {
                     addr &= ~(1<<15);
-                    return m_progMem[addr];
+                    return m_mcuPgm->read_08( addr );
                 }
             }
             else if( addr == 1 )   // INDF1
@@ -58,15 +58,15 @@ class Pic14eCore : public PicMrCore
                 if( addr & 1<<15 ) // Read Program Memory
                 {
                     addr &= ~(1<<15);
-                    return m_progMem[addr];
+                    return m_mcuPgm->read_08( addr );
                 }
             }
             return McuCpu::GET_RAM( addr );
         }
         virtual void setRam( uint16_t addr, uint8_t v ) override //
         {
-            addr = m_mcuRam->getMapperAddr( addr+m_bank );
-            if( addr == m_PCLaddr ) setPC( v + (m_dataMem[m_PCHaddr]<<8) ); // Writting to PCL
+            addr = m_mcuRam->getMappedAddr( addr+m_bank );
+            if( addr == m_PCLaddr ) setPC( v + (m_mcuRam->read_08(m_PCHaddr)<<8) ); // Writting to PCL
             else if( addr == 0 ) addr = getFSR0(); // INDF0
             else if( addr == 1 ) addr = getFSR1(); // INDF1
             McuCpu::SET_RAM( addr, v );

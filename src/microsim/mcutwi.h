@@ -22,10 +22,10 @@ class McuTwi : public McuPrescaled, public TwiModule
 
         virtual void initialize() override;
 
-        virtual void writeAddrReg( uint8_t val ){ m_address = val; }
-        virtual void writeStatus( uint8_t val ){;}
-        virtual void writeTwiReg( uint8_t val ){;}
-        virtual void readTwiReg( uint8_t val ){;}
+        virtual void writeAddrReg(){ m_address = *m_addrReg; }
+        virtual void writeStatus(){;}
+        virtual void writeTwiReg(){;}
+        virtual void readTwiReg(){;}
 
     protected:
         virtual void updateFreq() {;}

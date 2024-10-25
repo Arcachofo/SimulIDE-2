@@ -13,6 +13,7 @@
 class eMcu;
 class McuRam;
 class Interrupt;
+class McuRegister;
 
 class McuModule
 {
@@ -26,9 +27,9 @@ class McuModule
 
         virtual void reset(){;}
 
-        virtual void configureA( uint8_t ){;}
-        virtual void configureB( uint8_t ){;}
-        virtual void configureC( uint8_t ){;}
+        virtual void configureA(){;}
+        virtual void configureB(){;}
+        virtual void configureC(){;}
         virtual void callBackDoub( double ){;}
         virtual void callBack() {;}
         virtual void sleep( int mode );
@@ -51,6 +52,10 @@ class McuModule
         bool m_sleeping;
 
         Interrupt* m_interrupt;
+
+        McuRegister* m_cfgRegA;
+        McuRegister* m_cfgRegB;
+        McuRegister* m_cfgRegC;
 
         regBits_t m_configBitsA;
         regBits_t m_configBitsB;

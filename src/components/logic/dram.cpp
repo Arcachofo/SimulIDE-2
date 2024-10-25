@@ -188,10 +188,10 @@ void DRAM::voltChanged()        // Some Pin Changed State, Manage it
                     bool state = m_outPin[i]->getInpState();
                     if( state ) value += pow( 2, i );
                 }
-                m_data[m_address] = value;
+                setValue( m_address, value ); //m_data[m_address] = value;
                 //qDebug() << "Write" << value << "to address" << m_address;
             }else{                                            // Read
-                m_nextOutVal = m_data[m_address];
+                m_nextOutVal = getValue( m_address ); //m_data[m_address];
                 IoComponent::scheduleOutPuts( this );
             }
         }

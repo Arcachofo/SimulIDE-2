@@ -23,13 +23,19 @@ void AvrSpi::setup()
     n.toInt( &ok );
     if( !ok ) n = "";
 
-    m_SPR   = getRegBits( "SPR"+n+"0,SPR"+n+"1", m_mcuRam );
-    m_SPE   = getRegBits( "SPE"+n, m_mcuRam );
-    m_DODR  = getRegBits( "DODR"+n, m_mcuRam );
-    m_MSTR  = getRegBits( "MSTR"+n, m_mcuRam );
-    m_CPOL  = getRegBits( "CPOL"+n, m_mcuRam );
-    m_CPHA  = getRegBits( "CPHA"+n, m_mcuRam );
-    m_SPI2X = getRegBits( "SPI2X"+n, m_mcuRam );
+    m_SPR   = m_mcuRam->getRegBits( "SPR"+n+"0,SPR"+n+"1" );
+    m_SPE   = m_mcuRam->getRegBits( "SPE"+n );
+    m_DODR  = m_mcuRam->getRegBits( "DODR"+n );
+    m_MSTR  = m_mcuRam->getRegBits( "MSTR"+n );
+    m_CPOL  = m_mcuRam->getRegBits( "CPOL"+n );
+    m_CPHA  = m_mcuRam->getRegBits( "CPHA"+n );
+    m_SPI2X = m_mcuRam->getRegBits( "SPI2X"+n );
+}
+
+void AvrSpi::initialize()
+{
+    McuSpi::initialize();
+    m_status = 0;
 }
 
 void AvrSpi::setMode( spiMode_t mode )
@@ -63,43 +69,46 @@ void AvrSpi::setMode( spiMode_t mode )
     SpiModule::setMode( mode );
 }
 
-void AvrSpi::configureA( uint8_t newSPCR ) // SPCR is being written
+void AvrSpi::configureA() // SPCR is being written
 {
-    bool enable = getRegBitsBool( newSPCR, m_SPE );
+    bool enable = m_SPE.getRegBitsBool();
     if( !enable )                 /// Disable SPI
     { setMode( SPI_OFF ); return; }
 
-    bool master = getRegBitsBool( newSPCR, m_MSTR );
+    bool master = m_MSTR.getRegBitsBool();
     spiMode_t mode = master ? SPI_MASTER : SPI_SLAVE;
     setMode( mode );
 
-    m_lsbFirst  = getRegBitsBool( newSPCR, m_DODR ); // Data order
+    m_lsbFirst  = m_DODR.getRegBitsBool(); // Data order
 
-    bool clkPol = getRegBitsBool( newSPCR, m_CPOL ); // Clock polarity
+    bool clkPol = m_CPOL.getRegBitsBool(); // Clock polarity
     m_leadEdge = clkPol ? Clock_Falling : Clock_Rising;
     m_tailEdge = clkPol ? Clock_Rising  : Clock_Falling;
     m_clkPin->setOutState( clkPol );
     updateClock();
 
-    bool clkPha = getRegBitsBool( newSPCR, m_CPHA ); // Clock phase
+    bool clkPha = m_CPHA.getRegBitsBool(); // Clock phase
     m_sampleEdge = ( clkPol == clkPha ) ? Clock_Rising : Clock_Falling; // This shows up in the truth table
 
-    uint8_t spr = getRegBitsVal( newSPCR, m_SPR );
+    uint8_t spr = m_SPR.getRegBitsVal();
     m_prescaler = m_prescList[spr];
     updateSpeed();
 }
 
-void AvrSpi::writeStatus( uint8_t newSPSR ) // SPSR is being written
+void AvrSpi::writeStatus() // SPSR is being written
 {
-    uint8_t spi2x = getRegBitsVal( newSPSR, m_SPI2X );
-    m_speed2x = spi2x > 0;
+    m_speed2x = m_SPI2X.getRegBitsBool();
     updateSpeed();
-    m_mcuRam->m_regOverride = (*m_statReg & ~m_SPI2X.mask) | spi2x; // Preserve Status bits
+
+    // m_mcuRam->m_regOverride = (*m_statReg & ~m_SPI2X.mask) | spi2x; // Preserve Status bits
+    *m_statReg = m_status & ~m_SPI2X.mask;
+    if( m_speed2x ) *m_statReg |= m_SPI2X.mask;
+    m_status = *m_statReg ;
 }
 
-void AvrSpi::writeSpiReg( uint8_t newSPDR ) // SPDR is being written
+void AvrSpi::writeSpiReg() // SPDR is being written
 {
-    m_srReg = newSPDR;
+    m_srReg = *m_dataReg;
 
     /// SPIF is cleared by first reading the SPI Status Register with SPIF set,
     /// then accessing the SPI Data Register (SPDR).

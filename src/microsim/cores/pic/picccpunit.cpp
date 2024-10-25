@@ -42,7 +42,9 @@ void PicCcpUnit::setup()
     if( timer2 ) timer2->addOcUnit( m_pwmUnit );
 
     QString n = m_name.right(1);
-    m_CCPxM = getRegBits( "CCP"+n+"M0,CCP"+n+"M1,CCP"+n+"M2,CCP"+n+"M3", m_mcuRam );
+    m_CCPxM = m_mcuRam->getRegBits("CCP"+n+"M0,CCP"+n+"M1,CCP"+n+"M2,CCP"+n+"M3");
+
+    m_CCPxCON = m_cfgRegA->getData08();
 
     m_mode = 0;
 }
@@ -50,27 +52,33 @@ void PicCcpUnit::setup()
 void PicCcpUnit::initialize()
 {
     m_mode = 0;
+    m_lastRegH = 0;
     m_ccpMode = ccpOFF;
 }
 
-void PicCcpUnit::ccprWriteL( uint8_t val )
+void PicCcpUnit::ccprWriteL()
 {
-    m_pwmUnit->ocrWriteL( val );
-    m_comUnit->ocrWriteL( val );
+    m_pwmUnit->ocrWriteL();
+    m_comUnit->ocrWriteL();
 }
 
-void PicCcpUnit::ccprWriteH( uint8_t val )
+void PicCcpUnit::ccprWriteH()
 {
-    if( m_ccpMode == ccpPWM ) m_mcuRam->m_regOverride = *m_ccpRegH; // Read only
-    else                      m_comUnit->ocrWriteH( val );
+    if( m_ccpMode == ccpPWM )
+    {
+        *m_ccpRegH = m_lastRegH; // Read only
+    }else{
+        m_lastRegH = *m_ccpRegH;
+        m_comUnit->ocrWriteH();
+    }
 }
 
-void PicCcpUnit::configureA( uint8_t CCPxCON ) //
+void PicCcpUnit::configureA() // CCPxCON
 {
-    if( CCPxCON == m_mode ) return;
-    m_mode = CCPxCON;
+    if( m_mode == *m_CCPxCON ) return;
+    m_mode = *m_CCPxCON;
 
-    uint8_t CCPxM = getRegBitsVal( CCPxCON, m_CCPxM );
+    uint8_t CCPxM = m_CCPxM.getRegBitsVal();
 
     m_ccpMode = ccpOFF;
     m_capUnit->initialize();
@@ -81,7 +89,7 @@ void PicCcpUnit::configureA( uint8_t CCPxCON ) //
     if     ( CCPxM < 4  ) { m_ccpMode = ccpCOM; m_comUnit->configure( CCPxM ); } // Compare Mode (Enhanced):
     else if( CCPxM < 8  ) { m_ccpMode = ccpCAP; m_capUnit->configure( CCPxM ); } // Capture Mode:
     else if( CCPxM < 12 ) { m_ccpMode = ccpCOM; m_comUnit->configure( CCPxM ); } // Compare Mode:
-    else                  { m_ccpMode = ccpPWM; m_pwmUnit->configure( CCPxCON );}// PWM Mode
+    else                  { m_ccpMode = ccpPWM; m_pwmUnit->configure( *m_CCPxCON );}// PWM Mode
 }
 
 void PicCcpUnit::setInterrupt( Interrupt* i )

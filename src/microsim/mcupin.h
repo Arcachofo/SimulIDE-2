@@ -49,7 +49,7 @@ class McuPin : public IoPin
         virtual void setPullup( bool up ) override;
 
         virtual void setAnalog( bool ) {;}
-        virtual void ConfExtInt( uint8_t bits );
+        virtual void ConfExtInt();
 
         void setExtInt( uint mode );
 

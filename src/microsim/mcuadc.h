@@ -23,7 +23,7 @@ class McuAdc : public McuPrescaled, public eElement
         virtual void initialize() override;
         virtual void runEvent() override;
 
-        virtual void setChannel( uint8_t val ){;}
+        virtual void setChannel(){;}
 
         virtual void startConversion();
 
@@ -42,6 +42,8 @@ class McuAdc : public McuPrescaled, public eElement
 
         uint8_t* m_ADCL; // Actual ram for ADC Reg. Low byte
         uint8_t* m_ADCH; // Actual ram for ADC Reg. High byte
+
+        McuRegister* m_muxReg;
 
         std::vector<McuPin*> m_adcPin; // ADC Pins
         std::vector<McuPin*> m_refPin; // Vref Pins

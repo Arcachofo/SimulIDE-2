@@ -8,7 +8,7 @@
 #include "avrsleep.h"
 #include "e_mcu.h"
 #include "mcuwdt.h"
-#include "datautils.h"
+#include "mcuram.h"
 
 AvrSleep::AvrSleep( eMcu* mcu, QString name )
         : McuSleep( mcu, name )
@@ -18,8 +18,8 @@ AvrSleep::~AvrSleep(){}
 
 void AvrSleep::setup()
 {
-    m_SM = getRegBits( "SM0,SM1,SM2", m_mcuRam );
-    m_SE = getRegBits( "SE", m_mcuRam );
+    m_SM = m_mcuRam->getRegBits( "SM0,SM1,SM2");
+    m_SE = m_mcuRam->getRegBits( "SE");
 
     //Interrupt* inte = NULL;
 
@@ -31,9 +31,9 @@ void AvrSleep::initialize()
     m_sleepMode = sleepNone;
 }
 
-void AvrSleep::configureA( uint8_t newVal )
+void AvrSleep::configureA()
 {
-    bool enabled = getRegBitsBool( newVal, m_SE );
+    bool enabled = m_SE.getRegBitsBool();
     if( m_enabled != enabled )
     {
         m_enabled = enabled;
@@ -45,7 +45,7 @@ void AvrSleep::configureA( uint8_t newVal )
             }
         }
     }
-    sleepMode_t mode = (sleepMode_t)getRegBitsVal( newVal, m_SM );
+    sleepMode_t mode = (sleepMode_t)m_SM.getRegBitsVal();
     if( m_sleepMode != mode )
     {
         m_sleepMode = mode;

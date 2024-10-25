@@ -30,17 +30,18 @@ void McuUsart::frameSent( uint8_t data )
     m_sender->raiseInt();
 }
 
-void McuUsart::readByte( uint8_t )
+uint32_t McuUsart::getData() // Reading Data register
 {
-    /// Fixme if( m_mcu->isCpuRead() ) m_mcu->m_regOverride = m_receiver->getData();
+    return m_receiver->getData();
 }
 
 uint8_t McuUsart::getBit9Tx()
 {
-    return getRegBitsVal( m_bit9Tx );
+    return m_bit9Tx.getRegBitsVal();
 }
 
 void McuUsart::setBit9Rx( uint8_t bit )
 {
-    writeRegBits( m_bit9Rx, bit );
+    if( bit ) m_bit9Rx.set_08();
+    else      m_bit9Rx.clear_08();
 }

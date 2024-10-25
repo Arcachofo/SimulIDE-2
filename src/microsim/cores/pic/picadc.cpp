@@ -31,9 +31,9 @@ void PicAdc::setup()
 {
     m_sleepMode = 0xFF;
 
-    m_ADON = getRegBits("ADON", m_mcuRam );
-    m_GODO = getRegBits("GO/DONE", m_mcuRam );
-    m_ADFM = getRegBits("ADFM", m_mcuRam );
+    m_ADON = m_mcuRam->getRegBits("ADON" );
+    m_GODO = m_mcuRam->getRegBits("GO/DONE" );
+    m_ADFM = m_mcuRam->getRegBits("ADFM" );
 
     m_pRefPin = nullptr;
     m_nRefPin = nullptr;
@@ -46,23 +46,23 @@ void PicAdc::initialize()
     if( m_refPin.size() > 1 ) m_nRefPin = m_refPin.at(1);
 }
 
-void PicAdc::configureA( uint8_t newADCON0 ) // ADCON0
+void PicAdc::configureA() // ADCON0
 {
-    m_enabled = getRegBitsBool( newADCON0, m_ADON );
+    m_enabled = m_ADON.getRegBitsBool();
 
-    uint8_t prs = getRegBitsVal( newADCON0, m_ADSC );
+    uint8_t prs = m_ADSC.getRegBitsVal();
     setAdcClock( prs );
 
-    m_channel = getRegBitsVal( newADCON0, m_CHS );
+    m_channel = m_CHS.getRegBitsVal();
 
-    bool convert = getRegBitsBool( newADCON0, m_GODO );
+    bool convert = m_GODO.getRegBitsBool();
     if( !m_converting && convert ) startConversion();
 }
 
 void PicAdc::endConversion()
 {
     if( m_leftAdjust ) m_adcValue <<= 6;
-    clearRegBits( m_GODO ); // Clear GO/DONE bit
+    m_GODO.clear_08(); // Clear GO/DONE bit
 }
 
 void PicAdc::setAdcClock( uint8_t prs )
@@ -93,16 +93,16 @@ void PicAdc00::setup()
 {
     PicAdc::setup();
 
-    m_ADSC = getRegBits("ADSC0,ADCS1", m_mcuRam );
-    m_CHS  = getRegBits("CHS0,CHS1,CHS2", m_mcuRam );
-    m_PCFG = getRegBits("PCFG0,PCFG1,PCFG2,PCFG3", m_mcuRam );
+    m_ADSC = m_mcuRam->getRegBits("ADSC0,ADCS1" );
+    m_CHS  = m_mcuRam->getRegBits("CHS0,CHS1,CHS2" );
+    m_PCFG = m_mcuRam->getRegBits("PCFG0,PCFG1,PCFG2,PCFG3" );
 }
 
-void PicAdc00::configureB( uint8_t newADCON1 ) // ADCON1
+void PicAdc00::configureB() // ADCON1
 {
-    m_leftAdjust = !getRegBitsBool( newADCON1, m_ADFM );
+    m_leftAdjust = !m_ADFM.getRegBitsBool();
 
-    uint8_t mode = getRegBitsVal( newADCON1, m_PCFG );
+    uint8_t mode = m_PCFG.getRegBitsVal();
     if( mode != m_mode )
     {
         m_mode = mode;
@@ -162,13 +162,7 @@ void PicAdc1::setup()
 
     m_ANSELH = nullptr;
     m_ANSEL  = (uint8_t*) m_mcuRam->getReg( "ANSEL" );
-    watchRegNames( "ANSEL" , R_WRITE, this, &PicAdc1::setANSEL , m_mcuRam );
-}
-
-void PicAdc1::setANSEL( uint8_t newANSEL )
-{
-    *m_ANSEL = newANSEL;
-    updtANSEL();
+    m_mcuRam->watchRegName( "ANSEL" , R_WRITE, this, &PicAdc1::updtANSEL );
 }
 
 void PicAdc1::updtANSEL()
@@ -198,24 +192,18 @@ void PicAdc10::setup()
 {
     PicAdc1::setup();
 
-    m_ADSC = getRegBits("ADSC0,ADCS1", m_mcuRam );
-    m_CHS  = getRegBits("CHS0,CHS1,CHS2,CHS3", m_mcuRam );
-    m_VCFG = getRegBits("VCFG0,VCFG1", m_mcuRam );
+    m_ADSC = m_mcuRam->getRegBits("ADSC0,ADCS1" );
+    m_CHS  = m_mcuRam->getRegBits("CHS0,CHS1,CHS2,CHS3" );
+    m_VCFG = m_mcuRam->getRegBits("VCFG0,VCFG1" );
 
     m_ANSELH = (uint8_t*) m_mcuRam->getReg( "ANSELH" );
-    watchRegNames( "ANSELH", R_WRITE, this, &PicAdc10::setANSELH, m_mcuRam );
+    m_mcuRam->watchRegName( "ANSELH", R_WRITE, this, &PicAdc10::updtANSEL );
 }
 
-void PicAdc10::configureB( uint8_t newADCON1 ) // ADCON1
+void PicAdc10::configureB() // ADCON1
 {
-    m_leftAdjust = !getRegBitsBool( newADCON1, m_ADFM );
-    m_mode       =  getRegBitsVal(  newADCON1, m_VCFG );
-}
-
-void PicAdc10::setANSELH( uint8_t newANSELH )
-{
-    *m_ANSELH = newANSELH;
-    updtANSEL();
+    m_leftAdjust = !m_ADFM.getRegBitsBool();
+    m_mode       =  m_VCFG.getRegBitsVal();
 }
 
 //------------------------------------------------------
@@ -231,27 +219,27 @@ void PicAdc11::setup()
 {
     PicAdc1::setup();
 
-    m_ADSC = getRegBits("ADSC0,ADCS1,ADCS2", m_mcuRam );
-    m_CHS  = getRegBits("CHS0,CHS1", m_mcuRam );
-    m_VCFG = getRegBits("VCFG", m_mcuRam );
+    m_ADSC = m_mcuRam->getRegBits("ADSC0,ADCS1,ADCS2");
+    m_CHS  = m_mcuRam->getRegBits("CHS0,CHS1");
+    m_VCFG = m_mcuRam->getRegBits("VCFG");
 }
 
-void PicAdc11::configureA( uint8_t newADCON0 )
+void PicAdc11::configureA() // ADCON0
 {
-    m_leftAdjust = !getRegBitsBool( newADCON0, m_ADFM );
-    m_mode       = getRegBitsVal(   newADCON0, m_VCFG );
-    m_enabled    = getRegBitsBool(  newADCON0, m_ADON );
-    m_channel    = getRegBitsVal(   newADCON0, m_CHS );
+    m_leftAdjust = !m_ADFM.getRegBitsBool();
+    m_mode       = m_VCFG.getRegBitsVal();
+    m_enabled    = m_ADON.getRegBitsBool();
+    m_channel    = m_CHS.getRegBitsVal();
 
-    bool convert = getRegBitsBool( newADCON0, m_GODO );
+    bool convert = m_GODO.getRegBitsBool();
     if( !m_converting && convert ) startConversion();
 }
 
-void PicAdc11::setANSEL( uint8_t newANSEL )
+void PicAdc11::updtANSEL()
 {
-    uint8_t prs = getRegBitsVal( newANSEL, m_ADSC );
+    uint8_t prs = m_ADSC.getRegBitsVal();
     setAdcClock( prs );
-    PicAdc1::setANSEL( newANSEL );
+    PicAdc1::updtANSEL();
 }
 
 //------------------------------------------------------
@@ -267,28 +255,28 @@ void PicAdc20::setup()
 {
     PicAdc::setup();
 
-    m_ADSC = getRegBits("ADCS0,ADCS1,ADCS2", m_mcuRam );
-    m_CHS  = getRegBits("CHS0,CHS1,CHS2,CHS3,CHS4", m_mcuRam );
-    m_ADXREF = getRegBits("ADPREF0,ADPREF1,ADNREF", m_mcuRam );
+    m_ADSC   = m_mcuRam->getRegBits("ADCS0,ADCS1,ADCS2");
+    m_CHS    = m_mcuRam->getRegBits("CHS0,CHS1,CHS2,CHS3,CHS4");
+    m_ADXREF = m_mcuRam->getRegBits("ADPREF0,ADPREF1,ADNREF");
 
     m_fvr = (PicVrefE*)m_mcu->getModule("Vref");
 }
 
-void PicAdc20::configureA (uint8_t newADCON0 )
+void PicAdc20::configureA() // ADCON0
 {
-    m_enabled    = getRegBitsBool( newADCON0, m_ADON );
-    m_channel    = getRegBitsVal(  newADCON0, m_CHS );
-    bool convert = getRegBitsBool( newADCON0, m_GODO );
+    m_enabled    = m_ADON.getRegBitsBool();
+    m_channel    = m_CHS.getRegBitsVal();
+    bool convert = m_GODO.getRegBitsBool();
     if( !m_converting && convert ) startConversion();
 }
 
-void PicAdc20::configureB( uint8_t newADCON1 )
+void PicAdc20::configureB() // ADCON1
 {
-    m_leftAdjust = !getRegBitsBool( newADCON1, m_ADFM );
+    m_leftAdjust = !m_ADFM.getRegBitsBool();
 
-    m_mode = getRegBitsVal( newADCON1, m_ADXREF );
+    m_mode = m_ADXREF.getRegBitsVal();
 
-    uint8_t prs = getRegBitsVal( newADCON1, m_ADSC );
+    uint8_t prs = m_ADSC.getRegBitsVal();
     setAdcClock( prs );
 }
 

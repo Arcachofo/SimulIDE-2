@@ -7,7 +7,7 @@
 #include "e_mcu.h"
 #include "cpubase.h"
 #include "simulator.h"
-#include "datautils.h"
+#include "mcuram.h"
 
 AvrWdt* AvrWdt::createWdt( eMcu* mcu, QString name )
 {
@@ -28,10 +28,10 @@ void AvrWdt::setup()
 {
     //m_WDTCSR = m_mcu->getReg( "WDTCSR" );
 
-    m_WDCE  = getRegBits("WDCE", m_mcuRam );
-    m_WDE   = getRegBits("WDE", m_mcuRam );
-    m_WDP02 = getRegBits("WDP0,WDP1,WDP2", m_mcuRam );
-    m_WDRF  = getRegBits("WDRF", m_mcuRam );
+    m_WDCE  = m_mcuRam->getRegBits("WDCE");
+    m_WDE   = m_mcuRam->getRegBits("WDE");
+    m_WDP02 = m_mcuRam->getRegBits("WDP0,WDP1,WDP2");
+    m_WDRF  = m_mcuRam->getRegBits("WDRF");
 }
 
 void AvrWdt::initialize()
@@ -49,7 +49,7 @@ void AvrWdt::runEvent()
 
     if( m_allowChanges )
     {
-        clearRegBits( m_WDCE );
+        m_WDCE.clear_08();
         m_allowChanges = false;
     }
     else // McuWdt::runEvent();
@@ -71,10 +71,10 @@ void AvrWdt::callBack() // WDT Overflow Interrupt just executed
     m_mcu->cpu()->reset();
 }
 
-void AvrWdt::configureA( uint8_t newWDTCSR ) // WDTCSR Written
+void AvrWdt::configureA() // WDTCSR Written
 {
-    bool WDE  = getRegBitsBool( newWDTCSR, m_WDE );
-    bool WDCE = getRegBitsBool( newWDTCSR, m_WDCE );
+    bool WDE  = m_WDE.getRegBitsBool();
+    bool WDCE = m_WDCE.getRegBitsBool();
 
     if( WDCE && WDE )     // Allow WDP & WDE changes for next 4 cycles
     {
@@ -84,7 +84,7 @@ void AvrWdt::configureA( uint8_t newWDTCSR ) // WDTCSR Written
     }
     else if( m_allowChanges && !WDCE ) // WDP & WDE changes allowed
     {
-        updtPrescaler( newWDTCSR );
+        updtPrescaler();
         m_ovfPeriod  = m_clkPeriod/m_prescList[ m_prescaler ];
         m_ovfReset   = WDE;
         wdtEnable();
@@ -108,7 +108,7 @@ void AvrWdt::wdtEnable()
 
 void AvrWdt::reset()
 {
-    setRegBits( m_WDRF ); // MCUSR.WDRF
+    m_WDRF.set_08(); // MCUSR.WDRF
     Simulator::self()->cancelEvents( this );
     if( m_wdtFuse || !m_disabled ) Simulator::self()->addEvent( m_ovfPeriod, this );
 }
@@ -121,34 +121,36 @@ AvrWdt00::AvrWdt00( eMcu* mcu, QString name )
 {
     m_clkPeriod = 8.192*1e12; // 1048576 cycles * 7812500 ps (128 KHz)
 
-    m_WDIF = getRegBits( "WDIF", m_mcuRam );
-    m_WDIE = getRegBits( "WDIE", m_mcuRam );
-    m_WDP3 = getRegBits( "WDP3", m_mcuRam );
+    m_WDIF = m_mcuRam->getRegBits("WDIF");
+    m_WDIE = m_mcuRam->getRegBits("WDIE");
+    m_WDP3 = m_mcuRam->getRegBits("WDP3");
 }
 AvrWdt00::~AvrWdt00(){}
 
-void AvrWdt00::configureA( uint8_t newWDTCSR ) // WDTCSR Written
+void AvrWdt00::configureA() // WDTCSR Written
 {
-    bool clearWdif = getRegBitsVal( newWDTCSR, m_WDIF );
+    /// Done in Interrupts??
+    /*bool clearWdif = m_WDIF.getRegBitsVal();
     if( clearWdif )  /// Writting 1 to WDIF clears the flag
     {
-        newWDTCSR &= ~m_WDIF.mask; // Clear WDIF flag
-    }
-    m_ovfInter = getRegBitsVal( newWDTCSR, m_WDIE );
+        m_WDIF.clear_08(); // Clear WDIF flag
+    }*/
+    m_ovfInter = m_WDIE.getRegBitsVal();
 
-    AvrWdt::configureA( newWDTCSR );
+    AvrWdt::configureA();
 
     // WDP & WDE changes not allowed, keep old values
-    newWDTCSR = overrideBits( newWDTCSR, m_WDE );   // Keep old WDE
-    newWDTCSR = overrideBits( newWDTCSR, m_WDP02 ); // Keep old WDP
-    newWDTCSR = overrideBits( newWDTCSR, m_WDP3 );  // Keep old WDP
-    m_mcuRam->m_regOverride = newWDTCSR;
+    /// FIXME
+    ///newWDTCSR = overrideBits( newWDTCSR, m_WDE );   // Keep old WDE
+    ///newWDTCSR = overrideBits( newWDTCSR, m_WDP02 ); // Keep old WDP
+    ///newWDTCSR = overrideBits( newWDTCSR, m_WDP3 );  // Keep old WDP
+    ///m_mcuRam->m_regOverride = newWDTCSR;
 }
 
-void AvrWdt00::updtPrescaler( uint8_t newWDTCSR )
+void AvrWdt00::updtPrescaler() // WDTCSR
 {
-    m_prescaler  = getRegBitsVal( newWDTCSR, m_WDP02 );
-    m_prescaler |= getRegBitsVal( newWDTCSR, m_WDP3 ) << 3;
+    m_prescaler  = m_WDP02.getRegBitsVal();
+    m_prescaler |= m_WDP3.getRegBitsVal() << 3;
 }
 
 //------------------------------------------------------
@@ -161,17 +163,18 @@ AvrWdt01::AvrWdt01( eMcu* mcu, QString name )
 }
 AvrWdt01::~AvrWdt01(){}
 
-void AvrWdt01::configureA( uint8_t newWDTCSR ) // WDTCSR Written
+void AvrWdt01::configureA() // WDTCSR Written
 {
-    AvrWdt::configureA( newWDTCSR );
+    AvrWdt::configureA();
 
     // WDP & WDE changes not allowed, keep old values
-    newWDTCSR = overrideBits( newWDTCSR, m_WDE );   // Keep old WDE
-    newWDTCSR = overrideBits( newWDTCSR, m_WDP02 ); // Keep old WDP
-    m_mcuRam->m_regOverride = newWDTCSR;
+    /// FIXME
+    ///newWDTCSR = overrideBits( newWDTCSR, m_WDE );   // Keep old WDE
+    ///newWDTCSR = overrideBits( newWDTCSR, m_WDP02 ); // Keep old WDP
+    ///m_mcuRam->m_regOverride = newWDTCSR;
 }
 
-void AvrWdt01::updtPrescaler( uint8_t newWDTCSR )
+void AvrWdt01::updtPrescaler() // WDTCSR
 {
-    m_prescaler  = getRegBitsVal( newWDTCSR, m_WDP02 );
+    m_prescaler = m_WDP02.getRegBitsVal();
 }

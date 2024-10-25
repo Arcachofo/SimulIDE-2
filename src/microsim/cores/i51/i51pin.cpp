@@ -44,9 +44,9 @@ void I51Pin::scheduleState( bool state, uint64_t time )
     IoPin::scheduleState( state, time );
 }
 
-void I51Pin::ConfExtInt( uint8_t bits )
+void I51Pin::ConfExtInt()
 {
-    bool fallEdge = getRegBitsBool( bits, m_extIntBits );
+    bool fallEdge = m_extIntBits.getRegBitsBool();
     m_extIntTrigger = fallEdge ? McuPin::pinFalling : McuPin::pinLow;
     m_extInt->setAutoClear( fallEdge );
     voltChanged();

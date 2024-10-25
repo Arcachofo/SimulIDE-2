@@ -21,7 +21,7 @@ class AvrEeprom : public McuRom
         virtual void initialize() override;
         virtual void runEvent() override;
 
-        virtual void configureA( uint8_t newEECR ) override;
+        virtual void configureA() override;
 
         virtual void writeEeprom() override;
 
@@ -29,6 +29,9 @@ class AvrEeprom : public McuRom
         uint64_t m_nextCycle;
 
         uint8_t m_mode;
+
+        bool m_oldEempe;
+        bool m_oldEepe;
 
         uint8_t* m_EECR;
 

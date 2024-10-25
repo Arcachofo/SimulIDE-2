@@ -17,6 +17,10 @@ McuModule::McuModule( eMcu* mcu, QString name )
 
     m_interrupt = nullptr;
 
+    m_cfgRegA = nullptr;
+    m_cfgRegB = nullptr;
+    m_cfgRegC = nullptr;
+
     m_mcuRam = (McuRam*)m_mcu->getModule("ram");
 }
 McuModule::~McuModule( ){}

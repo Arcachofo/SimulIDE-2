@@ -7,10 +7,11 @@
 #include "simulator.h"
 #include "mcuport.h"
 #include "mcupin.h"
+#include "mcuregister.h"
 
 #define ACC  m_acc[0]
 #define BANK ( (STATUS(RS0)>>RS0) | (STATUS(RS1)>>RS1) ) //( (PSW & (PSWMASK_RS0|PSWMASK_RS1))>>PSW_RS0 )
-#define I_RX_VAL ( m_dataMem[(m_opcode & 1) + 8*BANK] )
+#define I_RX_VAL ( GET_RAM((m_opcode & 1) + 8*BANK) )
 #define RX_ADDR ( (m_opcode & 7) + 8*BANK )
 
 I51Core::I51Core( eMcu* mcu  )
@@ -26,9 +27,11 @@ I51Core::I51Core( eMcu* mcu  )
     m_dataPort = mcu->getMcuPort("PORT0");
     m_addrPort = mcu->getMcuPort("PORT2");
 
-    m_acc = (uint8_t*) m_mcuRam->getReg( "ACC" );
+    McuRegister* acc = m_mcuRam->getRegByName("ACC");
+    if( acc ) m_acc = acc->getData08();
+    else      m_acc = nullptr;
 
-    m_upperData = (m_dataMemEnd > m_regEnd);
+    //m_upperData = (m_dataMemEnd > m_regEnd);
 }
 I51Core::~I51Core() {}
 
@@ -139,7 +142,7 @@ void I51Core::runStep()  // Machine cycle: 1/6 frequency
     }
 
     if( extPGM ) m_pgmData = m_data;              // Read from External Memory
-    else         m_pgmData = m_progMem[m_readPC]; // Read from Internal ROM
+    else         m_pgmData = m_mcuPgm->read_08( m_readPC ); // Read from Internal ROM
 
     if( m_cpuState == cpu_FETCH )     // Read cycle 1
     {
@@ -209,14 +212,14 @@ void I51Core::readOperand()
     else if( addrMode & aBIT ){   // Get bit mask and Reg address
         m_bitAddr = m_pgmData;
         m_bitMask = 1 << (m_pgmData & 7);
-        if( m_bitAddr > m_lowDataMemEnd ) m_bitAddr &= 0xF8;
-        else{ m_bitAddr >>= 3; m_bitAddr += 0x20; }
+        /// FIXME if( m_bitAddr > m_lowDataMemEnd ) m_bitAddr &= 0xF8;
+        /// FIXME else{ m_bitAddr >>= 3; m_bitAddr += 0x20; }
     }
     m_lastPC = m_readPC;
 }
 
-void I51Core::operRgx() { m_op0 = m_dataMem[ m_RxAddr ]; }        //
-void I51Core::operInd() { m_op0 = readInd( I_RX_VAL ); }          //
+void I51Core::operRgx() { m_op0 = GET_RAM( m_RxAddr ); }          //
+void I51Core::operInd() { m_op0 = GET_RAM( I_RX_VAL ); }          //
 void I51Core::operI08() { m_readOp.append( aIMME | aORIG ); }     // m_op0 = data
 void I51Core::operDir() { m_readOp.append( aDIRE | aORIG ); }     // m_op0 = GET_RAM( data );
 void I51Core::operACC() { m_op0 = ACC; }                          //
@@ -224,7 +227,7 @@ void I51Core::opr2I08() { m_readOp.append( aIMME | aRELA ); }     // m_op2 = dat
 void I51Core::opr2Dir() { m_readOp.append( aDIRE | aRELA ); }     // m_op2 = GET_RAM( data );
 
 void I51Core::addrRgx() { m_opAddr = m_RxAddr; }
-void I51Core::addrInd() { m_opAddr = checkAddr( I_RX_VAL );}      //
+void I51Core::addrInd() { m_opAddr = I_RX_VAL; }                  //m_opAddr = checkAddr( I_RX_VAL );}      //
 void I51Core::addrI08() { m_readOp.append( aIMME ); }             // m_opAddr = data;
 void I51Core::addrI16() { m_readOp.append( aIMME | a16BIT_HIGH);
                           m_readOp.append( aIMME | a16BIT_LOW); } // m_opAddr = data16;
@@ -235,14 +238,14 @@ void I51Core::addrBit( bool invert ) { m_readOp.append( aBIT );   // m_opAddr = 
 void I51Core::pushStack8( uint8_t value )
 {
     REG_SPL++;
-    uint16_t address = checkAddr( REG_SPL );
-    m_dataMem[ address ] = value;
+    //uint16_t address = checkAddr( REG_SPL );
+    m_mcuRam->write_08( REG_SPL, value );
 }
 
 uint8_t I51Core::popStack8()
 {
-    uint16_t address = checkAddr( REG_SPL );
-    uint8_t  value   = m_dataMem[ address ];
+    //uint16_t address = checkAddr( REG_SPL );
+    uint8_t  value   = GET_RAM( REG_SPL );
     REG_SPL--;
     return value;
 }
@@ -369,9 +372,9 @@ void I51Core::CLRc()  { clear_S_Bit( Cy ); }
 void I51Core::SETBc() { set_S_Bit( Cy ); }
 void I51Core::CPLc()  { *m_STATUS ^= 1 << Cy; }
 
-void I51Core::CLRb()  { SET_RAM( m_bitAddr, m_dataMem[m_bitAddr] & ~m_bitMask ); }
-void I51Core::SETBb() { SET_RAM( m_bitAddr, m_dataMem[m_bitAddr] |  m_bitMask ); }
-void I51Core::CPLb()  { SET_RAM( m_bitAddr, m_dataMem[m_bitAddr] ^  m_bitMask ); }
+void I51Core::CLRb()  { SET_RAM( m_bitAddr, GET_RAM(m_bitAddr) & ~m_bitMask ); }
+void I51Core::SETBb() { SET_RAM( m_bitAddr, GET_RAM(m_bitAddr) |  m_bitMask ); }
+void I51Core::CPLb()  { SET_RAM( m_bitAddr, GET_RAM(m_bitAddr) ^  m_bitMask ); }
 
 void I51Core::CJNE()  ///
 {
@@ -411,11 +414,11 @@ void I51Core::DAa()
 void I51Core::INCd()
 {
     //SET_REG16_LH( GET_REG16_LH( REG_DPL ) + 1);
-    SET_RAM( REG_DPL, m_dataMem[ REG_DPL ]+1);
-    if( !m_dataMem[ REG_DPL ] ) SET_RAM( REG_DPH, m_dataMem[ REG_DPH ]+1 );
+    SET_RAM( REG_DPL, GET_RAM(REG_DPL)+1);
+    if( !GET_RAM( REG_DPL ) ) SET_RAM( REG_DPH, GET_RAM(REG_DPH)+1 );
 }
-void I51Core::INC() { SET_RAM( m_opAddr, m_dataMem[ m_opAddr ]+1); }
-void I51Core::DEC() { SET_RAM( m_opAddr, m_dataMem[ m_opAddr ]-1); }
+void I51Core::INC() { SET_RAM( m_opAddr, GET_RAM(m_opAddr)+1); }
+void I51Core::DEC() { SET_RAM( m_opAddr, GET_RAM(m_opAddr)-1); }
 
 void I51Core::ADD() { addFlags( m_op0, ACC, 0 ); ACC += m_op0; }
 void I51Core::ADDC()
@@ -424,9 +427,9 @@ void I51Core::ADDC()
     addFlags( m_op0, ACC, carry );
     ACC += m_op0 + carry;
 }
-void I51Core::ORLm() { SET_RAM( m_opAddr, m_dataMem[ m_opAddr ] | m_op0 ); }
-void I51Core::ANLm() { SET_RAM( m_opAddr, m_dataMem[ m_opAddr ] & m_op0 ); }
-void I51Core::XRLm() { SET_RAM( m_opAddr, m_dataMem[ m_opAddr ] ^ m_op0 ); }
+void I51Core::ORLm() { SET_RAM( m_opAddr, GET_RAM(m_opAddr) | m_op0 ); }
+void I51Core::ANLm() { SET_RAM( m_opAddr, GET_RAM(m_opAddr) & m_op0 ); }
+void I51Core::XRLm() { SET_RAM( m_opAddr, GET_RAM(m_opAddr) ^ m_op0 ); }
 
 void I51Core::ORLa() { ACC |= m_op0; }
 void I51Core::ANLa() { ACC &= m_op0; }
@@ -449,22 +452,23 @@ void I51Core::XCH() //
 void I51Core::XCHr() //
 {
     uint8_t a = ACC ;
-    ACC = m_dataMem[ m_opAddr ];
-    m_dataMem[m_opAddr] = a;
+    ACC = GET_RAM( m_opAddr );
+    SET_RAM( m_opAddr, a );
 }
 
 void I51Core::XCHD()
 {
-    uint16_t address = checkAddr( m_opAddr );
-    uint8_t value = m_dataMem[address];
-    m_dataMem[address] = (value & 0xF0) | (ACC & 0x0F);
+    //uint16_t address = checkAddr( m_opAddr );
+    //uint8_t value = GET_RAM( address );
+    uint8_t value = GET_RAM( m_opAddr );
+    SET_RAM( m_opAddr, (value & 0xF0) | (ACC & 0x0F) );
     ACC = (ACC & 0xF0) | (value & 0x0F);
 }
 
 void I51Core::DIVab()
 {
     uint A = ACC;
-    uint B = m_dataMem[ REG_B ];
+    uint B = GET_RAM(REG_B);
 
     if( B ){
         ACC = A/B;
@@ -478,7 +482,7 @@ void I51Core::DIVab()
 
 void I51Core::MULab()
 {
-    uint res = ACC*m_dataMem[ REG_B ];
+    uint res = ACC*GET_RAM(REG_B);
     ACC = res & 0xFF;
     SET_RAM( REG_B, res >> 8 );
 
@@ -487,13 +491,13 @@ void I51Core::MULab()
     clear_S_Bit( Cy );
 }
 
-void I51Core::MOVr()  { m_dataMem[ m_opAddr ] = m_op0; }
+void I51Core::MOVr()  { SET_RAM( m_opAddr, m_op0 ); }
 void I51Core::MOVm()  { SET_RAM( m_opAddr, m_op0 ); }
-void I51Core::MOVml() { writeInd( m_opAddr, m_op0 ); }
+void I51Core::MOVml() { SET_RAM( m_opAddr, m_op0 ); }
 
 void I51Core::MOVa()  { ACC = m_op0; }
-void I51Core::MOVCd() { ACC = m_progMem[ GET_REG16_LH( REG_DPL ) + ACC ]; }
-void I51Core::MOVCp() { ACC = m_progMem[ m_PC + 1 + ACC ]; }
+void I51Core::MOVCd() { ACC = GET_RAM( GET_REG16_LH( REG_DPL ) + ACC ); }
+void I51Core::MOVCp() { ACC = GET_RAM( m_PC + 1 + ACC ); }
 void I51Core::MOVd()  { SET_REG16_LH( REG_DPL, m_opAddr ); }
 
 void I51Core::movx_a_indir_dptr()

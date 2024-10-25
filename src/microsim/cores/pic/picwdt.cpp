@@ -7,7 +7,7 @@
 #include "e_mcu.h"
 #include "cpubase.h"
 #include "simulator.h"
-#include "datautils.h"
+#include "mcuram.h"
 
 PicWdt::PicWdt( eMcu* mcu, QString name )
       : McuWdt( mcu, name )
@@ -19,8 +19,8 @@ void PicWdt::setup()
 {
     m_clkPeriod = 18*1e9; // 18 ms
 
-    m_PS  = getRegBits( "PS0, PS1, PS2", m_mcuRam );
-    m_PSA = getRegBits( "PSA", m_mcuRam );
+    m_PS  = m_mcuRam->getRegBits("PS0, PS1, PS2");
+    m_PSA = m_mcuRam->getRegBits("PSA");
 }
 
 void PicWdt::initialize()
@@ -41,12 +41,12 @@ void PicWdt::runEvent()
     else McuWdt::runEvent();
 }
 
-void PicWdt::configureA( uint8_t newOPTION ) // OPTION Written
+void PicWdt::configureA() // OPTION Written
 {
     if( !m_wdtFuse ) return;
 
-    if( getRegBitsVal( newOPTION, m_PSA ) )
-         m_prescaler = getRegBitsVal( newOPTION, m_PS );  // Prescaler asigned to Watchdog
+    if( m_PSA.getRegBitsVal() )
+         m_prescaler = m_PS.getRegBitsVal();  // Prescaler asigned to Watchdog
     else m_prescaler = 0;                                 // Prescaler asigned to TIMER0
     m_ovfPeriod = m_clkPeriod/m_prescList[ m_prescaler ];
 }

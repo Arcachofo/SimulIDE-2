@@ -27,10 +27,10 @@ void TwiModule::initialize()
     m_i2cState  = I2C_IDLE;
     m_lastState = I2C_IDLE;
 
-    m_toggleScl  = false;
-    m_genCall    = false;
+    m_toggleScl = false;
+    m_genCall   = false;
 
-    m_lastSDA = true; // SDA High = inactive
+    m_lastSDA   = true; // SDA High = inactive
     m_masterACK = true;
 }
 

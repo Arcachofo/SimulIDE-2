@@ -25,8 +25,8 @@ class PicOcUnit : public McuOcUnit
         virtual void runEvent();
 
         virtual void configure( uint8_t CCPxM ) override;
-        virtual void ocrWriteL( uint8_t val ) override;
-        virtual void ocrWriteH( uint8_t val ) override;
+        virtual void ocrWriteL() override;
+        virtual void ocrWriteH() override;
 
     protected:
         bool m_enhanced;
@@ -51,7 +51,7 @@ class PicPwmUnit : public McuOcUnit
 
         virtual void sheduleEvents( uint32_t ovf, uint32_t countVal, int rot=0 ) override;
 
-        virtual void ocrWriteL( uint8_t val ) override;
+        virtual void ocrWriteL() override;
 
     protected:
         bool m_enhanced;

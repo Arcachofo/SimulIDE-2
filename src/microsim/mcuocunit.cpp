@@ -93,14 +93,14 @@ void McuOcUnit::setOcActs( ocAct_t comAct, ocAct_t tovAct )
     m_tovAct = tovAct;
 }
 
-void McuOcUnit::ocrWriteL( uint8_t val )
+void McuOcUnit::ocrWriteL()
 {
-    m_comMatch = (m_comMatch & 0xFF00) | val;
+    m_comMatch = (m_comMatch & 0xFF00) | *m_ocRegL;
     if( m_timer->running() ) sheduleEvents( m_timer->ovfMatch(), m_timer->getCount() );
 }
 
-void McuOcUnit::ocrWriteH( uint8_t val )
+void McuOcUnit::ocrWriteH()
 {
-    m_comMatch = (m_comMatch & 0x00FF) | (uint16_t)val<<8;
+    m_comMatch = (m_comMatch & 0x00FF) | (uint16_t)*m_ocRegH<<8;
     //sheduleEvents( m_timer->ovfMatch(), m_timer->getCount() );
 }

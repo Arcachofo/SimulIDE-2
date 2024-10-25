@@ -7,7 +7,7 @@
 #include "picspi.h"
 #include "pictwi.h"
 #include "e_mcu.h"
-#include "datautils.h"
+#include "mcuram.h"
 
 PicMssp::PicMssp( eMcu* mcu, QString name, int type )
        : McuModule( mcu, name )
@@ -18,8 +18,8 @@ PicMssp::~PicMssp(){}
 
 void PicMssp::setup()
 {
-    m_SSPMx = getRegBits( "SSPM0,SSPM1,SSPM2,SSPM3", m_mcuRam );
-    m_SSPEN = getRegBits( "SSPEN", m_mcuRam );
+    m_SSPMx = m_mcuRam->getRegBits( "SSPM0,SSPM1,SSPM2,SSPM3");
+    m_SSPEN = m_mcuRam->getRegBits( "SSPEN");
 }
 
 void PicMssp::initialize()
@@ -28,11 +28,11 @@ void PicMssp::initialize()
     m_enabled = false;
 }
 
-void PicMssp::configureA( uint8_t SSPCON )
+void PicMssp::configureA() // SSPCON
 {
-    bool enabled = getRegBitsBool( SSPCON, m_SSPEN );
+    bool enabled = m_SSPEN.getRegBitsBool();
 
-    uint8_t mode = getRegBitsVal( SSPCON, m_SSPMx );
+    uint8_t mode = m_SSPMx.getRegBitsVal();
     if( m_mode != mode || m_enabled != enabled )
     {
         m_enabled = enabled;
@@ -77,4 +77,3 @@ void PicMssp::configureA( uint8_t SSPCON )
         }
     }
 }
-

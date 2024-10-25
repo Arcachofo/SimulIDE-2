@@ -31,8 +31,8 @@ class McuOcUnit : public McuModule, public eElement
         virtual void initialize();
         virtual void runEvent();
         virtual void configure( uint8_t ){;}
-        virtual void ocrWriteL( uint8_t val );
-        virtual void ocrWriteH( uint8_t val );
+        virtual void ocrWriteL();
+        virtual void ocrWriteH();
         virtual void sheduleEvents( uint32_t ovf, uint32_t countVal, int rot=0 );
         virtual void tov() { drivePin( m_tovAct ); }
 

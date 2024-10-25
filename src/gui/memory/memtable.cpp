@@ -224,8 +224,8 @@ void MemTable::on_table_itemChanged( QTableWidgetItem* item )
         for( int i=0; i<m_byteRatio; ++i )
         {
             int addr = start+i;
-            int row = addr/16;
-            int colRam = addr%16;
+            int row  = addr/16;
+            int colRam  = addr%16;
             int cellVal = table->item( row, colRam )->text().toInt( &ok, 0 );
             val |= cellVal<<(i*8);
         }
@@ -266,7 +266,7 @@ void MemTable::saveTable()
 
 void MemTable::loadTable()
 {
-    m_memory->loadData( true );
+    m_memory->loadData();
 }
 
 void MemTable::cellClicked( int row, int col )

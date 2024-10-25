@@ -9,7 +9,8 @@
 #include "e_mcu.h"
 #include "iopin.h"
 #include "serialmon.h"
-#include "datautils.h"
+#include "mcuregister.h"
+#include "mcuram.h"
 #include "regwatcher.h"
 
 PicUsart::PicUsart( eMcu* mcu,  QString name, int number )
@@ -29,56 +30,59 @@ void PicUsart::setup()
     m_SPBRGL = nullptr;
     m_SPBRGH = nullptr;
 
-    m_PIR1  = (uint8_t*) m_mcuRam->getReg( "PIR1" );
-    m_TXSTA = (uint8_t*) m_mcuRam->getReg( "TXSTA" );
-    m_RCSTA = (uint8_t*) m_mcuRam->getReg( "RCSTA" );
+    m_PIR1  = (uint8_t*) m_mcuRam->getReg("PIR1");
+    m_TXSTA = (uint8_t*) m_mcuRam->getReg("TXSTA");
+    m_RCSTA = (uint8_t*) m_mcuRam->getReg("RCSTA");
 
-    if( m_mcuRam->regExist( "SPBRG") ){
-        m_SPBRGL = (uint8_t*) m_mcuRam->getReg( "SPBRG" );
-        watchRegNames( "SPBRG",  R_WRITE, this, &PicUsart::setSPBRGL, m_mcuRam );
+    McuRegister* reg = m_mcuRam->getRegByName("SPBRG");
+    if( reg ){
+        m_SPBRGL = reg->getData08();
+        m_mcuRam->watchRegName("SPBRG",  R_WRITE, this, &PicUsart::setBaurrate );
     }
-    if( m_mcuRam->regExist( "SPBRGL") ){
-        m_SPBRGL = (uint8_t*) m_mcuRam->getReg( "SPBRGL" );
-        watchRegNames( "SPBRGL", R_WRITE, this, &PicUsart::setSPBRGL, m_mcuRam );
+    reg = m_mcuRam->getRegByName("SPBRGL");
+    if( reg ){
+        m_SPBRGL = reg->getData08();
+        m_mcuRam->watchRegName("SPBRGL", R_WRITE, this, &PicUsart::setBaurrate );
     }
-    if( m_mcuRam->regExist( "SPBRGH") ){
-        m_SPBRGH = (uint8_t*) m_mcuRam->getReg( "SPBRGH" );
-        watchRegNames( "SPBRGH", R_WRITE, this, &PicUsart::setSPBRGH, m_mcuRam );
+    reg = m_mcuRam->getRegByName("SPBRGH");
+    if( reg ){
+        m_SPBRGH = reg->getData08();
+        m_mcuRam->watchRegName("SPBRGH", R_WRITE, this, &PicUsart::setBaurrate );
     }
 
-    m_SPEN = getRegBits( "SPEN", m_mcuRam );
-    m_BRGH = getRegBits( "BRGH", m_mcuRam );
+    m_SPEN = m_mcuRam->getRegBits("SPEN");
+    m_BRGH = m_mcuRam->getRegBits("BRGH");
 
-    m_bit9Tx = getRegBits( "TX9D", m_mcuRam );
-    m_bit9Rx = getRegBits( "RX9D", m_mcuRam );
+    m_bit9Tx = m_mcuRam->getRegBits("TX9D");
+    m_bit9Rx = m_mcuRam->getRegBits("RX9D");
 
-    m_txEn = getRegBits( "TXEN", m_mcuRam );
-    m_rxEn = getRegBits( "CREN", m_mcuRam );
-    m_TX9  = getRegBits( "TX9",  m_mcuRam );
-    m_RX9  = getRegBits( "RX9",  m_mcuRam );
-    m_ADDEN = getRegBits( "ADDEN", m_mcuRam );
+    m_txEn = m_mcuRam->getRegBits("TXEN");
+    m_rxEn = m_mcuRam->getRegBits("CREN");
+    m_TX9  = m_mcuRam->getRegBits("TX9");
+    m_RX9  = m_mcuRam->getRegBits("RX9");
+    m_ADDEN = m_mcuRam->getRegBits("ADDEN");
 
-    m_TXIF = getRegBits( "TXIF", m_mcuRam );
-    m_TRMT = getRegBits( "TMRT", m_mcuRam );
-    m_RCIF = getRegBits( "RCIF", m_mcuRam );
-    m_FERR = getRegBits( "FERR", m_mcuRam );
-    m_OERR = getRegBits( "OERR", m_mcuRam );
-    m_SYNC = getRegBits( "SYNC", m_mcuRam );
+    m_TXIF = m_mcuRam->getRegBits("TXIF");
+    m_TRMT = m_mcuRam->getRegBits("TMRT");
+    m_RCIF = m_mcuRam->getRegBits("RCIF");
+    m_FERR = m_mcuRam->getRegBits("FERR");
+    m_OERR = m_mcuRam->getRegBits("OERR");
+    m_SYNC = m_mcuRam->getRegBits("SYNC");
 }
 
-void PicUsart::configureA( uint8_t newTXSTA ) // TXSTA changed
+void PicUsart::configureA() // TXSTA changed
 {
     // clockPol = getRegBitsVal( val, CSRC );
 
-    m_synchronous = getRegBitsBool( newTXSTA, m_SYNC );
+    m_synchronous = m_SYNC.getRegBitsBool();
 
-    bool txEn = getRegBitsBool( newTXSTA, m_txEn );
+    bool txEn = m_txEn.getRegBitsBool();
     if( m_synchronous );
     else{
         if( txEn != m_sender->isEnabled() )
         {
-            setRegBits( m_TXIF );
-            setRegBits( m_TRMT );
+            m_TXIF.set_08();
+            m_TRMT.set_08();
             if( txEn ){
                 m_sender->getPin()->controlPin( true, true );
                 m_sender->getPin()->setPinMode( output );
@@ -87,36 +91,24 @@ void PicUsart::configureA( uint8_t newTXSTA ) // TXSTA changed
             m_sender->enable( txEn );
         }
     }
-    m_dataBits = getRegBitsVal( newTXSTA, m_TX9 )+8;
+    m_dataBits = m_TX9.getRegBitsVal()+8;
 
-    m_speedx2 = getRegBitsBool( newTXSTA, m_BRGH ); // Double Speed?
+    m_speedx2 = m_BRGH.getRegBitsBool(); // Double Speed?
     setBaurrate();
 }
 
-void PicUsart::configureB( uint8_t newRCSTA ) // RCSTA changed
+void PicUsart::configureB() // RCSTA changed
 {
-    m_enabled = getRegBitsVal( newRCSTA, m_SPEN );
+    m_enabled = m_SPEN.getRegBitsVal();
 
-    bool rxEn = getRegBitsVal( newRCSTA, m_rxEn );
+    bool rxEn = m_rxEn.getRegBitsVal();
     if( rxEn != m_receiver->isEnabled() ) m_receiver->enable( rxEn );
 
-    bool adden = getRegBitsBool( newRCSTA, m_ADDEN );
+    bool adden = m_ADDEN.getRegBitsBool();
     m_receiver->ignoreData( adden );
 }
 
-void PicUsart::setSPBRGL(  uint8_t val )
-{
-    *m_SPBRGL = val;
-    setBaurrate();
-}
-
-void PicUsart::setSPBRGH(  uint8_t val )
-{
-    *m_SPBRGH = val;
-    setBaurrate();
-}
-
-void PicUsart::setBaurrate( uint8_t )
+void PicUsart::setBaurrate()
 {
     uint64_t mult = 16;
     if( m_speedx2 ) mult = 4;
@@ -125,37 +117,37 @@ void PicUsart::setBaurrate( uint8_t )
     setPeriod( mult*(SPBRG+1)*m_mcu->psInst() ); // period in picoseconds
 }
 
-void PicUsart::sendByte(  uint8_t data )
+void PicUsart::dataRegChanged() // Buffer is being written
 {
-    if( getRegBitsBool( *m_PIR1, m_TXIF ) )  // TXREG is empty
+    if( m_TXIF.getRegBitsBool() )  // TXREG is empty
     {
         m_interrupt->clearFlag();            // TXREG full: Clear TXIF bit
-        m_sender->processData( data );
+        m_sender->processData( *m_txReg );
 }   }
 
 void PicUsart::frameSent( uint8_t data ) // TSR is empty
 {
     if( m_monitor ) m_monitor->printOut( data );
 
-    if( getRegBitsBool( *m_PIR1, m_TXIF ) )  // TXREG is empty, no data to load
-        clearRegBits( m_TRMT );              // Clear TMRT bit
+    if( m_TXIF.getRegBitsBool() )       // TXREG is empty, no data to load
+        m_TRMT.clear_08();              // Clear TMRT bit
     else
-        m_sender->startTransmission();       // TXREG contains data, send it
+        m_sender->startTransmission();  // TXREG contains data, send it
 }
 
 void PicUsart::bufferEmpty()
 {
     m_interrupt->raise(); // USART Data Register Empty Interrupt
-    setRegBits( m_TRMT ); // Set TMRT bit
+    m_TRMT.set_08(); // Set TMRT bit
 }
 
 void PicUsart::setRxFlags( uint16_t frame )
 {
     if( m_dataBits == 9 ) setBit9Rx( ( frame & (1<<8) ) ? 1 : 0 );
 
-    writeRegBits( m_FERR, frame & frameError );  // frameError
-    writeRegBits( m_OERR, frame & dataOverrun ); // overrun error
-    //writeRegBits(     , frame & parityError);  // parityError
+    m_FERR.setBits_08( frame & frameError );  // frameError
+    m_OERR.setBits_08( frame & dataOverrun ); // overrun error
+    //setBits_08(     , frame & parityError);  // parityError
 }
 
 void PicUsart::sleep( int mode )

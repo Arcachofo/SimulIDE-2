@@ -10,7 +10,8 @@
 #include "mcucomparator.h"
 #include "mcupin.h"
 #include "e_mcu.h"
-#include "datautils.h"
+#include "mcuregister.h"
+#include "mcuram.h"
 
 AvrAdc* AvrAdc::createAdc( eMcu* mcu, QString name, int type )
 {
@@ -33,17 +34,17 @@ AvrAdc::~AvrAdc(){}
 
 void AvrAdc::setup()
 {
-    m_ADEN  = getRegBits("ADEN", m_mcuRam );
-    m_ADSC  = getRegBits("ADSC", m_mcuRam );
-    m_ADATE = getRegBits("ADATE", m_mcuRam );
-    m_ADIF  = getRegBits("ADIF", m_mcuRam );
-    m_ADPS  = getRegBits("ADPS0,ADPS1,ADPS2", m_mcuRam );
+    m_ADEN  = m_mcuRam->getRegBits("ADEN");
+    m_ADSC  = m_mcuRam->getRegBits("ADSC");
+    m_ADATE = m_mcuRam->getRegBits("ADATE");
+    m_ADIF  = m_mcuRam->getRegBits("ADIF");
+    m_ADPS  = m_mcuRam->getRegBits("ADPS0,ADPS1,ADPS2");
 
-    m_ADTS  = getRegBits("ADTS0,ADTS1,ADTS2", m_mcuRam );
-    m_ACME  = getRegBits("ACME", m_mcuRam );
+    m_ADTS  = m_mcuRam->getRegBits("ADTS0,ADTS1,ADTS2");
+    m_ACME  = m_mcuRam->getRegBits("ACME");
 
-    m_ADLAR = getRegBits("ADLAR", m_mcuRam );
-    m_REFS  = getRegBits("REFS0,REFS1", m_mcuRam );
+    m_ADLAR = m_mcuRam->getRegBits("ADLAR");
+    m_REFS  = m_mcuRam->getRegBits("REFS0,REFS1");
 
     if( m_mcu->getMcuPort("PORTV") )
     {
@@ -58,7 +59,7 @@ void AvrAdc::setup()
     m_int1Cap = nullptr;
 
     m_aComp = (McuComp*)m_mcu->getModule("COMP");
-    m_compInt = m_aComp->getInterrupt();
+    if( m_aComp ) m_compInt = m_aComp->getInterrupt();
 
     m_intExt0 = m_mcu->interrupts()->getInterrupt("INT0");
 
@@ -80,9 +81,9 @@ void AvrAdc::initialize()
     McuAdc::initialize();
 }
 
-void AvrAdc::configureA( uint8_t newADCSRA ) // ADCSRA
+void AvrAdc::configureA() // ADCSRA
 {
-    bool enabled = getRegBitsBool( newADCSRA, m_ADEN );
+    bool enabled = m_ADEN.getRegBitsBool();
     if( m_enabled != enabled )
     {
         if( !m_enabled && enabled ) m_initCycles = 12; // First conversion after enabling ADC
@@ -90,13 +91,13 @@ void AvrAdc::configureA( uint8_t newADCSRA ) // ADCSRA
         toAdcMux();
     }
 
-    uint8_t prs = getRegBitsVal( newADCSRA, m_ADPS );
+    uint8_t prs = m_ADPS.getRegBitsVal();
     m_convTime = m_mcu->psInst()*(13+m_initCycles)*m_prescList[prs];
 
-    m_autoTrigger = getRegBitsBool( newADCSRA, m_ADATE );
+    m_autoTrigger = m_ADATE.getRegBitsBool();
     if( m_autoTrigger ) autotriggerConf();
 
-    bool convert = getRegBitsBool( newADCSRA, m_ADSC );
+    bool convert = m_ADSC.getRegBitsBool();
     if( !m_converting && convert )
     {
         startConversion();
@@ -109,17 +110,17 @@ void AvrAdc::configureA( uint8_t newADCSRA ) // ADCSRA
     }
 }
 
-void AvrAdc::configureB( uint8_t newADCSRB ) // ADCSRB / SFIOR(Atmega32)
+void AvrAdc::configureB() // ADCSRB / SFIOR(Atmega32)
 {
-    m_trigger = getRegBitsVal( newADCSRB, m_ADTS );
+    m_trigger = m_ADTS.getRegBitsVal();
     if( m_autoTrigger ) autotriggerConf();
 
-    updateAcme( newADCSRB );
+    updateAcme();
 }
 
-void AvrAdc::updateAcme( uint8_t newVal )
+void AvrAdc::updateAcme()
 {
-    bool acme = getRegBitsBool( newVal, m_ACME );
+    bool acme = m_ACME.getRegBitsBool();
     if( m_acme != acme )
     {
         m_acme = acme;
@@ -136,11 +137,11 @@ void AvrAdc::toAdcMux() // Connect Comparator with ADC multiplexer
     else          m_aComp->setPinN( nullptr );
 }
 
-void AvrAdc::setChannel( uint8_t newADMUX ) // ADMUX
+void AvrAdc::setChannel() // ADMUX
 {
-    m_channel    = getRegBitsVal(  newADMUX, m_MUX );
-    m_leftAdjust = getRegBitsBool( newADMUX, m_ADLAR );
-    m_refSelect  = getRegBitsVal(  newADMUX, m_REFS );
+    m_channel    = m_MUX.getRegBitsVal();
+    m_leftAdjust = m_ADLAR.getRegBitsBool();
+    m_refSelect  = m_REFS.getRegBitsVal();
 
     updtVref();
 
@@ -150,7 +151,7 @@ void AvrAdc::setChannel( uint8_t newADMUX ) // ADMUX
 
 void AvrAdc::endConversion()
 {
-    clearRegBits( m_ADSC ); // Clear ADSC bit
+    m_ADSC.clear_08(); // Clear ADSC bit
     if( m_autoTrigger && m_freeRunning ) startConversion();
 }
 
@@ -167,7 +168,7 @@ void AvrAdc00::setup()
 {
     AvrAdc::setup();
 
-    m_MUX = getRegBits("MUX0,MUX1,MUX2,MUX3", m_mcuRam );
+    m_MUX = m_mcuRam->getRegBits("MUX0,MUX1,MUX2,MUX3");
 
     McuTimer* timer1 = m_mcu->getTimer("TIMER1");
     m_int1Ovf = timer1->getInterrupt();
@@ -222,7 +223,7 @@ AvrAdc02::~AvrAdc02(){}
 void AvrAdc02::setup()
 {
     AvrAdc00::setup();
-    m_MUX = getRegBits("MUX0,MUX1,MUX2,MUX3,MUX4,MUX5", m_mcuRam );
+    m_MUX = m_mcuRam->getRegBits("MUX0,MUX1,MUX2,MUX3,MUX4,MUX5");
 }
 
 void AvrAdc02::updtVref()
@@ -245,7 +246,7 @@ AvrAdc03::~AvrAdc03(){}
 void AvrAdc03::setup()
 {
     AvrAdc00::setup();
-    m_MUX = getRegBits("MUX0,MUX1,MUX2,MUX3,MUX4", m_mcuRam );
+    m_MUX = m_mcuRam->getRegBits("MUX0,MUX1,MUX2,MUX3,MUX4");
     m_fixedVref = 2.6;
 }
 
@@ -297,22 +298,22 @@ void AvrAdc03::specialConv()
 AvrAdc04::AvrAdc04( eMcu* mcu, QString name )
         : AvrAdc03( mcu, name )
 {
-    m_MUX5  = getRegBits("MUX5", m_mcuRam );
+    m_MUX5 = m_mcuRam->getRegBits("MUX5");
 }
 AvrAdc04::~AvrAdc04(){}
 
 void AvrAdc04::setup()
 {
     AvrAdc00::setup();
-    m_MUX5  = getRegBits("MUX5", m_mcuRam );
+    m_MUX5 = m_mcuRam->getRegBits("MUX5");
     m_fixedVref = 2.6;
 }
 
-void AvrAdc04::configureB( uint8_t newADCSRB ) // ADCSRB
+void AvrAdc04::configureB() // ADCSRB
 {
-    AvrAdc::configureB( newADCSRB );
+    AvrAdc::configureB();
 
-    bool mux5 = getRegBitsBool( newADCSRB, m_MUX5 );
+    bool mux5 = m_MUX5.getRegBitsBool();
     if( mux5 ) m_chOffset = 8;
     else       m_chOffset = 0;
 }
@@ -330,7 +331,7 @@ void AvrAdc10::setup()
 {
     AvrAdc::setup();
 
-    m_MUX = getRegBits("MUX0,MUX1", m_mcuRam );
+    m_MUX = m_mcuRam->getRegBits("MUX0,MUX1");
 
     McuTimer* timer0 = m_mcu->getTimer("TIMER0");
     m_int0Ovf = timer0->getInterrupt();
@@ -373,7 +374,7 @@ void AvrAdc11::setup()
 {
     AvrAdc10::setup();
 
-    m_MUX = getRegBits("MUX0,MUX1,MUX2,MUX3", m_mcuRam );
+    m_MUX = m_mcuRam->getRegBits("MUX0,MUX1,MUX2,MUX3");
 }
 
 void AvrAdc11::updtVref()
@@ -399,15 +400,15 @@ void AvrAdc20::setup()
 {
     AvrAdc::setup();
 
-    m_MUX   = getRegBits("MUX0,MUX1,MUX2,MUX3", m_mcuRam );
-    m_ADATE = getRegBits("ADFR", m_mcuRam ); // Same bit, different name: Autotrigger
+    m_MUX   = m_mcuRam->getRegBits("MUX0,MUX1,MUX2,MUX3");
+    m_ADATE = m_mcuRam->getRegBits("ADFR"); // Same bit, different name: Autotrigger
 
     m_fixedVref = 2.56;
 }
 
-void AvrAdc20::configureB( uint8_t newSFIOR ) // SFIOR(Atmega8)
+void AvrAdc20::configureB() // SFIOR(Atmega8)
 {
-    updateAcme( newSFIOR );
+    updateAcme();
 }
 
 void AvrAdc20::autotriggerConf()

@@ -21,13 +21,19 @@ class PicPort : public McuPort
 
         virtual void setup() override{;}
 
-        virtual void configureA( uint8_t newANSEL ) override;
+        virtual void configureA() override;
 
-        virtual void outChanged( uint8_t val ) override;
-        virtual void readPort( uint8_t ) override;
+        virtual void outChanged() override;
+        virtual uint32_t getInpState() override;
+
+        virtual void puRegChanged() override;
+        virtual void puBitsChanged() override;
+        virtual void puBitsInvChanged() override;
 
     protected:
         virtual McuPin* createPin( int i, QString id , Component* mcu ) override;
+
+        uint8_t* m_ANSEL;
 };
 
 #endif

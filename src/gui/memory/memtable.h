@@ -58,7 +58,7 @@ class MemTable : public QWidget, private Ui::MemTable
         QTableWidgetItem* m_hoverItem;
 
         Memory* m_memory;
-        std::vector<uint32_t>* m_data;
+        std::vector<uint8_t>* m_data;
 };
 
 #endif

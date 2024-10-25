@@ -24,69 +24,80 @@ void AvrTwi::setup()
     n.toInt( &ok );
     if( !ok ) n = "";
 
-    m_TWCR = (uint8_t*) m_mcuRam->getReg("TWCR"+n );
-    //m_TWSR = m_mcu->getReg( "TWSR" );
+    //m_TWCR = (uint8_t*) m_mcuRam->getReg("TWCR"+n );
+    m_TWBR = (uint8_t*) m_mcuRam->getReg("TWBR"+n);
 
-    m_TWEN  = getRegBits("TWEN"+n , m_mcuRam );
-    m_TWWC  = getRegBits("TWWC"+n , m_mcuRam );
-    m_TWSTO = getRegBits("TWSTO"+n, m_mcuRam );
-    m_TWSTA = getRegBits("TWSTA"+n, m_mcuRam );
-    m_TWEA  = getRegBits("TWEA"+n , m_mcuRam );
-    m_TWINT = getRegBits("TWINT"+n, m_mcuRam );
+    m_TWEN  = m_mcuRam->getRegBits("TWEN"+n  );
+    m_TWWC  = m_mcuRam->getRegBits("TWWC"+n  );
+    m_TWSTO = m_mcuRam->getRegBits("TWSTO"+n );
+    m_TWSTA = m_mcuRam->getRegBits("TWSTA"+n );
+    m_TWEA  = m_mcuRam->getRegBits("TWEA"+n  );
+    m_TWINT = m_mcuRam->getRegBits("TWINT"+n );
 }
 
 void AvrTwi::initialize()
 {
     McuTwi::initialize();
     m_bitRate = 0;
+    m_enabled = false;
+    m_start = false;
+    m_stop  = false;
 }
 
-void AvrTwi::configureA( uint8_t newTWCR ) // TWCR is being written
+void AvrTwi::configureA() // TWCR is being written
 {
-    bool oldEn  = getRegBitsBool( *m_TWCR, m_TWEN );
-    bool enable = getRegBitsBool( newTWCR, m_TWEN );
+    //bool oldEn  = getRegBitsBool( *m_TWCR, m_TWEN );
+    bool enable = m_TWEN.getRegBitsBool();
 
-    if( oldEn && !enable )                 /// Disable TWI
+    if( m_enabled != enable )
     {
-        setMode( TWI_OFF );
-        m_sda->controlPin( false, false ); // Release control of MCU PIns
-        m_scl->controlPin( false, false );
+        if( enable )   /// Enable TWI if it was disabled
+        {
+            m_sda->setPinMode( openCo );
+            m_sda->controlPin( true, true ); // Get control of MCU PIns
+            m_scl->setPinMode( openCo );
+            m_scl->controlPin( true, true );
+        }
+        else          /// Disable TWI
+        {
+            setMode( TWI_OFF );
+            m_sda->controlPin( false, false ); // Release control of MCU PIns
+            m_scl->controlPin( false, false );
+        }
+        m_enabled = enable;
     }
     if( !enable ) return;                  // Not enabled, do nothing
 
-    if( !oldEn )                           /// Enable TWI if it was disabled
+    bool newStart = m_TWSTA.getRegBitsBool();
+    if( m_start != newStart )
     {
-        m_sda->setPinMode( openCo );
-        m_sda->controlPin( true, true ); // Get control of MCU PIns
-        m_scl->setPinMode( openCo );
-        m_scl->controlPin( true, true );
-    }
-
-    bool oldStart = getRegBitsBool( *m_TWCR, m_TWSTA );
-    bool newStart = getRegBitsBool( newTWCR, m_TWSTA );
-    if( newStart && !oldStart )            /// Generate Start Condition
-    {
-        if( m_mode != TWI_MASTER ) setMode( TWI_MASTER );
-        masterStart();
-    }
-
-    bool oldStop = getRegBitsBool( *m_TWCR, m_TWSTO );
-    bool newStop = getRegBitsBool( newTWCR, m_TWSTO );
-    if( newStop && !oldStop )              /// Generate Stop Condition
-    {
-        if( m_mode == TWI_MASTER ) // Master: Stop if I2C was started
-        {/// DONE if Stop and Start at same time, then Start Condition should be sheduled
-            if( !newStart && getStaus() < TWI_NO_STATE ) masterStop();//I2Cstop();
+        if( newStart && !m_start )            /// Generate Start Condition
+        {
+            if( m_mode != TWI_MASTER ) setMode( TWI_MASTER );
+            masterStart();
         }
-        else setMode( TWI_SLAVE ); // Slave: Stop Cond restarts Slave mode (can be used to recover from an error condition)
+        m_start = newStart;
+    }
+    bool newStop = m_TWSTO.getRegBitsBool();
+    if( m_stop != newStop )
+    {
+        if( newStop && !m_stop )              /// Generate Stop Condition
+        {
+            if( m_mode == TWI_MASTER ) // Master: Stop if I2C was started
+            {/// DONE if Stop and Start at same time, then Start Condition should be sheduled
+                if( !newStart && getStaus() < TWI_NO_STATE ) masterStop();//I2Cstop();
+            }
+            else setMode( TWI_SLAVE ); // Slave: Stop Cond restarts Slave mode (can be used to recover from an error condition)
+        }
+        m_stop = newStop;
     }
 
-    bool clearTwint = getRegBitsBool( newTWCR, m_TWINT );
-    bool twea = getRegBitsBool( newTWCR, m_TWEA );
+    bool clearTwint = m_TWINT.getRegBitsBool();
+    bool twea = m_TWEA.getRegBitsBool();
     if( !newStop && !newStart && !clearTwint )
     {
         if( m_mode != TWI_SLAVE ) setMode( TWI_SLAVE );
-        m_enabled = twea;
+        /// FIXME: m_enabled = twea;  // Check this
     }
 
     bool data = clearTwint && !newStop && !newStart; // No start or stop and TWINT cleared, receive data
@@ -105,49 +116,52 @@ void AvrTwi::configureA( uint8_t newTWCR ) // TWCR is being written
     }
 }
 
-void AvrTwi::configureB( uint8_t val )       // TWBR is being written
+void AvrTwi::configureB()       // TWBR is being written
 {
-    if( m_bitRate == val ) return;
-    m_bitRate = val;
+    if( m_bitRate == *m_TWBR ) return;
+    m_bitRate = *m_TWBR;
     updateFreq();
 }
 
-void AvrTwi::writeAddrReg( uint8_t newTWAR ) // TWAR is being written
+void AvrTwi::writeAddrReg() // TWAR is being written
 {
-    m_genCall = newTWAR & 1;
-    m_address = newTWAR >> 1;
+    m_genCall = *m_addrReg & 1;
+    m_address = *m_addrReg >> 1;
 }
 
-void AvrTwi::writeStatus( uint8_t newTWSR ) // TWSR Status Register is being written
+void AvrTwi::writeStatus() // TWSR Status Register is being written
 {
-    newTWSR &= 0b00000011;
-    uint8_t prescaler = m_prescList[newTWSR];
+    //newTWSR &= 0b00000011;
+    uint8_t prIndex = *m_statReg & 0b00000011;
+    uint8_t prescaler = m_prescList[prIndex];
     if( m_prescaler != prescaler ) { m_prescaler = prescaler; updateFreq(); }
     /// Done by masking //m_mcu->m_regOverride = newTWSR | (*m_statReg & 0b11111100); // Preserve Status bits
 }
 
-void AvrTwi::writeTwiReg( uint8_t newTWDR ) // TWDR is being written
+void AvrTwi::writeTwiReg() // TWDR is being written
 {
-    if( m_mode == TWI_SLAVE ) m_txReg = newTWDR;
+    uint8_t TWDR = *m_dataReg;
+
+    if( m_mode == TWI_SLAVE ) m_txReg = TWDR;
     if( m_mode != TWI_MASTER ) return;
 
-    bool twint = getRegBitsBool( *m_TWCR, m_TWINT ); // Check if TWINT is set
+    bool twint = m_TWINT.getRegBitsBool(); // Check if TWINT is set
     if( twint )                  // If set clear TWWC
     {
-        clearRegBits( m_TWWC );  // Clear Write Collision bit TWWC
+        m_TWWC.clear_08();  // Clear Write Collision bit TWWC
     }
     else                         // If not, the access will be discarded
     {
-        setRegBits( m_TWWC );    // set Write Collision bit TWWC
+        m_TWWC.set_08();    // set Write Collision bit TWWC
         return;
     }
     bool write = false;
     bool isAddr = (getStaus() == TWI_START
                 || getStaus() == TWI_REP_START); // We just sent Start, so this must be slave address
 
-    if( isAddr ) write = ((newTWDR & 1) == 0);   // Sending address for Read or Write?
+    if( isAddr ) write = ((TWDR & 1) == 0);   // Sending address for Read or Write?
 
-    masterWrite( newTWDR, isAddr, write );       /// Write data or address to Slave
+    masterWrite( TWDR, isAddr, write );       /// Write data or address to Slave
 }
 
 void AvrTwi::setTwiState( twiState_t state )     // Set new AVR Status value
@@ -159,7 +173,7 @@ void AvrTwi::setTwiState( twiState_t state )     // Set new AVR Status value
 
     if( state == TWI_NO_STATE && m_i2cState == I2C_STOP ) // Stop Condition sent
     {
-        clearRegBits( m_TWSTO );   // Clear TWSTO bit
+        m_TWSTO.clear_08();   // Clear TWSTO bit
     }
     else{
         m_interrupt->raise();

@@ -15,9 +15,9 @@ PicPin::PicPin( McuPort* port, int i, QString id, Component* mcu )
 }
 PicPin::~PicPin() {}
 
-void PicPin::ConfExtInt( uint8_t bits )
+void PicPin::ConfExtInt()
 {
-   m_extIntTrigger = getRegBitsVal( bits, m_extIntBits ) ? pinRising : pinFalling;
+   m_extIntTrigger = m_extIntBits.getRegBitsVal() ? pinRising : pinFalling;
 }
 
 void PicPin::setAnalog( bool an )

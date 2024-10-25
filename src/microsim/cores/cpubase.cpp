@@ -10,9 +10,6 @@ CpuBase::CpuBase( eMcu* mcu )
 {
     m_mcu = mcu;
 
-    m_mcuRam = (McuRam*)m_mcu->getModule("ram");
-    m_mcuPgm = (McuPgm*)m_mcu->getModule("pgm");
-
     m_retCycles = 2;
 
     m_spl = nullptr;

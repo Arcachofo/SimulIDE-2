@@ -7,7 +7,7 @@
 #include "mcupin.h"
 #include "e_mcu.h"
 #include "mcuinterrupts.h"
-#include "datautils.h"
+#include "mcuram.h"
 #include "simulator.h"
 
 PicTwi::PicTwi( eMcu* mcu, QString name )
@@ -21,23 +21,23 @@ void PicTwi::setup()
     m_sleepMode = 0xFF;
 
     // SSPCON
-    m_WCOL    = getRegBits("WCOL"   , m_mcuRam );
+    m_WCOL    = m_mcuRam->getRegBits("WCOL");
 
     // SSPCON2
-    m_CGEN    = getRegBits("CGEN"   , m_mcuRam );
-    m_ACKSTAT = getRegBits("ACKSTAT", m_mcuRam );
-    m_ACKDT   = getRegBits("ACKDT"  , m_mcuRam );
-    m_ACKEN   = getRegBits("ACKEN"  , m_mcuRam );
-    m_RCEN    = getRegBits("RCEN"   , m_mcuRam );
-    m_PEN     = getRegBits("PEN"    , m_mcuRam );
-    m_RSEN    = getRegBits("RSEN"   , m_mcuRam );
-    m_SEN     = getRegBits("SEN"    , m_mcuRam );
+    m_CGEN    = m_mcuRam->getRegBits("CGEN"   );
+    m_ACKSTAT = m_mcuRam->getRegBits("ACKSTAT");
+    m_ACKDT   = m_mcuRam->getRegBits("ACKDT"  );
+    m_ACKEN   = m_mcuRam->getRegBits("ACKEN"  );
+    m_RCEN    = m_mcuRam->getRegBits("RCEN"   );
+    m_PEN     = m_mcuRam->getRegBits("PEN"    );
+    m_RSEN    = m_mcuRam->getRegBits("RSEN"   );
+    m_SEN     = m_mcuRam->getRegBits("SEN"    );
 
     //SSPSTAT
-    m_P  = getRegBits("P" , m_mcuRam );
-    m_S  = getRegBits("S" , m_mcuRam );
-    m_RW = getRegBits("RW", m_mcuRam );
-    m_BF = getRegBits("BF", m_mcuRam );
+    m_P  = m_mcuRam->getRegBits("P" );
+    m_S  = m_mcuRam->getRegBits("S" );
+    m_RW = m_mcuRam->getRegBits("RW");
+    m_BF = m_mcuRam->getRegBits("BF");
 }
 
 void PicTwi::initialize()
@@ -68,36 +68,36 @@ void PicTwi::setMode( twiMode_t mode )
     TwiModule::setMode( mode );
 }
 
-void PicTwi::configureA( uint8_t newSSPCON )
+void PicTwi::configureA() // SSPCON
 {
     /*bool wcol  = getRegBitsBool( newSSPCON, m_WCOL );
     bool oldWcol = getRegBitsBool( m_WCOL );
     wcol=false;*/
 }
 
-void PicTwi::configureB( uint8_t newSSPCON2 )
+void PicTwi::configureB() // SSPCON2
 {
-    m_genCall = getRegBitsBool( newSSPCON2, m_CGEN ); /// Interrupt??
+    m_genCall = m_CGEN.getRegBitsBool(); /// Interrupt??
 
-    bool newStart  = getRegBitsBool( newSSPCON2, m_SEN )
-                   | getRegBitsBool( newSSPCON2, m_RSEN );
+    bool newStart  = m_SEN.getRegBitsBool()
+                   | m_RSEN.getRegBitsBool();
     if( newStart )              /// Generate Start Condition
     {
         if( m_mode == TWI_MASTER )
         {
-            clearRegBits( m_RW );
+            m_RW.clear_08();
             masterStart();
         }
     }
 
-    bool newStop = getRegBitsBool( newSSPCON2, m_PEN );
+    bool newStop = m_PEN.getRegBitsBool();
     if( newStop  )              /// Generate Stop Condition
     {
         if( m_mode == TWI_MASTER ) // Master: Stop if I2C was started
         {
             if( getStaus() < TWI_NO_STATE )
             {
-                clearRegBits( m_RW );
+                m_RW.clear_08();
                 masterStop();
             }
         }
@@ -105,97 +105,97 @@ void PicTwi::configureB( uint8_t newSSPCON2 )
     }
     if( m_mode == TWI_MASTER )
     {
-        bool rcen  = getRegBitsBool( newSSPCON2, m_RCEN );
+        bool rcen  = m_RCEN.getRegBitsBool();
         if( rcen )
         {
-            m_sendACK   = !getRegBitsBool( newSSPCON2, m_ACKDT ); // ACK State to send
-            m_masterACK = getRegBitsBool( newSSPCON2, m_ACKEN ); // Send ACK action
+            m_sendACK   = !m_ACKDT.getRegBitsBool(); // ACK State to send
+            m_masterACK = m_ACKEN.getRegBitsBool(); // Send ACK action
 
             //if( m_twiState == TWI_MRX_ADR_ACK    // We sent Slave Address + R and received ACK
             // || m_twiState == TWI_MRX_DATA_ACK ) // We sent data and received ACK
             if( m_i2cState == I2C_IDLE ) masterRead( m_sendACK );     // Read a byte and send ACK/NACK
-            if( m_masterACK && !m_sendACK ) clearRegBits( m_RW );
+            if( m_masterACK && !m_sendACK ) m_RW.clear_08();
         }
     }
 }
 
-void PicTwi::writeAddrReg( uint8_t newSSPADD )
+void PicTwi::writeAddrReg() // SSPADD
 {
     //if( m_mode == TWI_MASTER ) // Baudrate
     {
-        double freq = m_mcu->freq()/(4*(newSSPADD+1));
+        double freq = m_mcu->freq()/(4*(*m_addrReg+1));
         setFreqKHz( freq/1e3 );
     }
     //else
-        m_address = newSSPADD >> 1; // SLAVE Address
+        m_address = *m_addrReg >> 1; // SLAVE Address
 }
 
-void PicTwi::writeStatus( uint8_t newSSPSTAT )
+void PicTwi::writeStatus() // SSPSTAT
 {
     /// Done by masking //m_mcu->m_regOverride = newTWSR | (*m_statReg & 0b11111100); // Preserve Status bits
 }
 
-void PicTwi::writeTwiReg( uint8_t newSSPBUF ) // SSPBUF is being written
+void PicTwi::writeTwiReg() // SSPBUF is being written
 {
     if( m_mode != TWI_MASTER ) return;
 
-    if( getRegBitsBool( m_BF ) )  // Check if BF is set (still transmitting)
+    if( m_BF.getRegBitsBool() )  // Check if BF is set (still transmitting)
     {
-        setRegBits( m_WCOL );  // set Write Collision bit WCOL
+        m_WCOL.set_08();  // set Write Collision bit WCOL
         return;                // The access will be discarded
     }
     bool write = false;
-    bool isAddr = getRegBitsBool( m_S ); // We just sent Start, so this must be slave address
+    bool isAddr = m_S.getRegBitsBool(); // We just sent Start, so this must be slave address
 
     if( isAddr )
     {
-        write = ((newSSPBUF & 1) == 0); // Sendind address for Read or Write?
+        write = ((*m_dataReg & 1) == 0); // Sendind address for Read or Write?
         //writeRegBits( m_RW, !write );
     }
-    setRegBits( m_RW );
-    setRegBits( m_BF );
+    m_RW.set_08();
+    m_BF.set_08();
 
-    masterWrite( newSSPBUF, isAddr, write );       /// Write data or address to Slave
+    masterWrite( *m_dataReg, isAddr, write );       /// Write data or address to Slave
 }
 
 void PicTwi::setTwiState( twiState_t state )  // Set new Status value
 {
-    clearRegBits( m_S );
-    clearRegBits( m_P );
+    m_S.clear_08();
+    m_P.clear_08();
 
     if( state == TWI_START )                                           // Start sent
     {
-        clearRegBits( m_SEN );
-        clearRegBits( m_RSEN );
-        setRegBits( m_S );
+        m_SEN.clear_08();
+        m_RSEN.clear_08();
+        m_S.set_08();
         m_interrupt->raise();
     }
     else if( state == TWI_NO_STATE && m_i2cState == I2C_STOP  )        // Stop sent
     {
-        clearRegBits( m_PEN );
-        setRegBits( m_P );
+        m_PEN.clear_08();
+        m_P.set_08();
         m_interrupt->raise();
     }
     else if( state == TWI_MTX_ADR_ACK    // ACK Master Addr transmitted for Write
           || state == TWI_MRX_ADR_ACK    // ACK Master Addr transmitted for Read
           || state == TWI_MTX_DATA_ACK ) // ACK Master Data transmitted
     {
-        if( m_mode == TWI_MASTER ) clearRegBits( m_RW );
-        clearRegBits( m_ACKSTAT );
+        if( m_mode == TWI_MASTER ) m_RW.clear_08();
+        m_ACKSTAT.clear_08();
         m_interrupt->raise();
     }
     else if( state == TWI_MTX_ADR_NACK    // NACK Master Addr transmitted for Write
           || state == TWI_MRX_ADR_NACK    // NACK Master Addr transmitted for Read
           || state == TWI_MTX_DATA_NACK ) // NACK Master Data transmitted
     {
-        if( m_mode == TWI_MASTER ) clearRegBits( m_RW );
-        setRegBits( m_ACKSTAT );
+        if( m_mode == TWI_MASTER ) m_RW.clear_08();
+        m_ACKSTAT.set_08();
         m_interrupt->raise();
     }
     else if( state == TWI_MRX_DATA_ACK || state == TWI_MRX_DATA_NACK ) // Master Data received
     {
         //*m_dataReg = m_rxReg; // Save data received into SSPBUF  // Done in readByte()
-        clearRegBits( m_ACKEN );
+        m_ACKEN.clear_08();
     }
     else if( state == TWI_SRX_ADR_DATA_ACK || state == TWI_SRX_ADR_DATA_NACK   //Slave Addr received
           || state == TWI_SRX_GEN_DATA_ACK || state == TWI_SRX_GEN_DATA_NACK ) //Slave Data received
@@ -214,20 +214,20 @@ void PicTwi::writeByte() // Read from Data Register
 
 void PicTwi::bufferEmpty() // Data/Addr transmitted (before ACK)
 {
-    clearRegBits( m_BF );
+    m_BF.clear_08();
 }
 
 void PicTwi::readByte()
 {
     *m_dataReg = m_rxReg; // Save data received into SSPBUF
-    setRegBits( m_BF );
+    m_BF.set_08();
     m_interrupt->raise();
     TwiModule::readByte();
 }
 
-void PicTwi::readTwiReg( uint8_t val )
+void PicTwi::readTwiReg()
 {
-    clearRegBits( m_BF );
+    m_BF.clear_08();
 }
 
 void PicTwi::sleep( int mode )

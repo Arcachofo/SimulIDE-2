@@ -27,8 +27,8 @@ class McuRom : public McuModule, public Memory, public eElement
         virtual void readEeprom();
         virtual void writeEeprom();
 
-        virtual void addrWriteL( uint8_t val );
-        virtual void addrWriteH( uint8_t val );
+        virtual void addrWriteL();
+        virtual void addrWriteH();
 
     protected:
 

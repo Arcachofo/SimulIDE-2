@@ -9,7 +9,7 @@
 #include "e_mcu.h"
 #include "mcupin.h"
 #include "picvref.h"
-#include "datautils.h"
+#include "mcuram.h"
 
 PicDac::PicDac( eMcu* mcu, QString name )
       : McuDac( mcu, name )
@@ -22,13 +22,13 @@ void PicDac::setup()
     m_dacReg = nullptr;
     m_outPin = nullptr;
 
-    m_DACEN  = getRegBits("DACEN", m_mcuRam );
-    m_DACLPS = getRegBits("DACLPS", m_mcuRam );
-    m_DACOE  = getRegBits("DACOE", m_mcuRam );
-    m_DACPSS = getRegBits("DACPSS0,DACPSS1", m_mcuRam );
-    m_DACNSS = getRegBits("DACNSS", m_mcuRam );
+    m_DACEN  = m_mcuRam->getRegBits("DACEN");
+    m_DACLPS = m_mcuRam->getRegBits("DACLPS");
+    m_DACOE  = m_mcuRam->getRegBits("DACOE");
+    m_DACPSS = m_mcuRam->getRegBits("DACPSS0,DACPSS1");
+    m_DACNSS = m_mcuRam->getRegBits("DACNSS");
 
-    m_DACR = getRegBits("DACR0,DACR1,DACR2,DACR3,DACR4", m_mcuRam );
+    m_DACR = m_mcuRam->getRegBits("DACR0,DACR1,DACR2,DACR3,DACR4");
 
     m_fvr = (PicVrefE*)m_mcu->getModule("Vref");
 }
@@ -54,12 +54,12 @@ void PicDac::voltChanged()
     updtOutVolt();
 }
 
-void PicDac::configureA( uint8_t newDACCON0 ) //
+void PicDac::configureA() // DACCON0
 {
-    m_enabled = getRegBitsBool( newDACCON0, m_DACEN );
-    m_daclps  = getRegBitsBool( newDACCON0, m_DACLPS );
+    m_enabled = m_DACEN.getRegBitsBool();
+    m_daclps  = m_DACLPS.getRegBitsBool();
 
-    m_outVoltEn = getRegBitsBool( newDACCON0, m_DACOE );
+    m_outVoltEn = m_DACOE.getRegBitsBool();
     if( m_outPin )
     {
         if( m_outVoltEn ) m_outPin->setPinMode( output );
@@ -69,7 +69,7 @@ void PicDac::configureA( uint8_t newDACCON0 ) //
     m_useFVR  = false;
     m_usePinP = false;
     m_vRefP = 0;
-    uint8_t dacPss = getRegBitsVal( newDACCON0, m_DACPSS );
+    uint8_t dacPss = m_DACPSS.getRegBitsVal();
     switch( dacPss ) {
         case 0: m_vRefP = m_mcu->vdd(); break; // VDD
         case 1: m_usePinP = true;       break; // VREF+
@@ -78,7 +78,7 @@ void PicDac::configureA( uint8_t newDACCON0 ) //
     }
     m_usePinN = false;
     m_vRefN = 0;
-    uint8_t dacNss = getRegBitsVal( newDACCON0, m_DACNSS );
+    uint8_t dacNss = m_DACNSS.getRegBitsVal();
     switch( dacNss ) {
         case 0:                    break; // VSS
         case 1: m_usePinN = true;  break; // VREF-
@@ -89,9 +89,9 @@ void PicDac::configureA( uint8_t newDACCON0 ) //
     voltChanged();
 }
 
-void PicDac::outRegChanged( uint8_t val ) // DACON1 is written
+void PicDac::outRegChanged() // DACON1 is written
 {
-    m_outVal = getRegBitsVal( val, m_DACR );
+    m_outVal = m_DACR.getRegBitsVal();
     updtOutVolt();
 }
 

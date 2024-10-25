@@ -7,8 +7,8 @@
 #define CPUCORE_H
 
 #include "e_mcu.h"
-#include "mcuram.h"
-#include "mcupgm.h"
+//#include "mcuram.h"
+//#include "mcupgm.h"
 #include "watchable.h"
 
 #define REG_SPL      m_spl[0]
@@ -17,6 +17,7 @@
 
 class Display;
 class Watcher;
+class McuMmu;
 
 class CpuBase : public Watchable
 {
@@ -49,9 +50,6 @@ class CpuBase : public Watchable
     protected:
         eMcu* m_mcu;
 
-        McuRam* m_mcuRam;
-        McuPgm* m_mcuPgm;
-
         QStringList m_enumUids;  // For enum properties
         QStringList m_enumNames; // For enum properties
 
@@ -60,7 +58,7 @@ class CpuBase : public Watchable
         uint8_t m_retCycles;
 
         uint32_t m_PC;       // Program Counter  /// All CPUs must use this
-        uint32_t* m_STATUS;  // STATUS register  /// All CPUs must use this
+        uint8_t* m_STATUS;  // STATUS register  /// All CPUs must use this
         uint32_t m_RET_ADDR; // Last Address in Stack /// All CPUs must use this
 
         /// Should be in McuCpu:

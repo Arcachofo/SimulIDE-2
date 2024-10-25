@@ -110,7 +110,7 @@ class Mcs65Cpu : public Mcs65Interface
         IoPin* m_soPin;
         IoPin* m_dbePin;
 
-        uint32_t m_P;   // status
+        uint8_t m_P;   // status
         uint8_t m_SP;
         uint8_t m_Ac;
         uint8_t m_IR;

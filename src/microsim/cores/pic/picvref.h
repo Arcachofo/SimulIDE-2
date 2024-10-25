@@ -17,7 +17,7 @@ class PicVref : public McuVref
         virtual void setup() override;
         virtual void initialize() override;
 
-        virtual void configureA( uint8_t newVRCON ) override;
+        virtual void configureA() override;
 
     protected:
         //virtual void setMode( uint8_t mode ) override;
@@ -39,7 +39,7 @@ class PicVrefE : public McuVref
 
         virtual void setup() override;
 
-        virtual void configureA( uint8_t newFVRCON ) override;
+        virtual void configureA() override;
 
         double getAdcVref();
         double getDacVref();

@@ -32,8 +32,8 @@ Z80Core::Z80Core( eMcu* mcu )
        : CpuBase( mcu )
        , eElement( mcu->getId()+"-Z80Core" )
 {
-    /// Fixme m_STATUS = &regF;
-    m_mcuRam->setStatusBits({"C","N","PV","y","H","x","Z","S"});
+    /// FIXME: m_STATUS = &regF;
+    /// FIXME:m_mcuRam->setStatusBits({"C","N","PV","y","H","x","Z","S"});
 
     // initialization Z80Core settings
     m_producer = pZilog;                 // producer is Zilog - behaviour of instructions SCF and CCF

@@ -32,10 +32,10 @@ class PicCcpUnit : public McuModule, public eElement
         virtual void setup() override;
         virtual void initialize() override;
 
-        virtual void ccprWriteL( uint8_t val );
-        virtual void ccprWriteH( uint8_t val );
+        virtual void ccprWriteL();
+        virtual void ccprWriteH();
 
-        virtual void configureA( uint8_t CCPxCON ) override;
+        virtual void configureA() override;
 
         virtual void setInterrupt( Interrupt* i ) override;
 
@@ -45,8 +45,11 @@ class PicCcpUnit : public McuModule, public eElement
         uint8_t m_mode;
         ccpMode_t m_ccpMode;
 
+        uint8_t m_lastRegH;
+
         uint8_t* m_ccpRegL;
         uint8_t* m_ccpRegH;
+        uint8_t* m_CCPxCON;
 
         regBits_t m_CCPxM;
 

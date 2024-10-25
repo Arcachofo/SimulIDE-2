@@ -30,18 +30,18 @@ void AvrUsi::setup()
     m_dataReg   = (uint8_t*) m_mcuRam->getReg("USIDR");
     m_bufferReg = (uint8_t*) m_mcuRam->getReg("USIBR");
 
-    m_USITC  = getRegBits("USITC", m_mcuRam );
-    m_USICLK = getRegBits("USICLK", m_mcuRam );
-    m_USICS  = getRegBits("USICS0,USICS1", m_mcuRam );
-    m_USIWM  = getRegBits("USIWM0,USIWM1", m_mcuRam );
+    m_USITC  = m_mcuRam->getRegBits("USITC");
+    m_USICLK = m_mcuRam->getRegBits("USICLK");
+    m_USICS  = m_mcuRam->getRegBits("USICS0,USICS1");
+    m_USIWM  = m_mcuRam->getRegBits("USIWM0,USIWM1");
 
-    m_USICNT = getRegBits("USICNT0,USICNT1,USICNT2,USICNT3", m_mcuRam );
-    m_USIPF  = getRegBits("USIPF", m_mcuRam );
+    m_USICNT = m_mcuRam->getRegBits("USICNT0,USICNT1,USICNT2,USICNT3");
+    m_USIPF  = m_mcuRam->getRegBits("USIPF");
 
     AvrTimer800* timer0 = (AvrTimer800*)m_mcu->getTimer("TIMER0");
     m_t0OCA  = timer0->getOcUnit("OCA");
 
-    watchRegNames("USIDR", R_WRITE, this, &AvrUsi::dataRegWritten, m_mcuRam );
+    m_mcuRam->watchRegName("USIDR", R_WRITE, this, &AvrUsi::dataRegWritten );
 }
 
 void AvrUsi::reset()
@@ -51,6 +51,7 @@ void AvrUsi::reset()
     m_timer    = false;
     m_extClk   = false;
     m_usiClk   = false;
+    m_usiSR    = false;
     m_clkEdge  = false;
     m_clkState = false;
     m_clockMode = 0;
@@ -71,7 +72,7 @@ void AvrUsi::voltChanged()  // Clk Pin changed
         bool sdaState = m_DIpin->getInpState();
         if( clkState ){
             if     (  m_sdaState && !sdaState){ if( m_startInte ) m_startInte->raise(); } // Start condition
-            else if( !m_sdaState &&  sdaState) setRegBits( m_USIPF ); // Stop condition, set USIPF flag
+            else if( !m_sdaState &&  sdaState) m_USIPF.set_08(); // Stop condition, set USIPF flag
         }
         m_sdaState = sdaState;
     }
@@ -96,9 +97,9 @@ void AvrUsi::callBack()  // Called at Timer0 Compare Match
     setOutput();
 }
 
-void AvrUsi::configureA( uint8_t newUSICR )
+void AvrUsi::configureA() // USICR
 {
-    uint8_t mode = getRegBitsVal( newUSICR, m_USIWM );
+    uint8_t mode = m_USIWM.getRegBitsVal();
     if( m_mode != mode )
     {
         m_mode = mode;
@@ -130,7 +131,7 @@ void AvrUsi::configureA( uint8_t newUSICR )
         }
     }
 
-    uint8_t clockMode = getRegBitsVal( newUSICR, m_USICS );
+    uint8_t clockMode = m_USICS.getRegBitsVal();
     if( m_clockMode != clockMode )
     {
         m_clockMode = clockMode;
@@ -155,10 +156,10 @@ void AvrUsi::configureA( uint8_t newUSICR )
     }
     if( m_mode )
     {
-        bool usiTc = getRegBitsBool( newUSICR, m_USITC ); // toggles the USCK/SCL Pin
+        bool usiTc = m_USITC.getRegBitsBool(); // toggles the USCK/SCL Pin
         if( usiTc ) toggleClock();                        // USITC always toggles Clock (PORT Register)
 
-        m_usiClk = getRegBitsBool( newUSICR, m_USICLK );
+        m_usiClk = m_USICLK.getRegBitsBool();
 
         if( !m_timer )
         {
@@ -174,27 +175,28 @@ void AvrUsi::configureA( uint8_t newUSICR )
             }
         }
     }
-    m_mcuRam->m_regOverride = newUSICR & 0b11111100; // USICLK & USITC always read as 0
+    m_USICLK.clear_08();
+    m_USITC.clear_08(); // USICLK & USITC always read as 0
 }
 
-void AvrUsi::configureB( uint8_t newUSISR )
+void AvrUsi::configureB() // USISR
 {
-    m_counter = getRegBitsVal( newUSISR, m_USICNT ); // USICNT[3:0]: Counter Value
+    m_counter = m_USICNT.getRegBitsVal(); // USICNT[3:0]: Counter Value
 
-    bool oldUsiSR = getRegBitsBool( m_USIPF );
-    bool newUsiSR = getRegBitsBool( newUSISR, m_USIPF );
-    if( oldUsiSR && newUsiSR ) m_mcuRam->m_regOverride = newUSISR & ~m_USIPF.mask; // clear USIPF by writing a 1 to it
+    bool newUsiSR = m_USIPF.getRegBitsBool();
+    if( m_usiSR && newUsiSR ) m_USIPF.clear_08(); // clear USIPF by writing a 1 to it
+    m_usiSR = newUsiSR;
 }
 
-void AvrUsi::dataRegWritten( uint8_t newUSIDR ) // USIDR is being written
+void AvrUsi::dataRegWritten() // USIDR is being written
 {
-    m_DoState = newUSIDR & 1<<7; // Fetch bit 7
+    m_DoState = *m_dataReg & 1<<7; // Fetch bit 7
     setOutput();
 }
 
 void AvrUsi::stepCounter()  // increment counter
 {
-    replaceBits( m_counter, m_USICNT ); // Write m_counter to USI status reg
+    m_USICNT.write_08( m_counter ); // Write m_counter to USI status reg
 
     if( ++m_counter == 16 ){
         m_counter = 0;
@@ -216,12 +218,22 @@ void AvrUsi::shiftData()
 void AvrUsi::setOutput() // Set output *m_dataReg & 1<<7
 {
     if( m_mode == 1 ){ if( m_DOpin ) m_DOpin->setOutState( m_DoState ); } // SPI
-    else if( m_mode > 1 ) writeBitsToReg( m_DIbit, m_DoState, m_mcuRam );    // TWI
+    else if( m_mode > 1 ) //writeBitsToReg( m_DIbit, m_DoState );    // TWI
+    {
+        /// Fixme: this is mostly a hack
+        McuRegister* reg = m_DIbit.reg;
+        m_DIbit.write_08( m_DoState );
+        reg->write_08( reg->getAddress(), reg->read() );
+    }
 }
 
 void AvrUsi::toggleClock()
 {
-    writeBitsToReg( m_CKbit, !getRegBitsBool( m_CKbit ), m_mcuRam );
+    bool ck = m_CKbit.getRegBitsBool();
+    if( ck ) m_CKbit.clear_08();
+    else     m_CKbit.set_08();
+
+    //writeBitsToReg( m_CKbit, !getRegBitsBool( m_CKbit ), m_mcuRam );
 }
 
 void AvrUsi::setPins( QString pinStr ) // "DO,DI,USCK"
@@ -236,6 +248,6 @@ void AvrUsi::setPins( QString pinStr ) // "DO,DI,USCK"
     m_DIpin = m_mcu->getMcuPin( DIpin );
     m_CKpin = m_mcu->getMcuPin( CKpin );
 
-    m_DIbit = getRegBits( DIpin, m_mcuRam );
-    m_CKbit = getRegBits( CKpin, m_mcuRam );
+    m_DIbit = m_mcuRam->getRegBits( DIpin );
+    m_CKbit = m_mcuRam->getRegBits( CKpin );
 }

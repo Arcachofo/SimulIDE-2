@@ -35,7 +35,7 @@ class PicComp0 : public PicComp
         PicComp0( eMcu* mcu, QString name );
         ~PicComp0();
 
-        virtual void configureA( uint8_t newCMCON ) override;
+        virtual void configureA() override;
 
     protected:
         bool m_cis;
@@ -80,9 +80,11 @@ class PicComp1 : public PicComp
     public:
         PicComp1( eMcu* mcu, QString name );
         ~PicComp1();
-        virtual void configureA( uint8_t newCMxCON0 ) override;
+        virtual void configureA() override;
 
     protected:
+        uint8_t* m_CMxCON0;
+
         regBits_t m_CxON;
         regBits_t m_CxOE;
         regBits_t m_CxR;
@@ -95,7 +97,7 @@ class PicComp11 : public PicComp1
         PicComp11( eMcu* mcu, QString name );
         ~PicComp11();
 
-        virtual void configureC( uint8_t newSRCON ) override;
+        virtual void configureC() override;
 
     protected:
 };
@@ -106,8 +108,8 @@ class PicComp12 : public PicComp1
         PicComp12( eMcu* mcu, QString name );
         ~PicComp12();
 
-        virtual void configureB( uint8_t newCM2CON1 ) override;
-        virtual void configureC( uint8_t newSRCON ) override;
+        virtual void configureB() override;
+        virtual void configureC() override;
 
     protected:
 };
@@ -118,8 +120,8 @@ class PicComp20 : public PicComp
         PicComp20( eMcu* mcu, QString name );
         ~PicComp20();
 
-        virtual void configureA( uint8_t newCMxCON0 ) override;
-        virtual void configureB( uint8_t newCMxCON1 ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
 
     protected:
 };

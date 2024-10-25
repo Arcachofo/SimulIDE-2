@@ -16,7 +16,7 @@ AvrOcUnit::~AvrOcUnit( ){}
 
 void AvrOcUnit::configure( uint8_t val ) // COMNX0,COMNX1
 {
-    m_mode = getRegBitsVal( val, m_configBitsA );
+    m_mode = val & m_configBitsA.mask;
 
     bool enabled = m_mode > 0;
     if( m_enabled == enabled ) return;

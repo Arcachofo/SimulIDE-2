@@ -53,7 +53,7 @@ class UsartModule
         virtual void sendByte( uint8_t data );
         virtual void bufferEmpty(){;}
         virtual void frameSent( uint8_t data );
-        virtual void readByte( uint8_t data ){;}
+        virtual uint32_t getData(){ return -1; }
         virtual void byteReceived( uint8_t data );
         virtual void setRxFlags( uint16_t frame ){;}
 
@@ -134,10 +134,11 @@ class UartTR : public McuModule, public eElement
         virtual void setup() override{;}
         virtual void initialize() override;
 
+        virtual void enableChanged();
         virtual void enable( uint8_t ){;}
         virtual uint8_t getData() { return  m_data; }
 
-        virtual void configureA( uint8_t val ) override;
+        virtual void configureA() override;
 
         bool isEnabled() { return m_enabled; }
 
@@ -164,6 +165,7 @@ class UartTR : public McuModule, public eElement
         uint8_t m_bit9;
         state_t m_state;
 
+        regBits_t m_enableBit;
         bool m_enabled;
 
         uint64_t m_period; // Baudrate period

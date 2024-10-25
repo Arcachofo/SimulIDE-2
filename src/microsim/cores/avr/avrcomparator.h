@@ -19,13 +19,13 @@ class AvrComp : public McuComp
         virtual void initialize() override;
         virtual void voltChanged() override;
 
-        virtual void configureA( uint8_t newACSR ) override;
-        virtual void configureB( uint8_t newAIND ) override;
-        virtual void configureC( uint8_t newACOE ) override;
+        virtual void configureA() override;
+        virtual void configureB() override;
+        virtual void configureC() override;
 
         virtual void setPinN( McuPin* pin ) override;
 
-        void readACO( uint8_t );
+        void readACO();
 
     protected:
         void compare( uint8_t v=0 );
@@ -37,6 +37,7 @@ class AvrComp : public McuComp
         regBits_t m_ACD;
         regBits_t m_ACBG;
         regBits_t m_ACO;
+        regBits_t m_ACOE;
         regBits_t m_ACI;
         regBits_t m_ACIE;
         regBits_t m_ACIC;

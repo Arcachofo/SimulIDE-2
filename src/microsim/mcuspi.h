@@ -23,8 +23,8 @@ class McuSpi : public McuPrescaled, public SpiModule
         virtual void initialize() override;
 
         //virtual void setMode( spiMode_t mode ) override;
-        virtual void writeStatus( uint8_t val ){;}
-        virtual void writeSpiReg( uint8_t val ){;}
+        virtual void writeStatus(){;}
+        virtual void writeSpiReg(){;}
 
     protected:
         uint8_t* m_dataReg;

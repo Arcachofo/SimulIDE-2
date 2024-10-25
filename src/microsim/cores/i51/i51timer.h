@@ -18,13 +18,13 @@ class I51Timer : public McuTimer
 
         virtual void voltChanged() override;
 
-        virtual void enable( uint8_t en ) override;
+        virtual void enableChanged() override;
 
         virtual void initialize() override;
-        virtual void configureA( uint8_t newTMOD ) override;
+        virtual void configureA() override;
 
         virtual void updtCycles() override;
-        virtual void updtCount( uint8_t val=0 ) override;
+        virtual void updtCount() override;
 
     protected:
 

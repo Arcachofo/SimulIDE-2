@@ -9,7 +9,7 @@
 #include "e_mcu.h"
 #include "iopin.h"
 #include "serialmon.h"
-#include "datautils.h"
+#include "mcuram.h"
 #include "regwatcher.h"
 
 AvrUsart::AvrUsart( eMcu* mcu,  QString name, int number )
@@ -24,59 +24,60 @@ void AvrUsart::setup()
     bool ok = false;
     n.toInt( &ok );
     if( !ok ) n = "";
-    m_UCSRnA = (uint8_t*) m_mcuRam->getReg("UCSR"+n+"A" );
-    //m_UCSRnB = m_mcu->getReg( "UCSR"+n+"B" );
-    m_u2xn   = getRegBits("U2X"+n, m_mcuRam );
+    m_UCSRnA = (uint8_t*) m_mcuRam->getReg("UCSR"+n+"A");
+    m_UCSRnC = (uint8_t*) m_mcuRam->getReg("UCSR"+n+"C");
+    m_u2xn   = m_mcuRam->getRegBits("U2X"+n);
 
-    m_bit9Tx = getRegBits("TXB8"+n, m_mcuRam );
-    m_bit9Rx = getRegBits("RXB8"+n, m_mcuRam );
+    m_bit9Tx = m_mcuRam->getRegBits("TXB8"+n);
+    m_bit9Rx = m_mcuRam->getRegBits("RXB8"+n );
 
-    m_txEn = getRegBits("TXEN"+n, m_mcuRam );
-    m_rxEn = getRegBits("RXEN"+n, m_mcuRam );
+    m_txEn = m_mcuRam->getRegBits("TXEN"+n );
+    m_rxEn = m_mcuRam->getRegBits("RXEN"+n );
 
-    if( n == "" ) m_modeRB = getRegBits( "UMSEL", m_mcuRam ); // atmega8
-    else          m_modeRB = getRegBits( "UMSEL"+n+"0,UMSEL"+n+"1", m_mcuRam );
-    m_pariRB = getRegBits("UPM"+n+"0,UPM"+n+"1", m_mcuRam );
-    m_stopRB = getRegBits("USBS"+n, m_mcuRam );
-    m_UCSZ01 = getRegBits("UCSZ"+n+"0,UCSZ"+n+"1", m_mcuRam );
-    m_UCSZ2  = getRegBits("UCSZ"+n+"2", m_mcuRam );
+    if( n == "" ) m_modeRB = m_mcuRam->getRegBits("UMSEL"); // atmega8
+    else          m_modeRB = m_mcuRam->getRegBits("UMSEL"+n+"0,UMSEL"+n+"1");
 
-    m_UBRRnL = (uint8_t*) m_mcuRam->getReg("UBRR"+n+"L" );
-    watchRegNames("UBRR"+n+"L", R_WRITE, this, &AvrUsart::setUBRRnL, m_mcuRam );
+    m_pariRB = m_mcuRam->getRegBits("UPM"+n+"0,UPM"+n+"1");
+    m_stopRB = m_mcuRam->getRegBits("USBS"+n );
+    m_UCSZ01 = m_mcuRam->getRegBits("UCSZ"+n+"0,UCSZ"+n+"1");
+    m_UCSZ2  = m_mcuRam->getRegBits("UCSZ"+n+"2" );
+
+    m_UBRRnL = (uint8_t*) m_mcuRam->getReg("UBRR"+n+"L");
+    m_mcuRam->watchRegName("UBRR"+n+"L", R_WRITE, this, &AvrUsart::setUBRRnL );
 
     if( n == "" ) m_UBRRnH = nullptr; // atmega8
     else{         m_UBRRnH = (uint8_t*) m_mcuRam->getReg( "UBRR"+n+"H" );
-        watchRegNames("UBRR"+n+"H", R_WRITE, this, &AvrUsart::setUBRRnH, m_mcuRam );
+        m_mcuRam->watchRegName("UBRR"+n+"H", R_WRITE, this, &AvrUsart::setUBRRnH );
     }
-    m_UDRIE = getRegBits("UDRIE"+n, m_mcuRam );
-    m_UDRE  = getRegBits("UDRE"+n,  m_mcuRam );
-    m_TXC   = getRegBits("TXC"+n,   m_mcuRam );
-    m_RXC   = getRegBits("RXC"+n,   m_mcuRam );
-    m_FE    = getRegBits("FE"+n,    m_mcuRam );
-    m_DOR   = getRegBits("DOR"+n,   m_mcuRam );
-    m_MPCM  = getRegBits("MPCM"+n,  m_mcuRam );
+    m_UDRIE = m_mcuRam->getRegBits("UDRIE"+n );
+    m_UDRE  = m_mcuRam->getRegBits("UDRE"+n );
+    m_TXC   = m_mcuRam->getRegBits("TXC"+n );
+    m_RXC   = m_mcuRam->getRegBits("RXC"+n );
+    m_FE    = m_mcuRam->getRegBits("FE"+n );
+    m_DOR   = m_mcuRam->getRegBits("DOR"+n );
+    m_MPCM  = m_mcuRam->getRegBits("MPCM"+n );
 
-    if( n == "" ) m_UPE = getRegBits( "PE", m_mcuRam );
-    else          m_UPE = getRegBits( "UPE"+n, m_mcuRam );
+    if( n == "" ) m_UPE = m_mcuRam->getRegBits( "PE" );
+    else          m_UPE = m_mcuRam->getRegBits( "UPE"+n );
 }
 
-void AvrUsart::configureA( uint8_t newUCSRnA )
+void AvrUsart::configureA() // UCSRnA
 {
-    bool mpcm = getRegBitsBool( newUCSRnA, m_MPCM );
+    bool mpcm = m_MPCM.getRegBitsBool();
     m_receiver->ignoreData( mpcm );
 
-    bool speedx2 = getRegBitsBool( newUCSRnA, m_u2xn ); // Double Speed?
+    bool speedx2 = m_u2xn.getRegBitsBool(); // Double Speed?
     if( speedx2 == m_speedx2 ) return;
     m_speedx2 = speedx2;
     setBaurrate();
 }
 
-void AvrUsart::configureB( uint8_t newUCSRnB ) // UCSRnB changed
+void AvrUsart::configureB() // UCSRnB changed
 {
-    m_ucsz2 =  getRegBitsVal( newUCSRnB, m_UCSZ2 ) <<2;
+    m_ucsz2 =  m_UCSZ2.getRegBitsVal() <<2;
     m_dataBits = m_ucsz01+m_ucsz2+5;
 
-    uint8_t txEn = getRegBitsVal( newUCSRnB, m_txEn );
+    uint8_t txEn = m_txEn.getRegBitsVal();
     if( txEn != m_sender->isEnabled() )
     {
         if( txEn ){
@@ -87,7 +88,7 @@ void AvrUsart::configureB( uint8_t newUCSRnB ) // UCSRnB changed
         m_sender->enable( txEn );
     }
 
-    uint8_t rxEn = getRegBitsVal( newUCSRnB, m_rxEn );
+    uint8_t rxEn = m_rxEn.getRegBitsVal();
     if( rxEn != m_receiver->isEnabled() )
     {
         if( rxEn )
@@ -98,28 +99,29 @@ void AvrUsart::configureB( uint8_t newUCSRnB ) // UCSRnB changed
         else m_receiver->getPin()->controlPin( false, false );
         m_receiver->enable( rxEn );
     }
-    if( getRegBitsBool( newUCSRnB, m_UDRIE ) ) // Buffer empty Interrupt enabled?
+    if( m_UDRIE.getRegBitsBool() ) // Buffer empty Interrupt enabled?
     {
-        if( getRegBitsBool( *m_UCSRnA, m_UDRE ) )  // Buffer is empty?
-            bufferEmpty();                         // Trigger Buffer empty Interrupt
+        if( m_UDRE.getRegBitsBool() )  // Buffer is empty?
+            bufferEmpty();             // Trigger Buffer empty Interrupt
     }
 }
 
-void AvrUsart::configureC( uint8_t newUCSRnC ) // UCSRnC changed
+void AvrUsart::configureC() // UCSRnC changed
 {
-    if( !m_UBRRnH && !(newUCSRnC & (1<<7)) ) // atmega8 Writting to UBBRH
+    if( !m_UBRRnH && !(*m_UCSRnC & (1<<7)) ) // atmega8 Writting to UBBRH
     {
-        setUBRRnH( newUCSRnC & 0x0F );
+        *m_UBRRnH = *m_UCSRnC & 0x0F;
+
         return;
     }
     // clockPol = getRegBitsVal( val, UCPOLn );
 
-    m_mode     = getRegBitsVal( newUCSRnC, m_modeRB );    // UMSELn1, UMSELn0
-    m_stopBits = getRegBitsVal( newUCSRnC, m_stopRB )+1;  // UPMn1, UPMno
-    m_ucsz01   = getRegBitsVal( newUCSRnC, m_UCSZ01 );
+    m_mode     = m_modeRB.getRegBitsVal();    // UMSELn1, UMSELn0
+    m_stopBits = m_stopRB.getRegBitsVal()+1;  // UPMn1, UPMno
+    m_ucsz01   = m_UCSZ01.getRegBitsVal();
     m_dataBits = m_ucsz01+m_ucsz2+5;
 
-    uint8_t par = getRegBitsVal( newUCSRnC, m_pariRB );
+    uint8_t par = m_pariRB.getRegBitsVal();
     if( par > 0 ) m_parity = (parity_t)(par-1);
     else          m_parity = parNONE;
 
@@ -132,17 +134,17 @@ void AvrUsart::configureC( uint8_t newUCSRnC ) // UCSRnC changed
     }*/
 }
 
-void AvrUsart::setUBRRnL( uint8_t v )
+void AvrUsart::setUBRRnL()
 {
-    if( *m_UBRRnL == v ) return;
-    *m_UBRRnL = v;
+    //if( *m_UBRRnL == v ) return;
+    //*m_UBRRnL = v;
     setBaurrate();
 }
 
-void AvrUsart::setUBRRnH( uint8_t v )
+void AvrUsart::setUBRRnH()
 {
-    if( m_UBRRHval == v ) return;
-    m_UBRRHval = v;
+    //if( m_UBRRHval == v ) return;
+    //m_UBRRHval = v;
     setBaurrate();
 }
 
@@ -156,21 +158,21 @@ void AvrUsart::setBaurrate( uint8_t )
     setPeriod( period );
 }
 
-void AvrUsart::sendByte(  uint8_t data ) // Buffer is being written
+void AvrUsart::dataRegChanged() // Buffer is being written
 {
     if( !m_sender->isEnabled() ) return;
 
-    if( getRegBitsBool( *m_UCSRnA, m_UDRE ) )  // Buffer is empty?
+    if( m_UDRE.getRegBitsBool() )  // Buffer is empty?
     {
         m_interrupt->clearFlag();//clearRegBits( m_UDRE ); // Transmit buffer now full: Clear UDREn bit
-        m_sender->processData( data );
+        m_sender->processData( *m_txReg );
 }   }
 
 void AvrUsart::frameSent( uint8_t data )
 {
     if( m_monitor ) m_monitor->printOut( data );
 
-    if( getRegBitsBool( *m_UCSRnA, m_UDRE ) ) // Frame sent & Buffer is empty
+    if( m_UDRE.getRegBitsBool()  ) // Frame sent & Buffer is empty
         m_sender->raiseInt();                 // Raise USART Transmit Complete
     else
         m_sender->startTransmission();        // Buffer contains data, send it
@@ -180,7 +182,7 @@ void AvrUsart::setRxFlags( uint16_t frame )
 {
     if( m_dataBits == 9 ) setBit9Rx( ( frame & (1<<8) ) ? 1 : 0 );
 
-    writeRegBits( m_FE, frame & frameError );   // frameError
-    writeRegBits( m_DOR, frame & dataOverrun ); // overrun error
-    writeRegBits( m_UPE, frame & parityError ); // parityError
+    m_FE.setBits_08( frame & frameError );   // frameError
+    m_DOR.setBits_08( frame & dataOverrun ); // overrun error
+    m_UPE.setBits_08( frame & parityError ); // parityError
 }

@@ -24,7 +24,7 @@ class PicMssp : public McuModule, public eElement
         virtual void setup() override;
         virtual void initialize() override;
 
-        virtual void configureA( uint8_t SSPCON ) override;
+        virtual void configureA() override;
 
     protected:
         uint8_t m_mode;

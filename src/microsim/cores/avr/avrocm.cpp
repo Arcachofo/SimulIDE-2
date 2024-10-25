@@ -6,6 +6,7 @@
 #include "avrocm.h"
 #include "mcupin.h"
 #include "e_mcu.h"
+#include "mcuram.h"
 
 AvrOcm::AvrOcm( eMcu* mcu, QString name )
       : McuOcm( mcu, name )
@@ -13,9 +14,16 @@ AvrOcm::AvrOcm( eMcu* mcu, QString name )
 }
 AvrOcm::~AvrOcm(){}
 
-void AvrOcm::configureA( uint8_t newVal )
+void AvrOcm::setup()
 {
-    m_mode = newVal;
+    m_PD2.bit0 = 2;
+    m_PD2.mask = 0b100;
+    m_PD2.reg = m_mcuRam->getRegByName("PORTD"); /// FIXME
+}
+
+void AvrOcm::configureA()
+{
+    m_mode = m_PD2.getRegBitsBool();
 }
 
 void AvrOcm::OutputOcm() //Set Ocm output from OCnB1 & OCnB2
